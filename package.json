@@ -15,5 +15,8 @@
 	"bugs": {
 		"url": "https://github.com/rodpepablo/film-organizer/issues"
 	},
-	"homepage": "https://github.com/rodpepablo/film-organizer#readme"
+	"homepage": "https://github.com/rodpepablo/film-organizer#readme",
+	"devDependencies": {
+		"electro": "^2.1.1"
+	}
 }
