@@ -1,0 +1,10 @@
+#main-nav {
+	flex-basis: 300px;
+	border-right: 2px solid var(--secondary-light);
+	background-color: var(--light-gray);
+}
+
+#main-nav ul {
+	margin: 0;
+	padding: 0;
+}

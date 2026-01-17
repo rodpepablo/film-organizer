@@ -1,0 +1,14 @@
+.nav-menu-item {
+	font-size: var(--small-text);
+	padding: 1em 1em 1em 1.8em;
+	border-bottom: 2px solid var(--secondary-light);
+	cursor: pointer;
+}
+
+.nav-menu-item:hover {
+	background-color: var(--secondary-light);
+}
+
+.nav-menu-item:active {
+	background-color: var(--primary-light);
+}

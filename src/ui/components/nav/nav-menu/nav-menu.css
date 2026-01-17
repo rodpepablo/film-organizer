@@ -1,0 +1,15 @@
+.nav-menu .nav-menu-title:hover {
+	background-color: var(--secondary-light);
+}
+
+.nav-menu .nav-menu-title:active {
+	background-color: var(--primary-light);
+}
+
+.nav-menu .nav-menu-title {
+	list-style: none;
+	padding: 1em;
+	cursor: pointer;
+	border-bottom: 2px solid var(--secondary-light);
+	font-weight: bold;
+}

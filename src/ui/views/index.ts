@@ -1,7 +1,11 @@
-import html from "choo/html";
+import { html } from "../../infra/html";
+import { State, Emit } from "../../domain/models/state";
+import header from "../components/general/header/header";
+import mainContent from "../components/general/main-content/main-content";
 
-export default () => html`
+export default (state: State, emit: Emit) => html`
     <body>
-        <header><h1>Film organizer</h1></header>
+        ${header(state, emit)}
+        ${mainContent(state, emit)}
     </body>
 `;
