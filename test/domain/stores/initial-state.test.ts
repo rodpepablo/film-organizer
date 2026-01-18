@@ -16,6 +16,15 @@ describe("Create initial state", () => {
         });
     });
 
+    it("Should initialize modal", () => {
+        const state = {} as State;
+        createInitialState(state);
+        expect(state.modal).toStrictEqual({
+            active: false,
+            modalId: null,
+        });
+    });
+
     it("Should initialize album", () => {
         const state = {} as State;
         createInitialState(state);

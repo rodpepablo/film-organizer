@@ -2,25 +2,24 @@ import { html } from "../../../../infra/html";
 import "./nav.css";
 import { State, Emit } from "../../../../domain/models/state";
 import NavMenu from "../nav-menu/nav-menu";
-import NavMenuItem from "../nav-menu-item/nav-menu-item";
 import {
     ALBUM_MANAGEMENT_MENU,
+    CREATE_ALBUM_MODAL,
     FILM_MANAGEMENT_MENU,
 } from "../../../../infra/constants";
+import { items } from "./nav-menu-items";
 
 export default (state: State, emit: Emit) => {
     const albumManagementMenu = new NavMenu(
         "Album Management",
         ALBUM_MANAGEMENT_MENU,
     );
-    albumManagementMenu.addMenuItem(new NavMenuItem("Create album"));
-    albumManagementMenu.addMenuItem(new NavMenuItem("Load album"));
+    albumManagementMenu.addMenuItem(items[CREATE_ALBUM_MODAL]);
 
     const filmManagementMenu = new NavMenu(
         "Film Management",
         FILM_MANAGEMENT_MENU,
     );
-    filmManagementMenu.addMenuItem(new NavMenuItem("Load film"));
 
     const menus: NavMenu[] = [];
     menus.push(albumManagementMenu);

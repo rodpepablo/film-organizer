@@ -9,6 +9,13 @@ import createInitialState from "./domain/stores/initial-state";
 import { registerStores } from "./domain/stores";
 
 const app = new Choo();
+if (process.env.NODE_ENV === "development") {
+    app.use((state: State, emitter: Nanobus) => {
+        emitter.on("*", (event: string, data: any) => {
+            console.log(event, data);
+        });
+    });
+}
 app.use((state: State, _: Nanobus) => {
     createInitialState(state);
 });

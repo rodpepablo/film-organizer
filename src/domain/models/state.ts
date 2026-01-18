@@ -1,9 +1,10 @@
 import { IState } from "choo";
 import { Album } from "./album";
-import { Menus } from "./ui";
+import { Menus, Modal } from "./ui";
 
 export interface State extends IState {
     menus: Menus;
+    modal: Modal;
     album: Album | null;
 }
 

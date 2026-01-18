@@ -9,5 +9,9 @@ export default function createInitialState(state: State): void {
         [ALBUM_MANAGEMENT_MENU]: false,
         [FILM_MANAGEMENT_MENU]: false,
     };
+    state.modal = {
+        active: false,
+        modalId: null,
+    };
     state.album = null;
 }
