@@ -1,10 +1,9 @@
 import { IState } from "choo";
 import { Album } from "./album";
+import { Menus } from "./ui";
 
 export interface State extends IState {
-    ui: {
-        [key: string]: boolean;
-    };
+    menus: Menus;
     album: Album | null;
 }
 

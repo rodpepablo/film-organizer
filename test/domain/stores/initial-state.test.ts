@@ -10,7 +10,7 @@ describe("Create initial state", () => {
     it("Should initialize ui elements", () => {
         const state = {} as State;
         createInitialState(state);
-        expect(state.ui).toStrictEqual({
+        expect(state.menus).toStrictEqual({
             [ALBUM_MANAGEMENT_MENU]: false,
             [FILM_MANAGEMENT_MENU]: false,
         });

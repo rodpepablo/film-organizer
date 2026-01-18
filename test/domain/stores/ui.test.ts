@@ -10,7 +10,7 @@ describe("UI Store", () => {
             const bus = new Nanobus();
             vi.spyOn(bus, "emit");
             const state = {
-                ui: {
+                menus: {
                     "custom-menu": initial,
                 },
             };
@@ -18,7 +18,7 @@ describe("UI Store", () => {
             bus.emit(TOGGLE_NAV_MENU, { menu: "custom-menu" });
 
             expect(bus.emit).toHaveBeenCalledWith("render");
-            expect(state.ui["custom-menu"]).toEqual(!initial);
+            expect(state.menus["custom-menu"]).toEqual(!initial);
         },
     );
 });

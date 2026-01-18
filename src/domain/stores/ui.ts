@@ -6,10 +6,10 @@ export type ToggleNavMenuParams = EventParams & {
     menu: string;
 };
 
-export function uiStore(state: Pick<State, "ui">, emitter: Nanobus): void {
+export function uiStore(state: Pick<State, "menus">, emitter: Nanobus): void {
     emitter.on(TOGGLE_NAV_MENU, (params: ToggleNavMenuParams) => {
-        if (params.menu in state.ui) {
-            state.ui[params.menu] = !state.ui[params.menu];
+        if (params.menu in state.menus) {
+            state.menus[params.menu] = !state.menus[params.menu];
         }
         emitter.emit("render");
     });

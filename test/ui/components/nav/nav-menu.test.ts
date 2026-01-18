@@ -5,7 +5,7 @@ import { TOGGLE_NAV_MENU } from "../../../../src/infra/events";
 const TITLE = "custom title";
 const MENU_ID = "custom-menu";
 const STATE = {
-    ui: {
+    menus: {
         "custom-menu": false,
     },
 };
@@ -24,7 +24,7 @@ describe("NavMenu", () => {
         (status) => {
             const navMenu = new NavMenu(TITLE, MENU_ID);
             const state = {
-                ui: {
+                menus: {
                     "custom-menu": status === "open" ? true : false,
                 },
             };

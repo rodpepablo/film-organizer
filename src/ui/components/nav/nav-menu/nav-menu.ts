@@ -33,7 +33,7 @@ export default class NavMenu implements Component {
         };
     }
 
-    render(state: Pick<State, "ui">, emit: Emit): HTMLElement {
+    render(state: Pick<State, "menus">, emit: Emit): HTMLElement {
         this.open = uiMenuStateSelector(this.id, state);
 
         return html`

@@ -4,7 +4,7 @@ import { uiMenuStateSelector } from "../../../src/infra/selectors/ui";
 describe("UI selectors", () => {
     it("uiMenuSelectorShould get menu status from state", () => {
         const state = {
-            ui: {
+            menus: {
                 "other-menu": true,
                 "custom-menu": false,
             },
@@ -12,7 +12,7 @@ describe("UI selectors", () => {
 
         expect(uiMenuStateSelector("custom-menu", state)).toBeFalsy();
 
-        state.ui["custom-menu"] = true;
+        state.menus["custom-menu"] = true;
 
         expect(uiMenuStateSelector("custom-menu", state)).toBeTruthy();
     });
