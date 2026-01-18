@@ -15,4 +15,10 @@ describe("Create initial state", () => {
             [FILM_MANAGEMENT_MENU]: false,
         });
     });
+
+    it("Should initialize album", () => {
+        const state = {} as State;
+        createInitialState(state);
+        expect(state.album).toStrictEqual(null);
+    });
 });

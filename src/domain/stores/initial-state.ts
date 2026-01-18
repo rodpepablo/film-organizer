@@ -9,4 +9,5 @@ export default function createInitialState(state: State): void {
         [ALBUM_MANAGEMENT_MENU]: false,
         [FILM_MANAGEMENT_MENU]: false,
     };
+    state.album = null;
 }
