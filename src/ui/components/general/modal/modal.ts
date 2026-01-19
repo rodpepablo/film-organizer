@@ -20,7 +20,7 @@ export default class ModalComponent implements Component {
         return modalInfo.active && selected != null
             ? html`
                 <section class="modal" onclick=${this.closeModal(emit)}>
-                    <article class="modal-content">
+                    <article class="modal-content" onclick=${this.preventDefault}>
                         ${selected.render(state, emit)}
                     </article>
                 </section>
@@ -34,5 +34,10 @@ export default class ModalComponent implements Component {
             e.preventDefault();
             emit(CLOSE_MODAL);
         };
+    }
+
+    preventDefault(e: DOMEvent) {
+        e.preventDefault();
+        e.stopPropagation();
     }
 }

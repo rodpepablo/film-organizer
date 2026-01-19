@@ -52,6 +52,23 @@ describe("Modal component", () => {
 
         expect(emit).toHaveBeenCalledWith(CLOSE_MODAL);
     });
+
+    it("Should not close modal when clicking on content", () => {
+        const state = {
+            modal: {
+                active: true,
+                modalId: "custom-modal",
+            },
+        };
+        const emit = vi.fn();
+        const modal = new ModalComponent({
+            "custom-modal": new TestModal("custom-modal"),
+        });
+        const component = modal.render(state as State, emit);
+        component.querySelector<HTMLElement>(".modal-content")?.click();
+
+        expect(emit).not.toHaveBeenCalledWith(CLOSE_MODAL);
+    });
 });
 
 class TestModal implements Component {
