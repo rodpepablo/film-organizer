@@ -37,7 +37,6 @@ export default class ModalComponent implements Component {
     }
 
     preventDefault(e: DOMEvent) {
-        e.preventDefault();
         e.stopPropagation();
     }
 }

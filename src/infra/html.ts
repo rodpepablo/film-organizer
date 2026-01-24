@@ -3,9 +3,15 @@ import choohtml from "choo/html";
 import dom from "nanohtml/dom";
 import jsdom from "jsdom";
 
-const html =
-    process.env.NODE_ENV === "test"
-        ? dom(new jsdom.JSDOM().window.document)
-        : choohtml;
+const jsdomWindow = (() => {
+    let w: jsdom.DOMWindow;
+    return (): jsdom.DOMWindow => {
+        w = w || new jsdom.JSDOM().window;
+        return w;
+    };
+})();
 
-export { html };
+const html =
+    process.env.NODE_ENV === "test" ? dom(jsdomWindow().document) : choohtml;
+
+export { html, jsdomWindow };
