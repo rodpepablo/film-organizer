@@ -12,3 +12,13 @@
 .form > :not(button) {
 	align-self: stretch;
 }
+
+.form .form-error {
+	background: var(--error-color);
+	color: var(--white-color);
+	align-self: center;
+	width: fit-content;
+	max-width: 400px;
+	padding: 0.5em;
+	border-radius: 2px;
+}

@@ -3,9 +3,11 @@ import { State, Emit } from "../../../../domain/models/state";
 import Component from "../../../../infra/component";
 import { html } from "../../../../infra/html";
 import { mockFormData } from "../../../../../test/test-util/form-data";
+import { uiFormErrorSelector } from "../../../../infra/selectors/ui";
 
 type SubmitHandler = (emit: Emit, formData: FormData) => void;
 type FormConfig = {
+    formId: string;
     onSubmit: SubmitHandler;
 };
 
@@ -19,8 +21,12 @@ export default class Form implements Component {
     }
 
     render(state: State, emit: Emit): HTMLElement {
+        const error = uiFormErrorSelector(state, this.config.formId);
         return html`
-            <form class="form" onsubmit=${this.handleSubmit(emit)}>${this.content}</form>
+            <form class="form" onsubmit=${this.handleSubmit(emit)}>
+                ${error != null ? html`<span class="form-error">${error}</span>` : null}
+                ${this.content}
+            </form>
         `;
     }
 

@@ -3,11 +3,12 @@ import { State } from "../../../../src/domain/models/state";
 import { html } from "../../../../src/infra/html";
 import Form from "../../../../src/ui/components/general/form/form";
 import { setInputValueTo, submitForm } from "../../../test-util/dom";
-
+const state = { forms: {} } as State;
 describe("Form Component", () => {
     it("Should inject the content into the form", () => {
-        const form = new Form({ onSubmit: () => { } }, html`<input name="album"/>`);
-        const dom = form.render({} as State, () => { });
+        const config = { formId: "", onSubmit: () => { } };
+        const form = new Form(config, html`<input name="album"/>`);
+        const dom = form.render(state, () => { });
         const input = dom.querySelector('input[name="album"]');
 
         expect(input).not.toBeNull();
@@ -16,9 +17,9 @@ describe("Form Component", () => {
     it("Should provide form data and execute the submit handler", () => {
         const onSubmit = vi.fn();
         const emit = vi.fn();
-        const config = { onSubmit };
+        const config = { formId: "", onSubmit };
         const form = new Form(config, html`<input name="album"/>`);
-        const dom = form.render({} as State, emit);
+        const dom = form.render(state, emit);
 
         setInputValueTo(dom, "album", "ALBUM");
         submitForm(dom);

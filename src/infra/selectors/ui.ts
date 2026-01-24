@@ -12,4 +12,4 @@ export const uiModalSelector = (state: Pick<State, "modal">): Modal =>
 export const uiFormErrorSelector = (
     state: Pick<State, "forms">,
     form: string,
-): string | null => state.forms[form].error;
+): string | null => (form in state.forms ? state.forms[form].error : null);

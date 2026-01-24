@@ -85,6 +85,7 @@ describe("UI Store", () => {
 
         bus.emit(FORM_ERROR, { form: CREATE_ALBUM_FORM, error: ERROR_MSG });
         expect(state.forms[CREATE_ALBUM_FORM].error).toEqual(ERROR_MSG);
+        expectRender(bus);
     });
 
     it("Should modify an error in a form", () => {
@@ -102,6 +103,7 @@ describe("UI Store", () => {
 
         bus.emit(FORM_ERROR, { form: CREATE_ALBUM_FORM, error: ERROR_MSG });
         expect(state.forms[CREATE_ALBUM_FORM].error).toEqual(ERROR_MSG);
+        expectRender(bus);
     });
 
     it("Should clear an error in a form", () => {
@@ -119,5 +121,6 @@ describe("UI Store", () => {
 
         bus.emit(CLEAR_FORM, { form: CREATE_ALBUM_FORM });
         expect(state.forms[CREATE_ALBUM_FORM].error).toBeNull();
+        expectRender(bus);
     });
 });

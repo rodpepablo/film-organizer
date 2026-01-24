@@ -45,5 +45,6 @@ describe("UI selectors", () => {
         };
 
         expect(uiFormErrorSelector(state, "someform")).toEqual("CUSTOM ERROR");
+        expect(uiFormErrorSelector(state, "otherform")).toEqual(null);
     });
 });

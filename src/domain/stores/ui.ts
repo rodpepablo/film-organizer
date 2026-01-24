@@ -49,11 +49,13 @@ export function uiStore(state: Substate, emitter: Nanobus): void {
     emitter.on(FORM_ERROR, (params: FormErrorParams) => {
         initForm(state, params);
         state.forms[params.form].error = params.error;
+        emitter.emit("render");
     });
 
     emitter.on(CLEAR_FORM, (params: FormEventParams) => {
         initForm(state, params);
         state.forms[params.form].error = null;
+        emitter.emit("render");
     });
 }
 
