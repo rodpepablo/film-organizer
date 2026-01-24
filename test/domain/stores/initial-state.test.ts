@@ -25,6 +25,12 @@ describe("Create initial state", () => {
         });
     });
 
+    it("Should initialize forms", () => {
+        const state = {} as State;
+        createInitialState(state);
+        expect(state.forms).toEqual({});
+    });
+
     it("Should initialize album", () => {
         const state = {} as State;
         createInitialState(state);

@@ -13,5 +13,6 @@ export default function createInitialState(state: State): void {
         active: false,
         modalId: null,
     };
+    state.forms = {};
     state.album = null;
 }
