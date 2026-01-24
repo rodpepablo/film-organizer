@@ -1,5 +1,11 @@
 import Nanobus from "nanobus";
-import { CLOSE_MODAL, OPEN_MODAL, TOGGLE_NAV_MENU } from "../../infra/events";
+import {
+    CLEAR_FORM,
+    CLOSE_MODAL,
+    FORM_ERROR,
+    OPEN_MODAL,
+    TOGGLE_NAV_MENU,
+} from "../../infra/events";
 import { EventParams, State } from "../models/state";
 
 export type ToggleNavMenuParams = EventParams & {
@@ -10,10 +16,17 @@ export type OpenModalParams = EventParams & {
     modalId: string;
 };
 
-export function uiStore(
-    state: Pick<State, "menus" | "modal">,
-    emitter: Nanobus,
-): void {
+export type FormEventParams = EventParams & {
+    form: string;
+};
+
+export type FormErrorParams = FormEventParams & {
+    error: string;
+};
+
+type Substate = Pick<State, "menus" | "modal" | "forms">;
+
+export function uiStore(state: Substate, emitter: Nanobus): void {
     emitter.on(TOGGLE_NAV_MENU, (params: ToggleNavMenuParams) => {
         if (params.menu in state.menus) {
             state.menus[params.menu] = !state.menus[params.menu];
@@ -32,4 +45,20 @@ export function uiStore(
         state.modal.modalId = null;
         emitter.emit("render");
     });
+
+    emitter.on(FORM_ERROR, (params: FormErrorParams) => {
+        initForm(state, params);
+        state.forms[params.form].error = params.error;
+    });
+
+    emitter.on(CLEAR_FORM, (params: FormEventParams) => {
+        initForm(state, params);
+        state.forms[params.form].error = null;
+    });
+}
+
+function initForm(state: Substate, params: FormEventParams) {
+    if (!(params.form in state.forms)) {
+        state.forms[params.form] = {};
+    }
 }
