@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
+    uiFormErrorSelector,
     uiMenuStateSelector,
     uiModalSelector,
 } from "../../../src/infra/selectors/ui";
@@ -32,5 +33,17 @@ describe("UI selectors", () => {
             active: true,
             modalId: "custom-modal",
         });
+    });
+
+    it("uiFormErrorSelector should get the error for a form", () => {
+        const state = {
+            forms: {
+                someform: {
+                    error: "CUSTOM ERROR",
+                },
+            },
+        };
+
+        expect(uiFormErrorSelector(state, "someform")).toEqual("CUSTOM ERROR");
     });
 });
