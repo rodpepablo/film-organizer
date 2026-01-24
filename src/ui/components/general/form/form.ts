@@ -20,8 +20,9 @@ export default class Form implements Component {
         this.content = content;
     }
 
-    render(state: State, emit: Emit): HTMLElement {
+    render(state: Pick<State, "forms">, emit: Emit): HTMLElement {
         const error = uiFormErrorSelector(state, this.config.formId);
+
         return html`
             <form class="form" onsubmit=${this.handleSubmit(emit)}>
                 ${error != null ? html`<span class="form-error">${error}</span>` : null}
