@@ -9,7 +9,7 @@
 .modal .modal-content {
 	flex: 1;
 	margin: auto;
-	min-height: 40vh;
+	min-height: 30vh;
 	max-width: 60vw;
 	background-color: var(--white-color);
 	border: 2px solid var(--primary-dark);

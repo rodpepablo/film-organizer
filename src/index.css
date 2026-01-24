@@ -19,3 +19,11 @@ body {
 	flex-direction: column;
 	font-size: var(--small-text);
 }
+
+.center {
+	text-align: center;
+}
+
+.subtitle {
+	font-size: var(--medium-text);
+}

@@ -4,6 +4,8 @@ import Component from "../../../../infra/component";
 import { html } from "../../../../infra/html";
 import { CreateAlbumParams } from "../../../../domain/stores/album";
 import Form from "../../general/form/form";
+import Button from "../../general/button/button";
+import Input from "../../general/input/input";
 
 export default class CreateAlbumModal implements Component {
     render(state: State, emit: Emit): HTMLElement {
@@ -11,14 +13,14 @@ export default class CreateAlbumModal implements Component {
         const form = new Form(
             config,
             html`
-                <input name="albumName" type="text" />
-                <button type="submit">Create</button>
+                ${Input({ type: "text", name: "albumName", label: "name" })}
+                ${Button({ type: "submit", value: "Create" })}
             `,
         );
 
         return html`
             <div>
-                <h5>Create Album Modal</h5>
+                <h5 class="center subtitle">Create Album Modal</h5>
                 ${form.render(state, emit)}
             </div>
         `;

@@ -1,3 +1,14 @@
-.form input[type="text"] {
-	border: 2px solid var(--primary-color);
+.form {
+	display: flex;
+	flex-direction: column;
+	padding: 0 2em;
+	align-items: center;
+}
+
+.form > * {
+	margin: 0.5em 0;
+}
+
+.form > :not(button) {
+	align-self: stretch;
 }
