@@ -7,4 +7,5 @@ export interface IAlbumService {
         path: string,
         album: Album,
     ): Promise<void>;
+    loadAlbum(event: Electron.IpcMainInvokeEvent, path: string): Promise<Album>;
 }

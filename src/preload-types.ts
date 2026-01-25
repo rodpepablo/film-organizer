@@ -7,6 +7,7 @@ declare global {
             album: {
                 getFolder(): Promise<string | null>;
                 saveAlbum(path: string, album: Album): Promise<void>;
+                loadAlbum(path: string): Promise<Album>;
             };
         };
     }

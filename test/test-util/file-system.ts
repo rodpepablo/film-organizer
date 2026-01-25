@@ -13,3 +13,7 @@ export function removeDirectory(directory: string) {
 export function loadJSON<T>(file: string) {
     return JSON.parse(fs.readFileSync(file, "utf-8")) as T;
 }
+
+export function saveJSON(path: string, content: Object): void {
+    fs.writeFileSync(path, JSON.stringify(content));
+}

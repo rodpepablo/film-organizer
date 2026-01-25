@@ -5,11 +5,13 @@ import AlbumService from "../../../src/domain/services/album";
 import {
     createTemporalDirectory,
     loadJSON,
+    saveJSON,
     removeDirectory,
 } from "../../test-util/file-system";
 import { Album } from "../../../src/domain/models/album";
 import {
     GET_FOLDER_HANDLER,
+    LOAD_ALBUM_HANDLER,
     SAVE_ALBUM_HANDLER,
 } from "../../../src/infra/ipc-events";
 
@@ -68,6 +70,17 @@ describe("AlbumService", () => {
         expect(savedAlbum).toStrictEqual(album);
     });
 
+    it("Should load an album from a designated path", async () => {
+        const fullpath = `${temporalDirectory}/test.json`;
+        const expectedAlbum = { name: "test-album" };
+        saveJSON(fullpath, expectedAlbum);
+        const albumService = new AlbumService(mock());
+
+        const album = await albumService.loadAlbum(EVENT, fullpath);
+
+        expect(album).toStrictEqual(expectedAlbum);
+    });
+
     it("Should load IPC handlers", () => {
         const albumService = new AlbumService(mock());
         const ipcMain = mock<electron.IpcMain>();
@@ -81,6 +94,10 @@ describe("AlbumService", () => {
         expect(ipcMain.handle).toHaveBeenCalledWith(
             SAVE_ALBUM_HANDLER,
             albumService.saveAlbum,
+        );
+        expect(ipcMain.handle).toHaveBeenCalledWith(
+            LOAD_ALBUM_HANDLER,
+            albumService.loadAlbum,
         );
     });
 });

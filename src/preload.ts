@@ -1,12 +1,17 @@
-import electron from "electron";
+import { contextBridge, ipcRenderer } from "electron";
 import { Album } from "./domain/models/album";
-import { GET_FOLDER_HANDLER, SAVE_ALBUM_HANDLER } from "./infra/ipc-events";
+import {
+    GET_FOLDER_HANDLER,
+    LOAD_ALBUM_HANDLER,
+    SAVE_ALBUM_HANDLER,
+} from "./infra/ipc-events";
 import "./preload-types";
 
-electron.contextBridge.exposeInMainWorld("api", {
+contextBridge.exposeInMainWorld("api", {
     album: {
-        getFolder: () => electron.ipcRenderer.invoke(GET_FOLDER_HANDLER),
+        getFolder: () => ipcRenderer.invoke(GET_FOLDER_HANDLER),
         saveAlbum: (path: string, album: Album) =>
-            electron.ipcRenderer.invoke(SAVE_ALBUM_HANDLER, path, album),
+            ipcRenderer.invoke(SAVE_ALBUM_HANDLER, path, album),
+        loadAlbum: (path: string) => ipcRenderer.invoke(LOAD_ALBUM_HANDLER, path),
     },
 });
