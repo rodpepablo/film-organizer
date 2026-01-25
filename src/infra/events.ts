@@ -7,3 +7,4 @@ export const CLEAR_FORM = "form::clear";
 
 // Albums
 export const CREATE_ALBUM_REQUEST = "album::create::request";
+export const LOAD_ALBUM_REQUEST = "album::load::request";
