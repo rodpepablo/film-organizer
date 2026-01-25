@@ -13,16 +13,40 @@ export type CreateAlbumParams = EventParams & {
     name: string;
 };
 
-export function albumStore(state: Pick<State, "album">, emitter: Nanobus) {
-    emitter.on(CREATE_ALBUM_REQUEST, (params: CreateAlbumParams) => {
-        emitter.emit(CLEAR_FORM, { form: CREATE_ALBUM_FORM });
+type Substate = Pick<State, "album">;
+
+export class AlbumStoreManager {
+    state: Substate;
+    emitter: Nanobus;
+    api: Window["api"];
+
+    constructor(state: Substate, emitter: Nanobus, api: Window["api"]) {
+        this.state = state;
+        this.emitter = emitter;
+        this.api = api;
+    }
+
+    manageCreateAlbum = async (params: CreateAlbumParams): Promise<void> => {
+        this.emitter.emit(CLEAR_FORM, { form: CREATE_ALBUM_FORM });
         const [isValid, error] = AlbumValidators.albumCreation.validate(params);
         if (isValid) {
-            state.album = { name: params.name };
-            emitter.emit(CLOSE_MODAL);
+            const album = { name: params.name };
+            const path = await this.api.album.getFolder();
+            await this.api.album.saveAlbum(path, album);
+            this.state.album = album;
+            this.emitter.emit(CLOSE_MODAL);
         } else {
-            emitter.emit(FORM_ERROR, { form: CREATE_ALBUM_FORM, error: error.msg });
+            this.emitter.emit(FORM_ERROR, {
+                form: CREATE_ALBUM_FORM,
+                error: error.msg,
+            });
         }
-        emitter.emit("render");
-    });
+        this.emitter.emit("render");
+    };
+}
+
+export function albumStore(state: Substate, emitter: Nanobus) {
+    const albumStoreManager = new AlbumStoreManager(state, emitter, window.api);
+
+    emitter.on(CREATE_ALBUM_REQUEST, albumStoreManager.manageCreateAlbum);
 }

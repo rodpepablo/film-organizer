@@ -1,41 +1,46 @@
 import { describe, it, expect } from "vitest";
-import { albumStore } from "../../../src/domain/stores/album";
+import { mock } from "vitest-mock-extended";
+import "../../../src/preload-types";
+import { AlbumStoreManager } from "../../../src/domain/stores/album";
 import { CREATE_ALBUM_FORM } from "../../../src/infra/constants";
 import { INVALID_ALBUM_NAME } from "../../../src/infra/errors";
-import {
-    CLEAR_FORM,
-    CLOSE_MODAL,
-    CREATE_ALBUM_REQUEST,
-    FORM_ERROR,
-} from "../../../src/infra/events";
+import { CLEAR_FORM, CLOSE_MODAL, FORM_ERROR } from "../../../src/infra/events";
 import { expectRender, spiedBus } from "../../test-util/mocking";
 
 describe("Album store", () => {
-    it("Should create album from request", () => {
+    it("Should create album from request", async () => {
         const state = {
             album: null,
         };
         const bus = spiedBus();
-        albumStore(state, bus);
+        const api = { album: mock<Window["api"]["album"]>() };
+        const manager = new AlbumStoreManager(state, bus, api);
 
-        bus.emit(CREATE_ALBUM_REQUEST, { name: "ALBUM_NAME" });
+        api.album.getFolder.mockResolvedValue("PATH");
+        api.album.saveAlbum.mockResolvedValue();
+        await manager.manageCreateAlbum({ name: "ALBUM_NAME" });
 
-        expect(state.album).toStrictEqual({ name: "ALBUM_NAME" });
+        const expectedAlbum = {
+            name: "ALBUM_NAME",
+        };
+        expect(state.album).toStrictEqual(expectedAlbum);
         expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM, {
             form: CREATE_ALBUM_FORM,
         });
+        expect(api.album.saveAlbum).toHaveBeenCalledWith("PATH", expectedAlbum);
         expect(bus.emit).toHaveBeenCalledWith(CLOSE_MODAL);
         expectRender(bus);
     });
 
-    it("Should add an error to the form when invalid", () => {
+    it("Should add an error to the form when invalid", async () => {
         const state = {
             album: null,
         };
         const bus = spiedBus();
-        albumStore(state, bus);
+        const api = mock<Window["api"]>();
+        const manager = new AlbumStoreManager(state, bus, api);
 
-        bus.emit(CREATE_ALBUM_REQUEST, { name: "" });
+        await manager.manageCreateAlbum({ name: "" });
 
         expect(state.album).toBeNull();
         expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM, {

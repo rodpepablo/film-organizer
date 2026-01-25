@@ -22,7 +22,11 @@ const createWindow = (): void => {
     mainWindow.webContents.openDevTools();
 };
 
-app.on("ready", createWindow);
+app.whenReady().then(() => {
+    // load services
+    loadServices();
+    createWindow();
+});
 
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {
@@ -35,6 +39,3 @@ app.on("activate", () => {
         createWindow();
     }
 });
-
-// load services
-loadServices();
