@@ -1,8 +1,18 @@
-// See the Electron documentation for details on how to use preload scripts:
-// https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
-
 import electron from "electron";
+import { GET_FOLDER_HANDLER } from "./domain/services/album";
 
-electron.contextBridge.exposeInMainWorld("electron", {
-    fileManager: {},
+electron.contextBridge.exposeInMainWorld("api", {
+    album: {
+        getFolder: () => electron.ipcRenderer.invoke(GET_FOLDER_HANDLER),
+    },
 });
+
+declare global {
+    interface Window {
+        api: {
+            album: {
+                getFolder(): Promise<string | null>;
+            };
+        };
+    }
+}
