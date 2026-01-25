@@ -1,9 +1,12 @@
 import electron from "electron";
-import { GET_FOLDER_HANDLER } from "./domain/services/album";
+import { Album } from "./domain/models/album";
+import { GET_FOLDER_HANDLER, SAVE_ALBUM_HANDLER } from "./infra/ipc-events";
 
 electron.contextBridge.exposeInMainWorld("api", {
     album: {
         getFolder: () => electron.ipcRenderer.invoke(GET_FOLDER_HANDLER),
+        saveAlbum: (path: string, album: Album) =>
+            electron.ipcRenderer.invoke(SAVE_ALBUM_HANDLER, path, album),
     },
 });
 
@@ -12,6 +15,7 @@ declare global {
         api: {
             album: {
                 getFolder(): Promise<string | null>;
+                saveAlbum(path: string, album: Album): Promise<void>;
             };
         };
     }
