@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from "electron";
 import { Album } from "./domain/models/album";
 import {
+    GET_FILE_HANDLER,
     GET_FOLDER_HANDLER,
     LOAD_ALBUM_HANDLER,
     SAVE_ALBUM_HANDLER,
@@ -8,6 +9,9 @@ import {
 import "./preload-types";
 
 contextBridge.exposeInMainWorld("api", {
+    fs: {
+        getFile: () => ipcRenderer.invoke(GET_FILE_HANDLER),
+    },
     album: {
         getFolder: () => ipcRenderer.invoke(GET_FOLDER_HANDLER),
         saveAlbum: (path: string, album: Album) =>
