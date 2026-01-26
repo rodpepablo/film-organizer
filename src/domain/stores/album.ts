@@ -5,6 +5,7 @@ import {
     CLOSE_MODAL,
     CREATE_ALBUM_REQUEST,
     FORM_ERROR,
+    LOAD_ALBUM_REQUEST,
 } from "../../infra/events";
 import { EventParams, State } from "../models/state";
 import { AlbumValidators } from "../validators/album";
@@ -43,10 +44,20 @@ export class AlbumStoreManager {
         }
         this.emitter.emit("render");
     };
+
+    manageLoadAlbum = async (): Promise<void> => {
+        const path = await this.api.fs.getFile();
+        if (path !== null) {
+            const album = await this.api.album.loadAlbum(path);
+            this.state.album = album;
+            this.emitter.emit("render");
+        }
+    };
 }
 
 export function albumStore(state: Substate, emitter: Nanobus) {
     const albumStoreManager = new AlbumStoreManager(state, emitter, window.api);
 
     emitter.on(CREATE_ALBUM_REQUEST, albumStoreManager.manageCreateAlbum);
+    emitter.on(LOAD_ALBUM_REQUEST, albumStoreManager.manageLoadAlbum);
 }

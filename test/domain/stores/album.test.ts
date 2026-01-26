@@ -54,4 +54,45 @@ describe("Album store", () => {
             error: INVALID_ALBUM_NAME,
         });
     });
+
+    it("Should load an album if selected", async () => {
+        const state = { album: null };
+        const bus = spiedBus();
+        const api = {
+            fs: mock<Window["api"]["fs"]>(),
+            album: mock<Window["api"]["album"]>(),
+        };
+        const manager = new AlbumStoreManager(state, bus, api);
+        const expectedAlbum = { name: "test-album" };
+
+        api.fs.getFile.mockResolvedValue("/PATH/TO/FILE.json");
+        api.album.loadAlbum.mockResolvedValue(expectedAlbum);
+
+        await manager.manageLoadAlbum();
+
+        expect(state.album).toStrictEqual(expectedAlbum);
+        expect(api.fs.getFile).toHaveBeenCalledWith();
+        expect(api.album.loadAlbum).toHaveBeenCalledWith("/PATH/TO/FILE.json");
+        expectRender(bus);
+    });
+
+    it("Should not render or change album on file selection cancel", async () => {
+        const currentAlbum = { name: "loaded-album" };
+        const state = { album: currentAlbum };
+        const bus = spiedBus();
+        const api = {
+            fs: mock<Window["api"]["fs"]>(),
+            album: mock<Window["api"]["album"]>(),
+        };
+        const manager = new AlbumStoreManager(state, bus, api);
+
+        api.fs.getFile.mockResolvedValue(null);
+
+        await manager.manageLoadAlbum();
+
+        expect(state.album).toStrictEqual(currentAlbum);
+        expect(api.fs.getFile).toHaveBeenCalledWith();
+        expect(api.album.loadAlbum).not.toHaveBeenCalled();
+        expect(bus.emit).not.toHaveBeenCalledWith("render");
+    });
 });
