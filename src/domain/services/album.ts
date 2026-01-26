@@ -2,29 +2,9 @@ import fs from "fs/promises";
 import { IAlbumService } from "../ports/album";
 import { IIPCService } from "../../infra/ipc-service";
 import { Album } from "../models/album";
-import {
-    GET_FOLDER_HANDLER,
-    LOAD_ALBUM_HANDLER,
-    SAVE_ALBUM_HANDLER,
-} from "../../infra/ipc-events";
+import { LOAD_ALBUM_HANDLER, SAVE_ALBUM_HANDLER } from "../../infra/ipc-events";
 
 export default class AlbumService implements IAlbumService, IIPCService {
-    private dialog: Electron.Dialog;
-
-    constructor(dialog: Electron.Dialog) {
-        this.dialog = dialog;
-    }
-
-    getFolder = async (): Promise<string | null> => {
-        const result = await this.dialog.showOpenDialog({
-            properties: ["openDirectory"],
-        });
-
-        if (result.canceled) return null;
-
-        return result.filePaths[0];
-    };
-
     saveAlbum = async (
         _: Electron.IpcMainInvokeEvent,
         path: string,
@@ -45,7 +25,6 @@ export default class AlbumService implements IAlbumService, IIPCService {
     };
 
     load(ipcMain: Electron.IpcMain): void {
-        ipcMain.handle(GET_FOLDER_HANDLER, this.getFolder);
         ipcMain.handle(SAVE_ALBUM_HANDLER, this.saveAlbum);
         ipcMain.handle(LOAD_ALBUM_HANDLER, this.loadAlbum);
     }

@@ -5,10 +5,10 @@ declare global {
     interface Window {
         api: {
             fs: {
+                getFolder(): Promise<string | null>;
                 getFile(): Promise<string | null>;
             };
             album: {
-                getFolder(): Promise<string | null>;
                 saveAlbum(path: string, album: Album): Promise<void>;
                 loadAlbum(path: string): Promise<Album>;
             };

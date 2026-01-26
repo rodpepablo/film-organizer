@@ -13,10 +13,13 @@ describe("Album store", () => {
             album: null,
         };
         const bus = spiedBus();
-        const api = { album: mock<Window["api"]["album"]>() };
+        const api = {
+            fs: mock<Window["api"]["fs"]>(),
+            album: mock<Window["api"]["album"]>(),
+        };
         const manager = new AlbumStoreManager(state, bus, api);
 
-        api.album.getFolder.mockResolvedValue("PATH");
+        api.fs.getFolder.mockResolvedValue("PATH");
         api.album.saveAlbum.mockResolvedValue();
         await manager.manageCreateAlbum({ name: "ALBUM_NAME" });
 
