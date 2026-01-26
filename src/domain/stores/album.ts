@@ -1,5 +1,6 @@
 import Nanobus from "nanobus";
 import {
+    ALBUM_CREATION_SUCCESS,
     ALBUM_LOAD_ERROR,
     ALBUM_LOAD_SUCCESS,
     CREATE_ALBUM_FORM,
@@ -42,6 +43,7 @@ export class AlbumStoreManager {
             await this.api.album.saveAlbum(path, album);
             this.state.album = album;
             this.emitter.emit(CLOSE_MODAL);
+            this.emitter.emit(CREATE_NOTIFICATION, ALBUM_CREATION_SUCCESS);
         } else {
             this.emitter.emit(FORM_ERROR, {
                 form: CREATE_ALBUM_FORM,

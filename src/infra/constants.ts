@@ -20,5 +20,7 @@ const error = (message: string): CreateNotificationParams => ({
     type: "error",
     message,
 });
+
+export const ALBUM_CREATION_SUCCESS = success("Album created successfully");
 export const ALBUM_LOAD_SUCCESS = success("Album loaded successfully");
 export const ALBUM_LOAD_ERROR = error("Trying to load invalid file");

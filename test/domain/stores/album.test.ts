@@ -7,6 +7,7 @@ import {
     AlbumStoreManager,
 } from "../../../src/domain/stores/album";
 import {
+    ALBUM_CREATION_SUCCESS,
     ALBUM_LOAD_ERROR,
     ALBUM_LOAD_SUCCESS,
     CREATE_ALBUM_FORM,
@@ -49,6 +50,10 @@ describe("Album store", () => {
         });
         expect(api.album.saveAlbum).toHaveBeenCalledWith("PATH", expectedAlbum);
         expect(bus.emit).toHaveBeenCalledWith(CLOSE_MODAL);
+        expect(bus.emit).toHaveBeenCalledWith(
+            CREATE_NOTIFICATION,
+            ALBUM_CREATION_SUCCESS,
+        );
         expectRender(bus);
     });
 
