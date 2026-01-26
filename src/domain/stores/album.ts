@@ -69,7 +69,9 @@ export class AlbumStoreManager {
 }
 
 export function albumStore(state: Substate, emitter: Nanobus) {
-    const albumStoreManager = new AlbumStoreManager(state, emitter, window.api);
+    const api =
+        process.env.NODE_ENV !== "test" ? window.api : ({} as Window["api"]);
+    const albumStoreManager = new AlbumStoreManager(state, emitter, api);
 
     emitter.on(CREATE_ALBUM_REQUEST, albumStoreManager.manageCreateAlbum);
     emitter.on(LOAD_ALBUM_REQUEST, albumStoreManager.manageLoadAlbum);

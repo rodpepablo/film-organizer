@@ -1,7 +1,11 @@
 import { describe, it, expect } from "vitest";
+import Nanobus from "nanobus";
 import { mock } from "vitest-mock-extended";
 import "../../../src/preload-types";
-import { AlbumStoreManager } from "../../../src/domain/stores/album";
+import {
+    albumStore,
+    AlbumStoreManager,
+} from "../../../src/domain/stores/album";
 import {
     ALBUM_LOAD_ERROR,
     ALBUM_LOAD_SUCCESS,
@@ -11,11 +15,14 @@ import { INVALID_ALBUM_NAME } from "../../../src/infra/errors";
 import {
     CLEAR_FORM,
     CLOSE_MODAL,
+    CREATE_ALBUM_REQUEST,
     CREATE_NOTIFICATION,
     FORM_ERROR,
+    LOAD_ALBUM_REQUEST,
 } from "../../../src/infra/events";
 import { expectRender, spiedBus } from "../../test-util/mocking";
 import { Album } from "../../../src/domain/models/album";
+import { State } from "../../../src/domain/models/state";
 
 describe("Album store", () => {
     it("Should create album from request", async () => {
@@ -132,5 +139,17 @@ describe("Album store", () => {
             ALBUM_LOAD_ERROR,
         );
         expectRender(bus);
+    });
+
+    it("Should register handlers", () => {
+        const emitter = mock<Nanobus>();
+
+        albumStore({} as State, emitter);
+
+        const events = [CREATE_ALBUM_REQUEST, LOAD_ALBUM_REQUEST];
+        expect(emitter.on).toHaveBeenCalledTimes(events.length);
+        for (let event of events) {
+            expect(emitter.on).toHaveBeenCalledWith(event, expect.any(Function));
+        }
     });
 });
