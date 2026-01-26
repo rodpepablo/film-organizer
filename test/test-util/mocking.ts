@@ -1,5 +1,5 @@
 import Nanobus from "nanobus";
-import { expect, vi } from "vitest";
+import { expect, vi, ExpectStatic } from "vitest";
 
 export function spiedBus() {
     const bus = new Nanobus();
@@ -9,4 +9,11 @@ export function spiedBus() {
 
 export function expectRender(bus: Nanobus) {
     expect(bus.emit).toHaveBeenCalledWith("render");
+}
+
+export function autoTimeout(expect: ExpectStatic, expectedDelay: number) {
+    return (fn: Function, time: number) => {
+        fn();
+        expect(time).toEqual(expectedDelay);
+    };
 }

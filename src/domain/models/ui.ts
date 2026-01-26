@@ -14,3 +14,9 @@ export interface Form {
 export interface Forms {
     [key: string]: Form;
 }
+
+export interface Notification {
+    id: string;
+    type: "success" | "warning" | "error";
+    message: string;
+}

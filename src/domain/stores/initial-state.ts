@@ -14,5 +14,6 @@ export default function createInitialState(state: State): void {
         modalId: null,
     };
     state.forms = {};
+    state.notifications = [];
     state.album = null;
 }

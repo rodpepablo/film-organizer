@@ -1,8 +1,10 @@
 import { describe, it, expect } from "vitest";
+import { Notification } from "../../../src/domain/models/ui";
 import {
     uiFormErrorSelector,
     uiMenuStateSelector,
     uiModalSelector,
+    uiNotificationsSelector,
 } from "../../../src/infra/selectors/ui";
 
 describe("UI selectors", () => {
@@ -46,5 +48,18 @@ describe("UI selectors", () => {
 
         expect(uiFormErrorSelector(state, "someform")).toEqual("CUSTOM ERROR");
         expect(uiFormErrorSelector(state, "otherform")).toEqual(null);
+    });
+
+    it("uiNotificationsSelector should get all notifications", () => {
+        const notification: Notification = {
+            id: "123",
+            type: "success",
+            message: "message",
+        };
+        const state = {
+            notifications: [notification],
+        };
+
+        expect(uiNotificationsSelector(state)).toStrictEqual([notification]);
     });
 });

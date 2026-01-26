@@ -4,6 +4,8 @@ export const OPEN_MODAL = "modal::open";
 export const CLOSE_MODAL = "modal::close";
 export const FORM_ERROR = "form::error";
 export const CLEAR_FORM = "form::clear";
+export const CREATE_NOTIFICATION = "notification::create";
+export const DELETE_NOTIFICATION = "notification::delete";
 
 // Albums
 export const CREATE_ALBUM_REQUEST = "album::create::request";

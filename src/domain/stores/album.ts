@@ -1,14 +1,20 @@
 import Nanobus from "nanobus";
-import { CREATE_ALBUM_FORM } from "../../infra/constants";
+import {
+    ALBUM_LOAD_ERROR,
+    ALBUM_LOAD_SUCCESS,
+    CREATE_ALBUM_FORM,
+} from "../../infra/constants";
 import {
     CLEAR_FORM,
     CLOSE_MODAL,
     CREATE_ALBUM_REQUEST,
+    CREATE_NOTIFICATION,
     FORM_ERROR,
     LOAD_ALBUM_REQUEST,
 } from "../../infra/events";
 import { EventParams, State } from "../models/state";
 import { AlbumValidators } from "../validators/album";
+import { ZAlbum } from "../models/album";
 
 export type CreateAlbumParams = EventParams & {
     name: string;
@@ -49,7 +55,14 @@ export class AlbumStoreManager {
         const path = await this.api.fs.getFile();
         if (path !== null) {
             const album = await this.api.album.loadAlbum(path);
-            this.state.album = album;
+
+            try {
+                ZAlbum.parse(album);
+                this.state.album = album;
+                this.emitter.emit(CREATE_NOTIFICATION, ALBUM_LOAD_SUCCESS);
+            } catch {
+                this.emitter.emit(CREATE_NOTIFICATION, ALBUM_LOAD_ERROR);
+            }
             this.emitter.emit("render");
         }
     };

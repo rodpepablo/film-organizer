@@ -4,6 +4,7 @@ import header from "../components/general/header/header";
 import mainContent from "../components/general/main-content/main-content";
 import footer from "../components/footer/footer/footer";
 import ModalComponent from "../components/general/modal/modal";
+import notifications from "../components/general/notifications/notifications";
 import CreateAlbumModal from "../components/album/create-album-modal/create-album-modal";
 import { CREATE_ALBUM_MODAL } from "../../infra/constants";
 
@@ -17,5 +18,6 @@ export default (state: State, emit: Emit) => html`
         ${mainContent(state, emit)}
         ${footer(state, emit)}
         ${modal.render(state, emit)}
+        ${notifications(state, emit)}
     </body>
 `;

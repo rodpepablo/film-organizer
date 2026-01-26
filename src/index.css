@@ -7,6 +7,8 @@ body {
 	--light-grey: #fafafa;
 	--white-color: white;
 	--black-color: #030303;
+	--success-color: #99d98c;
+	--warning-color: var(--secondary-light);
 	--error-color: #ff5b46;
 	--big-text: 22px;
 	--medium-text: 18px;

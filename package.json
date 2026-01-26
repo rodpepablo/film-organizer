@@ -48,6 +48,8 @@
 		"choo": "^7.1.0",
 		"electron-squirrel-startup": "^1.0.1",
 		"jsdom": "^27.4.0",
-		"normalize.css": "^8.0.1"
+		"normalize.css": "^8.0.1",
+		"uuid": "^13.0.0",
+		"zod": "^4.3.6"
 	}
 }

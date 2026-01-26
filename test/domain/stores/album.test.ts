@@ -2,10 +2,20 @@ import { describe, it, expect } from "vitest";
 import { mock } from "vitest-mock-extended";
 import "../../../src/preload-types";
 import { AlbumStoreManager } from "../../../src/domain/stores/album";
-import { CREATE_ALBUM_FORM } from "../../../src/infra/constants";
+import {
+    ALBUM_LOAD_ERROR,
+    ALBUM_LOAD_SUCCESS,
+    CREATE_ALBUM_FORM,
+} from "../../../src/infra/constants";
 import { INVALID_ALBUM_NAME } from "../../../src/infra/errors";
-import { CLEAR_FORM, CLOSE_MODAL, FORM_ERROR } from "../../../src/infra/events";
+import {
+    CLEAR_FORM,
+    CLOSE_MODAL,
+    CREATE_NOTIFICATION,
+    FORM_ERROR,
+} from "../../../src/infra/events";
 import { expectRender, spiedBus } from "../../test-util/mocking";
+import { Album } from "../../../src/domain/models/album";
 
 describe("Album store", () => {
     it("Should create album from request", async () => {
@@ -73,6 +83,10 @@ describe("Album store", () => {
         expect(state.album).toStrictEqual(expectedAlbum);
         expect(api.fs.getFile).toHaveBeenCalledWith();
         expect(api.album.loadAlbum).toHaveBeenCalledWith("/PATH/TO/FILE.json");
+        expect(bus.emit).toHaveBeenCalledWith(
+            CREATE_NOTIFICATION,
+            ALBUM_LOAD_SUCCESS,
+        );
         expectRender(bus);
     });
 
@@ -94,5 +108,29 @@ describe("Album store", () => {
         expect(api.fs.getFile).toHaveBeenCalledWith();
         expect(api.album.loadAlbum).not.toHaveBeenCalled();
         expect(bus.emit).not.toHaveBeenCalledWith("render");
+    });
+
+    it("Should not render and should show an error if the file is non-compliant", async () => {
+        const state = { album: null };
+        const bus = spiedBus();
+        const api = {
+            fs: mock<Window["api"]["fs"]>(),
+            album: mock<Window["api"]["album"]>(),
+        };
+        const manager = new AlbumStoreManager(state, bus, api);
+
+        api.fs.getFile.mockResolvedValue("/PATH/TO/FILE.json");
+        api.album.loadAlbum.mockResolvedValue({ invalid: 3 } as unknown as Album);
+
+        await manager.manageLoadAlbum();
+
+        expect(state.album).toStrictEqual(null);
+        expect(api.fs.getFile).toHaveBeenCalledWith();
+        expect(api.album.loadAlbum).toHaveBeenCalledWith("/PATH/TO/FILE.json");
+        expect(bus.emit).toHaveBeenCalledWith(
+            CREATE_NOTIFICATION,
+            ALBUM_LOAD_ERROR,
+        );
+        expectRender(bus);
     });
 });
