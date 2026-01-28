@@ -9,23 +9,27 @@ import {
     LOAD_ALBUM_MENU,
 } from "../../../../infra/constants";
 import { items } from "./nav-menu-items";
+import { albumSelector } from "../../../../infra/selectors/album";
 
 export default (state: State, emit: Emit): HTMLElement => {
+    const album = albumSelector(state);
+    const menus: NavMenu[] = [];
+
     const albumManagementMenu = new NavMenu(
         "Album Management",
         ALBUM_MANAGEMENT_MENU,
     );
     albumManagementMenu.addMenuItem(items[CREATE_ALBUM_MENU]);
     albumManagementMenu.addMenuItem(items[LOAD_ALBUM_MENU]);
-
-    const filmManagementMenu = new NavMenu(
-        "Film Management",
-        FILM_MANAGEMENT_MENU,
-    );
-
-    const menus: NavMenu[] = [];
     menus.push(albumManagementMenu);
-    menus.push(filmManagementMenu);
+
+    if (album != null) {
+        const filmManagementMenu = new NavMenu(
+            "Film Management",
+            FILM_MANAGEMENT_MENU,
+        );
+        menus.push(filmManagementMenu);
+    }
 
     return html`
         <nav id="main-nav">
