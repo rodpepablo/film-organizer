@@ -5,6 +5,7 @@ export const FILM_MANAGEMENT_MENU = "film-management-menu";
 
 export const CREATE_ALBUM_MENU = "create-album-menu";
 export const LOAD_ALBUM_MENU = "load-album-menu";
+export const ADD_FILM_MENU = "add-film-menu";
 
 export const CREATE_ALBUM_MODAL = "create-album-modal";
 

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { State } from "../../../../src/domain/models/state";
 import Nav from "../../../../src/ui/components/nav/nav/nav";
+import { items } from "../../../../src/ui/components/nav/nav/nav-menu-items";
 
 const ALBUM = { name: "album" };
 
@@ -11,7 +12,7 @@ describe("Nav", () => {
         const menus = Array.from(nav.querySelectorAll(".nav-menu-title")).map(
             (x) => x.innerHTML,
         );
-        const items = Array.from(nav.querySelectorAll(".nav-menu-item")).map(
+        const foundItems = Array.from(nav.querySelectorAll(".nav-menu-item")).map(
             (x) => x.innerHTML,
         );
 
@@ -19,9 +20,11 @@ describe("Nav", () => {
         expect(menus).toContain("Album Management");
         expect(menus).toContain("Film Management");
 
-        expect(items).toHaveLength(2);
-        expect(items).toContain("Create Album");
-        expect(items).toContain("Load Album");
+        const itemList = Object.values(items);
+        expect(foundItems).toHaveLength(itemList.length);
+        for (let item of itemList) {
+            expect(foundItems).toContain(item.title);
+        }
     });
 
     it("Should only show album management menu when no menu loaded", () => {

@@ -1,10 +1,15 @@
 import { Emit } from "../../../../domain/models/state";
 import {
+    ADD_FILM_MENU,
     CREATE_ALBUM_MENU,
     CREATE_ALBUM_MODAL,
     LOAD_ALBUM_MENU,
 } from "../../../../infra/constants";
-import { OPEN_MODAL, LOAD_ALBUM_REQUEST } from "../../../../infra/events";
+import {
+    OPEN_MODAL,
+    LOAD_ALBUM_REQUEST,
+    ADD_FILM_REQUEST,
+} from "../../../../infra/events";
 import NavMenuItem from "../nav-menu-item/nav-menu-item";
 
 const createAlbum = new NavMenuItem("Create Album", (emit) => {
@@ -15,7 +20,12 @@ const loadAlbum = new NavMenuItem("Load Album", (emit: Emit) => {
     emit(LOAD_ALBUM_REQUEST);
 });
 
-export const items = {
+const addFilm = new NavMenuItem("Add Film Roll", (emit: Emit) => {
+    emit(ADD_FILM_REQUEST);
+});
+
+export const items: Record<string, NavMenuItem> = {
     [CREATE_ALBUM_MENU]: createAlbum,
     [LOAD_ALBUM_MENU]: loadAlbum,
+    [ADD_FILM_MENU]: addFilm,
 };

@@ -3,6 +3,7 @@ import "./nav.css";
 import { State, Emit } from "../../../../domain/models/state";
 import NavMenu from "../nav-menu/nav-menu";
 import {
+    ADD_FILM_MENU,
     ALBUM_MANAGEMENT_MENU,
     CREATE_ALBUM_MENU,
     FILM_MANAGEMENT_MENU,
@@ -28,6 +29,7 @@ export default (state: State, emit: Emit): HTMLElement => {
             "Film Management",
             FILM_MANAGEMENT_MENU,
         );
+        filmManagementMenu.addMenuItem(items[ADD_FILM_MENU]);
         menus.push(filmManagementMenu);
     }
 
