@@ -186,7 +186,7 @@ describe("UI Store", () => {
         expectRender(bus);
     });
 
-    it("Should register hanlders", () => {
+    it("Should register handlers", () => {
         const emitter = mock<Nanobus>();
 
         uiStore(BASE_STATE, emitter);

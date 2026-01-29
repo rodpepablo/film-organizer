@@ -1,5 +1,6 @@
 import Nanobus from "nanobus";
 import { expect, vi, ExpectStatic } from "vitest";
+import { mock, MockProxy } from "vitest-mock-extended";
 
 export function spiedBus() {
     const bus = new Nanobus();
@@ -17,3 +18,14 @@ export function autoTimeout(expect: ExpectStatic, expectedDelay: number) {
         expect(time).toEqual(expectedDelay);
     };
 }
+
+type MockedAPI = {
+    fs: MockProxy<Window["api"]["fs"]>;
+    album: MockProxy<Window["api"]["album"]>;
+};
+export const mockedAPI = (): MockedAPI => {
+    return {
+        fs: mock<Window["api"]["fs"]>(),
+        album: mock<Window["api"]["album"]>(),
+    };
+};

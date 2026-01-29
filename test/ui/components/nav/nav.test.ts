@@ -2,8 +2,9 @@ import { describe, expect, it } from "vitest";
 import { State } from "../../../../src/domain/models/state";
 import Nav from "../../../../src/ui/components/nav/nav/nav";
 import { items } from "../../../../src/ui/components/nav/nav/nav-menu-items";
+import { anAlbum } from "../../../test-util/fixtures";
 
-const ALBUM = { name: "album" };
+const ALBUM = anAlbum();
 
 describe("Nav", () => {
     it("Should contain menus and items", () => {

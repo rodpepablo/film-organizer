@@ -9,7 +9,7 @@ declare global {
                 getFile(): Promise<string | null>;
             };
             album: {
-                saveAlbum(path: string, album: Album): Promise<void>;
+                saveAlbum(path: string, name: string): Promise<Album>;
                 loadAlbum(path: string): Promise<Album>;
             };
         };

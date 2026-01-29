@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { join } from "path";
 import Nanobus from "nanobus";
 import { mock } from "vitest-mock-extended";
 import "../../../src/preload-types";
@@ -21,9 +22,14 @@ import {
     FORM_ERROR,
     LOAD_ALBUM_REQUEST,
 } from "../../../src/infra/events";
-import { expectRender, spiedBus } from "../../test-util/mocking";
+import { expectRender, mockedAPI, spiedBus } from "../../test-util/mocking";
 import { Album } from "../../../src/domain/models/album";
 import { State } from "../../../src/domain/models/state";
+import { anAlbum } from "../../test-util/fixtures";
+
+const ALBUM_NAME = "ALBUM_NAME";
+const FOLDER_PATH = "/PATH";
+const FILE_PATH = "/PATH/TO/FILE.json";
 
 describe("Album store", () => {
     it("Should create album from request", async () => {
@@ -31,24 +37,23 @@ describe("Album store", () => {
             album: null,
         };
         const bus = spiedBus();
-        const api = {
-            fs: mock<Window["api"]["fs"]>(),
-            album: mock<Window["api"]["album"]>(),
-        };
+        const api = mockedAPI();
         const manager = new AlbumStoreManager(state, bus, api);
+        const expectedAlbum = anAlbum({
+            name: ALBUM_NAME,
+            path: join(FOLDER_PATH, `${ALBUM_NAME}.json`),
+        });
 
-        api.fs.getFolder.mockResolvedValue("PATH");
-        api.album.saveAlbum.mockResolvedValue();
-        await manager.manageCreateAlbum({ name: "ALBUM_NAME" });
+        api.fs.getFolder.mockResolvedValue(FOLDER_PATH);
+        api.album.saveAlbum.mockResolvedValue(expectedAlbum);
 
-        const expectedAlbum = {
-            name: "ALBUM_NAME",
-        };
+        await manager.manageCreateAlbum({ name: ALBUM_NAME });
+
         expect(state.album).toStrictEqual(expectedAlbum);
         expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM, {
             form: CREATE_ALBUM_FORM,
         });
-        expect(api.album.saveAlbum).toHaveBeenCalledWith("PATH", expectedAlbum);
+        expect(api.album.saveAlbum).toHaveBeenCalledWith(FOLDER_PATH, ALBUM_NAME);
         expect(bus.emit).toHaveBeenCalledWith(CLOSE_MODAL);
         expect(bus.emit).toHaveBeenCalledWith(
             CREATE_NOTIFICATION,
@@ -62,7 +67,7 @@ describe("Album store", () => {
             album: null,
         };
         const bus = spiedBus();
-        const api = mock<Window["api"]>();
+        const api = mockedAPI();
         const manager = new AlbumStoreManager(state, bus, api);
 
         await manager.manageCreateAlbum({ name: "" });
@@ -80,21 +85,18 @@ describe("Album store", () => {
     it("Should load an album if selected", async () => {
         const state = { album: null };
         const bus = spiedBus();
-        const api = {
-            fs: mock<Window["api"]["fs"]>(),
-            album: mock<Window["api"]["album"]>(),
-        };
+        const api = mockedAPI();
         const manager = new AlbumStoreManager(state, bus, api);
-        const expectedAlbum = { name: "test-album" };
+        const expectedAlbum = anAlbum({ name: ALBUM_NAME, path: FILE_PATH });
 
-        api.fs.getFile.mockResolvedValue("/PATH/TO/FILE.json");
+        api.fs.getFile.mockResolvedValue(FILE_PATH);
         api.album.loadAlbum.mockResolvedValue(expectedAlbum);
 
         await manager.manageLoadAlbum();
 
         expect(state.album).toStrictEqual(expectedAlbum);
         expect(api.fs.getFile).toHaveBeenCalledWith();
-        expect(api.album.loadAlbum).toHaveBeenCalledWith("/PATH/TO/FILE.json");
+        expect(api.album.loadAlbum).toHaveBeenCalledWith(FILE_PATH);
         expect(bus.emit).toHaveBeenCalledWith(
             CREATE_NOTIFICATION,
             ALBUM_LOAD_SUCCESS,
@@ -103,13 +105,10 @@ describe("Album store", () => {
     });
 
     it("Should not render or change album on file selection cancel", async () => {
-        const currentAlbum = { name: "loaded-album" };
+        const currentAlbum = anAlbum({ name: "current_album" });
         const state = { album: currentAlbum };
         const bus = spiedBus();
-        const api = {
-            fs: mock<Window["api"]["fs"]>(),
-            album: mock<Window["api"]["album"]>(),
-        };
+        const api = mockedAPI();
         const manager = new AlbumStoreManager(state, bus, api);
 
         api.fs.getFile.mockResolvedValue(null);
@@ -125,20 +124,17 @@ describe("Album store", () => {
     it("Should not render and should show an error if the file is non-compliant", async () => {
         const state = { album: null };
         const bus = spiedBus();
-        const api = {
-            fs: mock<Window["api"]["fs"]>(),
-            album: mock<Window["api"]["album"]>(),
-        };
+        const api = mockedAPI();
         const manager = new AlbumStoreManager(state, bus, api);
 
-        api.fs.getFile.mockResolvedValue("/PATH/TO/FILE.json");
+        api.fs.getFile.mockResolvedValue(FILE_PATH);
         api.album.loadAlbum.mockResolvedValue({ invalid: 3 } as unknown as Album);
 
         await manager.manageLoadAlbum();
 
         expect(state.album).toStrictEqual(null);
         expect(api.fs.getFile).toHaveBeenCalledWith();
-        expect(api.album.loadAlbum).toHaveBeenCalledWith("/PATH/TO/FILE.json");
+        expect(api.album.loadAlbum).toHaveBeenCalledWith(FILE_PATH);
         expect(bus.emit).toHaveBeenCalledWith(
             CREATE_NOTIFICATION,
             ALBUM_LOAD_ERROR,

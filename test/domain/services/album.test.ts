@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { mock } from "vitest-mock-extended";
+import { join } from "path";
 import electron, { IpcMainInvokeEvent } from "electron";
 import AlbumService from "../../../src/domain/services/album";
 import {
@@ -13,6 +14,9 @@ import {
     LOAD_ALBUM_HANDLER,
     SAVE_ALBUM_HANDLER,
 } from "../../../src/infra/ipc-events";
+import { anAlbum } from "../../test-util/fixtures";
+
+const NAME = "album_name";
 
 const EVENT = {} as IpcMainInvokeEvent;
 let temporalDirectory: string;
@@ -28,24 +32,38 @@ afterEach(() => {
 describe("AlbumService", () => {
     it("Should save an album to a designated file", async () => {
         const albumService = new AlbumService();
-        const album = { name: "album_name" };
 
-        await albumService.saveAlbum(EVENT, temporalDirectory, album);
+        const createdAlbum = await albumService.saveAlbum(
+            EVENT,
+            temporalDirectory,
+            NAME,
+        );
 
-        const expectedPath = `${temporalDirectory}/${album.name}.json`;
-        const savedAlbum = loadJSON<Album>(expectedPath);
-        expect(savedAlbum).toStrictEqual(album);
+        const expectedAlbum = {
+            name: NAME,
+            path: join(temporalDirectory, `${NAME}.json`),
+        };
+
+        expect(createdAlbum).toStrictEqual(expectedAlbum);
+        const savedAlbum = loadJSON<Album>(expectedAlbum.path);
+        expect(savedAlbum).toStrictEqual(expectedAlbum);
     });
 
     it("Should load an album from a designated path", async () => {
-        const fullpath = `${temporalDirectory}/test.json`;
-        const expectedAlbum = { name: "test-album" };
-        saveJSON(fullpath, expectedAlbum);
+        const fullpath = join(temporalDirectory, "test.json");
+        const savedAlbum = anAlbum({ path: "/last/path.json" });
+        saveJSON(fullpath, savedAlbum);
+
         const albumService = new AlbumService();
 
         const album = await albumService.loadAlbum(EVENT, fullpath);
 
-        expect(album).toStrictEqual(expectedAlbum);
+        expect(album).toStrictEqual(
+            anAlbum({
+                ...savedAlbum,
+                path: fullpath,
+            }),
+        );
     });
 
     it("Should load IPC handlers", () => {

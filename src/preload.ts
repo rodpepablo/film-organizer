@@ -10,12 +10,14 @@ import "./preload-types";
 
 contextBridge.exposeInMainWorld("api", {
     fs: {
-        getFolder: () => ipcRenderer.invoke(GET_FOLDER_HANDLER),
-        getFile: () => ipcRenderer.invoke(GET_FILE_HANDLER),
+        getFolder: (): Promise<string | null> =>
+            ipcRenderer.invoke(GET_FOLDER_HANDLER),
+        getFile: (): Promise<string | null> => ipcRenderer.invoke(GET_FILE_HANDLER),
     },
     album: {
-        saveAlbum: (path: string, album: Album) =>
-            ipcRenderer.invoke(SAVE_ALBUM_HANDLER, path, album),
-        loadAlbum: (path: string) => ipcRenderer.invoke(LOAD_ALBUM_HANDLER, path),
+        saveAlbum: (path: string, name: string): Promise<Album> =>
+            ipcRenderer.invoke(SAVE_ALBUM_HANDLER, path, name),
+        loadAlbum: (path: string): Promise<Album> =>
+            ipcRenderer.invoke(LOAD_ALBUM_HANDLER, path),
     },
 });

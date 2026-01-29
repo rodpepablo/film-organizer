@@ -3,8 +3,9 @@ import {
     albumNameSelector,
     albumSelector,
 } from "../../../src/infra/selectors/album";
+import { anAlbum } from "../../test-util/fixtures";
 
-const ALBUM = { name: "ALBUM NAME" };
+const ALBUM = anAlbum();
 
 describe("Album selectors", () => {
     it("albumSelector should return then album in the state or null", () => {
@@ -15,7 +16,7 @@ describe("Album selectors", () => {
     it("albumNameSelector should return name when album is loaded", () => {
         const state = { album: ALBUM };
 
-        expect(albumNameSelector(state)).toEqual("ALBUM NAME");
+        expect(albumNameSelector(state)).toEqual(ALBUM.name);
     });
 
     it("albumNameSelector should be null when no album loaded", () => {

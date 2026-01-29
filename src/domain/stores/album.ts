@@ -37,10 +37,11 @@ export class AlbumStoreManager {
     manageCreateAlbum = async (params: CreateAlbumParams): Promise<void> => {
         this.emitter.emit(CLEAR_FORM, { form: CREATE_ALBUM_FORM });
         const [isValid, error] = AlbumValidators.albumCreation.validate(params);
+
         if (isValid) {
-            const album = { name: params.name };
             const path = await this.api.fs.getFolder();
-            await this.api.album.saveAlbum(path, album);
+            const album = await this.api.album.saveAlbum(path, params.name);
+
             this.state.album = album;
             this.emitter.emit(CLOSE_MODAL);
             this.emitter.emit(CREATE_NOTIFICATION, ALBUM_CREATION_SUCCESS);

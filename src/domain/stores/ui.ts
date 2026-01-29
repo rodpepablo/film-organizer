@@ -85,7 +85,6 @@ export class UIStoreManager {
     };
 
     createNotification = (params: CreateNotificationParams) => {
-        debugger;
         const id = this.idGenerator.generate();
         this.state.notifications.push({
             id,
