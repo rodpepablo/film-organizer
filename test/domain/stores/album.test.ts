@@ -45,7 +45,7 @@ describe("Album store", () => {
         });
 
         api.fs.getFolder.mockResolvedValue(FOLDER_PATH);
-        api.album.saveAlbum.mockResolvedValue(expectedAlbum);
+        api.album.createAlbum.mockResolvedValue(expectedAlbum);
 
         await manager.manageCreateAlbum({ name: ALBUM_NAME });
 
@@ -53,7 +53,7 @@ describe("Album store", () => {
         expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM, {
             form: CREATE_ALBUM_FORM,
         });
-        expect(api.album.saveAlbum).toHaveBeenCalledWith(FOLDER_PATH, ALBUM_NAME);
+        expect(api.album.createAlbum).toHaveBeenCalledWith(FOLDER_PATH, ALBUM_NAME);
         expect(bus.emit).toHaveBeenCalledWith(CLOSE_MODAL);
         expect(bus.emit).toHaveBeenCalledWith(
             CREATE_NOTIFICATION,

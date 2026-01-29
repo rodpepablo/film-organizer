@@ -40,7 +40,7 @@ export class AlbumStoreManager {
 
         if (isValid) {
             const path = await this.api.fs.getFolder();
-            const album = await this.api.album.saveAlbum(path, params.name);
+            const album = await this.api.album.createAlbum(path, params.name);
 
             this.state.album = album;
             this.emitter.emit(CLOSE_MODAL);

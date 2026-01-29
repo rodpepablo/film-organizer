@@ -1,7 +1,7 @@
 import { Album } from "../models/album";
 
 export interface IAlbumService {
-    saveAlbum(
+    createAlbum(
         event: Electron.IpcMainInvokeEvent,
         path: string,
         name: string,

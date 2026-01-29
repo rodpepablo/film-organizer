@@ -12,7 +12,7 @@ import {
 import { Album } from "../../../src/domain/models/album";
 import {
     LOAD_ALBUM_HANDLER,
-    SAVE_ALBUM_HANDLER,
+    CREATE_ALBUM_HANDLER,
 } from "../../../src/infra/ipc-events";
 import { anAlbum } from "../../test-util/fixtures";
 
@@ -33,7 +33,7 @@ describe("AlbumService", () => {
     it("Should save an album to a designated file", async () => {
         const albumService = new AlbumService();
 
-        const createdAlbum = await albumService.saveAlbum(
+        const createdAlbum = await albumService.createAlbum(
             EVENT,
             temporalDirectory,
             NAME,
@@ -73,8 +73,8 @@ describe("AlbumService", () => {
         albumService.load(ipcMain);
 
         expect(ipcMain.handle).toHaveBeenCalledWith(
-            SAVE_ALBUM_HANDLER,
-            albumService.saveAlbum,
+            CREATE_ALBUM_HANDLER,
+            albumService.createAlbum,
         );
         expect(ipcMain.handle).toHaveBeenCalledWith(
             LOAD_ALBUM_HANDLER,

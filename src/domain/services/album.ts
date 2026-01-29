@@ -3,12 +3,19 @@ import { join } from "path";
 import { IAlbumService } from "../ports/album";
 import { IIPCService } from "../../infra/ipc-service";
 import { Album } from "../models/album";
-import { LOAD_ALBUM_HANDLER, SAVE_ALBUM_HANDLER } from "../../infra/ipc-events";
+import {
+    LOAD_ALBUM_HANDLER,
+    CREATE_ALBUM_HANDLER,
+} from "../../infra/ipc-events";
 
 type Event = Electron.IpcMainInvokeEvent;
 
 export default class AlbumService implements IAlbumService, IIPCService {
-    saveAlbum = async (_: Event, path: string, name: string): Promise<Album> => {
+    createAlbum = async (
+        _: Event,
+        path: string,
+        name: string,
+    ): Promise<Album> => {
         const album = { name, path: join(path, `${name}.json`) };
 
         await fs.writeFile(album.path, JSON.stringify(album));
@@ -24,7 +31,7 @@ export default class AlbumService implements IAlbumService, IIPCService {
     };
 
     load(ipcMain: Electron.IpcMain): void {
-        ipcMain.handle(SAVE_ALBUM_HANDLER, this.saveAlbum);
+        ipcMain.handle(CREATE_ALBUM_HANDLER, this.createAlbum);
         ipcMain.handle(LOAD_ALBUM_HANDLER, this.loadAlbum);
     }
 }
