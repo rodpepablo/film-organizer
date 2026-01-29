@@ -82,6 +82,30 @@ describe("Album store", () => {
         });
     });
 
+    it("Should close the modal and do nothing when the folder dialog is cancelled", async () => {
+        const state = {
+            album: null,
+        };
+        const bus = spiedBus();
+        const api = mockedAPI();
+        const manager = new AlbumStoreManager(state, bus, api);
+
+        api.fs.getFolder.mockResolvedValue(null);
+
+        await manager.manageCreateAlbum({ name: ALBUM_NAME });
+
+        expect(state.album).toBeNull();
+        expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM, {
+            form: CREATE_ALBUM_FORM,
+        });
+        expect(bus.emit).toHaveBeenCalledWith(CLOSE_MODAL);
+        expect(bus.emit).not.toHaveBeenCalledWith(
+            CREATE_NOTIFICATION,
+            expect.any(String),
+        );
+        expectRender(bus);
+    });
+
     it("Should load an album if selected", async () => {
         const state = { album: null };
         const bus = spiedBus();

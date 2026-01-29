@@ -19,7 +19,7 @@ export default class FSService implements IFSService, IIPCService {
         return result.filePaths[0];
     };
 
-    getFile = async (): Promise<string> => {
+    getFile = async (): Promise<string | null> => {
         const result = await this.dialog.showOpenDialog({
             properties: ["openFile"],
         });
