@@ -42,6 +42,7 @@ describe("AlbumService", () => {
         const expectedAlbum = {
             name: NAME,
             path: join(temporalDirectory, `${NAME}.json`),
+            films: [],
         };
 
         expect(createdAlbum).toStrictEqual(expectedAlbum);

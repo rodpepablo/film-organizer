@@ -22,10 +22,12 @@ export function autoTimeout(expect: ExpectStatic, expectedDelay: number) {
 type MockedAPI = {
     fs: MockProxy<Window["api"]["fs"]>;
     album: MockProxy<Window["api"]["album"]>;
+    film: MockProxy<Window["api"]["film"]>;
 };
 export const mockedAPI = (): MockedAPI => {
     return {
         fs: mock<Window["api"]["fs"]>(),
         album: mock<Window["api"]["album"]>(),
+        film: mock<Window["api"]["film"]>(),
     };
 };

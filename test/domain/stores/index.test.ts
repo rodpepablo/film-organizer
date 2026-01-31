@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { registerStores } from "../../../src/domain/stores";
 import { albumStore } from "../../../src/domain/stores/album";
+import { filmStore } from "../../../src/domain/stores/film";
 import { uiStore } from "../../../src/domain/stores/ui";
 
 describe("Register stores", () => {
@@ -8,8 +9,10 @@ describe("Register stores", () => {
         const app = { use: vi.fn() };
         registerStores(app);
 
-        expect(app.use).toHaveBeenCalledTimes(2);
-        expect(app.use).toHaveBeenCalledWith(uiStore);
-        expect(app.use).toHaveBeenCalledWith(albumStore);
+        const stores = [uiStore, albumStore, filmStore];
+        expect(app.use).toHaveBeenCalledTimes(stores.length);
+        for (let store of stores) {
+            expect(app.use).toHaveBeenCalledWith(store);
+        }
     });
 });

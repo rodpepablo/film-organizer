@@ -16,7 +16,11 @@ export default class AlbumService implements IAlbumService, IIPCService {
         path: string,
         name: string,
     ): Promise<Album> => {
-        const album = { name, path: join(path, `${name}.json`) };
+        const album = {
+            name,
+            path: join(path, `${name}.json`),
+            films: [],
+        } as Album;
 
         await fs.writeFile(album.path, JSON.stringify(album));
 
