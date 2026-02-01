@@ -1,0 +1,15 @@
+#film-section {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.film-section-header {
+	border-bottom: 2px solid var(--primary-light);
+}
+
+.film-section-title {
+	padding: 1em;
+	margin: 0;
+	color: var(--gray-color);
+}

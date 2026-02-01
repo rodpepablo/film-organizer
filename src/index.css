@@ -4,7 +4,7 @@ body {
 	--primary-light: #8ecae6;
 	--secondary-color: #fb8500;
 	--secondary-light: #ffb703;
-	--light-grey: #fafafa;
+	--light-grey: #dfdfdf;
 	--white-color: white;
 	--black-color: #030303;
 	--success-color: #99d98c;
@@ -29,4 +29,8 @@ body {
 
 .subtitle {
 	font-size: var(--medium-text);
+}
+
+.subsubtitle {
+	font-size: var(--small-text);
 }
