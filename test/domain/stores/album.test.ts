@@ -11,7 +11,9 @@ import {
     ALBUM_CREATION_SUCCESS,
     ALBUM_LOAD_ERROR,
     ALBUM_LOAD_SUCCESS,
+    ALBUM_SAVE_SUCCESS,
     CREATE_ALBUM_FORM,
+    UNEXPECTED_ERROR,
 } from "../../../src/infra/constants";
 import { INVALID_ALBUM_NAME } from "../../../src/infra/errors";
 import {
@@ -21,6 +23,7 @@ import {
     CREATE_NOTIFICATION,
     FORM_ERROR,
     LOAD_ALBUM_REQUEST,
+    SAVE_ALBUM_REQUEST,
 } from "../../../src/infra/events";
 import { expectRender, mockedAPI, spiedBus } from "../../test-util/mocking";
 import { Album } from "../../../src/domain/models/album";
@@ -166,12 +169,50 @@ describe("Album store", () => {
         expectRender(bus);
     });
 
+    it("Should save the changes to the album", async () => {
+        const album = anAlbum();
+        const state = { album };
+        const bus = spiedBus();
+        const api = mockedAPI();
+        const manager = new AlbumStoreManager(state, bus, api);
+
+        await manager.manageSaveAlbum();
+
+        expect(api.album.saveAlbum).toHaveBeenCalledWith(album);
+        expect(bus.emit).toHaveBeenCalledWith(
+            CREATE_NOTIFICATION,
+            ALBUM_SAVE_SUCCESS,
+        );
+    });
+
+    it("Should notify about errors saving album", async () => {
+        const album = anAlbum();
+        const state = { album };
+        const bus = spiedBus();
+        const api = mockedAPI();
+        const manager = new AlbumStoreManager(state, bus, api);
+
+        api.album.saveAlbum.mockRejectedValue(new Error());
+
+        await manager.manageSaveAlbum();
+
+        expect(api.album.saveAlbum).toHaveBeenCalledWith(album);
+        expect(bus.emit).toHaveBeenCalledWith(
+            CREATE_NOTIFICATION,
+            UNEXPECTED_ERROR,
+        );
+    });
+
     it("Should register handlers", () => {
         const emitter = mock<Nanobus>();
 
         albumStore({} as State, emitter);
 
-        const events = [CREATE_ALBUM_REQUEST, LOAD_ALBUM_REQUEST];
+        const events = [
+            CREATE_ALBUM_REQUEST,
+            LOAD_ALBUM_REQUEST,
+            SAVE_ALBUM_REQUEST,
+        ];
         expect(emitter.on).toHaveBeenCalledTimes(events.length);
         for (let event of events) {
             expect(emitter.on).toHaveBeenCalledWith(event, expect.any(Function));

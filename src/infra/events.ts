@@ -10,6 +10,7 @@ export const DELETE_NOTIFICATION = "notification::delete";
 // Albums
 export const CREATE_ALBUM_REQUEST = "album::create::request";
 export const LOAD_ALBUM_REQUEST = "album::load::request";
+export const SAVE_ALBUM_REQUEST = "album::save::request";
 
 // Film
 export const ADD_FILM_REQUEST = "film::add::request";

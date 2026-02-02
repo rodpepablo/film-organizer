@@ -3,10 +3,14 @@ import { html } from "../../../../infra/html";
 
 type ButtonConfig = {
     value: string;
-    type?: "submit" | "button";
+    input?: "submit" | "button";
+    type?: "tiny" | "";
+    onclick?: (e: DOMEvent) => void;
 };
 
-export default function Button(config: ButtonConfig) {
-    const type = config.type || "button";
-    return html`<button class="button" type="${type}">${config.value}</button>`;
+export default function button(config: ButtonConfig): HTMLButtonElement {
+    const type = config.input || "button";
+    return html`<button class="${config.type + " button"}" type="${type}" onclick=${config.onclick}>
+        ${config.value}
+    </button>`;
 }

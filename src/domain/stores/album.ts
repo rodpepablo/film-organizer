@@ -3,7 +3,9 @@ import {
     ALBUM_CREATION_SUCCESS,
     ALBUM_LOAD_ERROR,
     ALBUM_LOAD_SUCCESS,
+    ALBUM_SAVE_SUCCESS,
     CREATE_ALBUM_FORM,
+    UNEXPECTED_ERROR,
 } from "../../infra/constants";
 import {
     CLEAR_FORM,
@@ -12,10 +14,12 @@ import {
     CREATE_NOTIFICATION,
     FORM_ERROR,
     LOAD_ALBUM_REQUEST,
+    SAVE_ALBUM_REQUEST,
 } from "../../infra/events";
 import { EventParams, State } from "../models/state";
 import { AlbumValidators } from "../validators/album";
 import { ZAlbum } from "../models/album";
+import { IPCError, IPCErrors } from "../../infra/ipc-service";
 
 export type CreateAlbumParams = EventParams & {
     name: string;
@@ -75,6 +79,24 @@ export class AlbumStoreManager {
             this.emitter.emit("render");
         }
     };
+
+    manageSaveAlbum = async (): Promise<void> => {
+        try {
+            await this.api.album.saveAlbum(this.state.album);
+            this.emitter.emit(CREATE_NOTIFICATION, ALBUM_SAVE_SUCCESS);
+        } catch (error) {
+            this.manageErrors({
+                ok: false,
+                type: IPCErrors.UNEXPECTED_ERROR,
+                message: error,
+            });
+        }
+    };
+
+    manageErrors(error: IPCError) {
+        if (process.env.NODE_ENV !== "test") console.log(error);
+        this.emitter.emit(CREATE_NOTIFICATION, UNEXPECTED_ERROR);
+    }
 }
 
 export function albumStore(state: Substate, emitter: Nanobus) {
@@ -84,4 +106,5 @@ export function albumStore(state: Substate, emitter: Nanobus) {
 
     emitter.on(CREATE_ALBUM_REQUEST, albumStoreManager.manageCreateAlbum);
     emitter.on(LOAD_ALBUM_REQUEST, albumStoreManager.manageLoadAlbum);
+    emitter.on(SAVE_ALBUM_REQUEST, albumStoreManager.manageSaveAlbum);
 }

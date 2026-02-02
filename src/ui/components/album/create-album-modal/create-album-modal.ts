@@ -4,7 +4,7 @@ import Component from "../../../../infra/component";
 import { html } from "../../../../infra/html";
 import { CreateAlbumParams } from "../../../../domain/stores/album";
 import Form from "../../general/form/form";
-import Button from "../../general/button/button";
+import button from "../../general/button/button";
 import Input from "../../general/input/input";
 import { CREATE_ALBUM_FORM } from "../../../../infra/constants";
 
@@ -17,7 +17,7 @@ export default class CreateAlbumModal implements Component {
             },
             html`
                 ${Input({ type: "text", name: "albumName", label: "name" })}
-                ${Button({ type: "submit", value: "Create" })}
+                ${button({ input: "submit", value: "Create" })}
             `,
         );
 

@@ -13,6 +13,7 @@ declare global {
             album: {
                 createAlbum(path: string, name: string): Promise<Album>;
                 loadAlbum(path: string): Promise<Album>;
+                saveAlbum(album: Album): Promise<void>;
             };
             film: {
                 addFilm(albumPath: string, filmPath: string): Promise<IPCResult<Film>>;

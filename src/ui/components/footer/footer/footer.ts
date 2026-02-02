@@ -1,8 +1,9 @@
 import "./footer.css";
-import { Emit } from "../../../../domain/models/state";
-import { State } from "../../../../domain/models/state";
+import { State, Emit } from "../../../../domain/models/state";
 import { html } from "../../../../infra/html";
 import { albumNameSelector } from "../../../../infra/selectors/album";
+import button from "../../general/button/button";
+import { SAVE_ALBUM_REQUEST } from "../../../../infra/events";
 
 export default function footer(
     state: Pick<State, "album">,
@@ -11,16 +12,27 @@ export default function footer(
     const albumName = albumNameSelector(state);
     return html`
         <footer class="footer">
-            ${albumName && footerAlbumInfo(albumName)}
+            ${albumName && footerAlbumInfo(albumName, emit)}
         </footer>
     `;
 }
 
-function footerAlbumInfo(albumName: string): HTMLElement {
+function footerAlbumInfo(albumName: string, emit: Emit): HTMLElement {
     return html`
         <div class="footer-album">
-            <span class="footer-album-span">Album:</span>
-            <h5 class="footer-album-title">${albumName}</h5>
+            ${button({ value: "save", type: "tiny", onclick: emitSave(emit) })}
+            <div class="footer-album-info">
+                <span class="footer-album-span">Album:</span>
+                <h5 class="footer-album-title">${albumName}</h5>
+            </div>
         </div>
     `;
+}
+
+function emitSave(emit: Emit) {
+    return (e: DOMEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        emit(SAVE_ALBUM_REQUEST);
+    };
 }

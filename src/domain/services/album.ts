@@ -6,6 +6,7 @@ import { Album } from "../models/album";
 import {
     LOAD_ALBUM_HANDLER,
     CREATE_ALBUM_HANDLER,
+    SAVE_ALBUM_HANDLER,
 } from "../../infra/ipc-events";
 
 type Event = Electron.IpcMainInvokeEvent;
@@ -34,8 +35,15 @@ export default class AlbumService implements IAlbumService, IIPCService {
         return { ...album, path };
     };
 
+    saveAlbum = async (_: Event, album: Album): Promise<void> => {
+        return fs.writeFile(album.path, JSON.stringify(album), {
+            encoding: "utf-8",
+        });
+    };
+
     load(ipcMain: Electron.IpcMain): void {
         ipcMain.handle(CREATE_ALBUM_HANDLER, this.createAlbum);
         ipcMain.handle(LOAD_ALBUM_HANDLER, this.loadAlbum);
+        ipcMain.handle(SAVE_ALBUM_HANDLER, this.saveAlbum);
     }
 }

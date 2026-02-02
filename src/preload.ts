@@ -7,6 +7,7 @@ import {
     LOAD_ALBUM_HANDLER,
     CREATE_ALBUM_HANDLER,
     ADD_FILM_HANDLER,
+    SAVE_ALBUM_HANDLER,
 } from "./infra/ipc-events";
 import { IPCResult } from "./infra/ipc-service";
 import "./preload-types";
@@ -22,6 +23,8 @@ contextBridge.exposeInMainWorld("api", {
             ipcRenderer.invoke(CREATE_ALBUM_HANDLER, path, name),
         loadAlbum: (path: string): Promise<Album> =>
             ipcRenderer.invoke(LOAD_ALBUM_HANDLER, path),
+        saveAlbum: (album: Album): Promise<void> =>
+            ipcRenderer.invoke(SAVE_ALBUM_HANDLER, album),
     },
     film: {
         addFilm: (albumPath: string, filmPath: string): Promise<IPCResult<Film>> =>

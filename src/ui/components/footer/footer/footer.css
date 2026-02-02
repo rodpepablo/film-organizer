@@ -1,14 +1,20 @@
 .footer {
 	background-color: var(--primary-light);
-	padding: 0.5em 1em;
-	display: flex;
-	justify-content: flex-end;
-	min-height: 30px;
+	padding: 0em 1em;
+	min-height: 32px;
+	line-height: 32px;
 	box-sizing: border-box;
 }
 
 .footer .footer-album {
 	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+.footer .footer-album-info {
+	display: flex;
+	margin-left: 1em;
 }
 
 .footer .footer-album-title {

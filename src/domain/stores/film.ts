@@ -36,7 +36,11 @@ export class FilmStoreManager {
                 this.manageErrors(filmResult as IPCError);
             }
         } catch (error) {
-            this.manageErrors({ ok: false, type: IPCErrors.UNEXPECTED_ERROR });
+            this.manageErrors({
+                ok: false,
+                type: IPCErrors.UNEXPECTED_ERROR,
+                message: error,
+            });
         }
     };
 
