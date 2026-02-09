@@ -5,6 +5,7 @@ import {
 import { State } from "../models/state";
 
 export default function createInitialState(state: State): void {
+    state.location = ["home"];
     state.menus = {
         [ALBUM_MANAGEMENT_MENU]: false,
         [FILM_MANAGEMENT_MENU]: false,

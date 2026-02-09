@@ -1,6 +1,9 @@
 import { Modal } from "../../domain/models/ui";
 import { State } from "../../domain/models/state";
 
+export const baseLocationSelector = (state: Pick<State, "location">): string =>
+    state.location[0];
+
 export const uiMenuStateSelector = (
     menu: string,
     state: Pick<State, "menus">,

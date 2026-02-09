@@ -13,6 +13,7 @@ import {
     ALBUM_LOAD_SUCCESS,
     ALBUM_SAVE_SUCCESS,
     CREATE_ALBUM_FORM,
+    FILM_SECTION,
     UNEXPECTED_ERROR,
 } from "../../../src/infra/constants";
 import { INVALID_ALBUM_NAME } from "../../../src/infra/errors";
@@ -23,6 +24,7 @@ import {
     CREATE_NOTIFICATION,
     FORM_ERROR,
     LOAD_ALBUM_REQUEST,
+    NAVIGATE,
     SAVE_ALBUM_REQUEST,
 } from "../../../src/infra/events";
 import { expectRender, mockedAPI, spiedBus } from "../../test-util/mocking";
@@ -62,6 +64,7 @@ describe("Album store", () => {
             CREATE_NOTIFICATION,
             ALBUM_CREATION_SUCCESS,
         );
+        expect(bus.emit).toHaveBeenCalledWith(NAVIGATE, { to: [FILM_SECTION] });
         expectRender(bus);
     });
 
@@ -128,6 +131,7 @@ describe("Album store", () => {
             CREATE_NOTIFICATION,
             ALBUM_LOAD_SUCCESS,
         );
+        expect(bus.emit).toHaveBeenCalledWith(NAVIGATE, { to: [FILM_SECTION] });
         expectRender(bus);
     });
 

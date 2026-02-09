@@ -1,3 +1,5 @@
+export type Location = string[];
+
 export interface Menus {
     [key: string]: boolean;
 }

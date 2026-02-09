@@ -5,6 +5,7 @@ import {
     ALBUM_LOAD_SUCCESS,
     ALBUM_SAVE_SUCCESS,
     CREATE_ALBUM_FORM,
+    FILM_SECTION,
     UNEXPECTED_ERROR,
 } from "../../infra/constants";
 import {
@@ -14,6 +15,7 @@ import {
     CREATE_NOTIFICATION,
     FORM_ERROR,
     LOAD_ALBUM_REQUEST,
+    NAVIGATE,
     SAVE_ALBUM_REQUEST,
 } from "../../infra/events";
 import { EventParams, State } from "../models/state";
@@ -55,6 +57,7 @@ export class AlbumStoreManager {
             this.state.album = album;
             this.emitter.emit(CLOSE_MODAL);
             this.emitter.emit(CREATE_NOTIFICATION, ALBUM_CREATION_SUCCESS);
+            this.emitter.emit(NAVIGATE, { to: [FILM_SECTION] });
         } else {
             this.emitter.emit(FORM_ERROR, {
                 form: CREATE_ALBUM_FORM,
@@ -73,6 +76,7 @@ export class AlbumStoreManager {
                 ZAlbum.parse(album);
                 this.state.album = album;
                 this.emitter.emit(CREATE_NOTIFICATION, ALBUM_LOAD_SUCCESS);
+                this.emitter.emit(NAVIGATE, { to: [FILM_SECTION] });
             } catch {
                 this.emitter.emit(CREATE_NOTIFICATION, ALBUM_LOAD_ERROR);
             }

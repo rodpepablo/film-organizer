@@ -7,9 +7,18 @@ import {
 import createInitialState from "../../../src/domain/stores/initial-state";
 
 describe("Create initial state", () => {
-    it("Should initialize ui elements", () => {
+    it("Should initialize location", () => {
         const state = {} as State;
+
         createInitialState(state);
+
+        expect(state.location).toEqual(["home"]);
+    });
+    it("Should initialize menus elements", () => {
+        const state = {} as State;
+
+        createInitialState(state);
+
         expect(state.menus).toStrictEqual({
             [ALBUM_MANAGEMENT_MENU]: false,
             [FILM_MANAGEMENT_MENU]: false,
@@ -18,7 +27,9 @@ describe("Create initial state", () => {
 
     it("Should initialize modal", () => {
         const state = {} as State;
+
         createInitialState(state);
+
         expect(state.modal).toStrictEqual({
             active: false,
             modalId: null,
@@ -27,19 +38,25 @@ describe("Create initial state", () => {
 
     it("Should initialize forms", () => {
         const state = {} as State;
+
         createInitialState(state);
+
         expect(state.forms).toEqual({});
     });
 
     it("Should initialize notifications", () => {
         const state = {} as State;
+
         createInitialState(state);
+
         expect(state.notifications).toEqual([]);
     });
 
     it("Should initialize album", () => {
         const state = {} as State;
+
         createInitialState(state);
+
         expect(state.album).toStrictEqual(null);
     });
 });

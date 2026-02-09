@@ -1,5 +1,7 @@
 import { CreateNotificationParams } from "../domain/stores/ui";
 
+export const FILM_SECTION = "films";
+
 export const ALBUM_MANAGEMENT_MENU = "album-menu";
 export const FILM_MANAGEMENT_MENU = "film-management-menu";
 

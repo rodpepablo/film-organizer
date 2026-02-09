@@ -8,6 +8,7 @@ import {
     CREATE_NOTIFICATION,
     DELETE_NOTIFICATION,
     FORM_ERROR,
+    NAVIGATE,
     OPEN_MODAL,
     TOGGLE_NAV_MENU,
 } from "../../../src/infra/events";
@@ -19,6 +20,7 @@ import { Notification } from "../../../src/domain/models/ui";
 import config from "../../../src/infra/config";
 
 const BASE_STATE = {
+    location: [],
     menus: {},
     modal: { active: false, modalId: null },
     forms: {},
@@ -29,6 +31,17 @@ const DUMB_ID_GENERATOR = mock<IIdGenerator>();
 const ERROR_MSG = "ERROR";
 
 describe("UI Store", () => {
+    it("should change location on navigate event", () => {
+        const bus = spiedBus();
+        const state = { ...BASE_STATE };
+        const manager = aManagerWith(state, bus);
+
+        manager.navigate({ to: ["album", "123"] });
+
+        expectRender(bus);
+        expect(state.location).toEqual(["album", "123"]);
+    });
+
     it.each([true, false])(
         "should change menu status on event for %s",
         (initial) => {
@@ -192,6 +205,7 @@ describe("UI Store", () => {
         uiStore(BASE_STATE, emitter);
 
         const events = [
+            NAVIGATE,
             TOGGLE_NAV_MENU,
             OPEN_MODAL,
             CLOSE_MODAL,
@@ -208,7 +222,10 @@ describe("UI Store", () => {
 });
 
 function aManagerWith(
-    state: Pick<State, "menus" | "modal" | "forms" | "notifications">,
+    state: Pick<
+        State,
+        "location" | "menus" | "modal" | "forms" | "notifications"
+    >,
     bus: Nanobus,
 ) {
     return new UIStoreManager(state, bus, DUMB_ID_GENERATOR, TIMEOUT_MOCK);

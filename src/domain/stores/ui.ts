@@ -6,12 +6,17 @@ import {
     CREATE_NOTIFICATION,
     DELETE_NOTIFICATION,
     FORM_ERROR,
+    NAVIGATE,
     OPEN_MODAL,
     TOGGLE_NAV_MENU,
 } from "../../infra/events";
 import { EventParams, State } from "../models/state";
 import { Notification } from "../models/ui";
 import config from "../../infra/config";
+
+export type NavigateParams = EventParams & {
+    to: string[];
+};
 
 export type ToggleNavMenuParams = EventParams & {
     menu: string;
@@ -33,7 +38,10 @@ export type DeleteNotificationParams = EventParams & Pick<Notification, "id">;
 export type CreateNotificationParams = EventParams &
     Pick<Notification, "type" | "message">;
 
-type Substate = Pick<State, "menus" | "modal" | "forms" | "notifications">;
+type Substate = Pick<
+    State,
+    "location" | "menus" | "modal" | "forms" | "notifications"
+>;
 
 export class UIStoreManager {
     state: Substate;
@@ -52,6 +60,11 @@ export class UIStoreManager {
         this.idGenerator = idGenerator;
         this.setTimout = _setTimout;
     }
+
+    navigate = (params: NavigateParams) => {
+        this.state.location = params.to;
+        this.emitter.emit("render");
+    };
 
     toggleNavmenu = (params: ToggleNavMenuParams) => {
         if (params.menu in this.state.menus) {
@@ -116,6 +129,7 @@ export function uiStore(state: Substate, emitter: Nanobus): void {
         process.env.NODE_ENV !== "test" ? window.setTimeout.bind(window) : () => { };
     const manager = new UIStoreManager(state, emitter, idGenerator, timeout);
 
+    emitter.on(NAVIGATE, manager.navigate);
     emitter.on(TOGGLE_NAV_MENU, manager.toggleNavmenu);
     emitter.on(OPEN_MODAL, manager.openModal);
     emitter.on(CLOSE_MODAL, manager.closeModal);
