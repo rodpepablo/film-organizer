@@ -9,9 +9,9 @@ export default class FilmListItem implements Component {
         this.film = film;
     }
 
-    render(state: State, emit: Emit) {
+    render(state: State, emit: Emit): HTMLElement {
         return html`
-            <li class="film-list-item">${this.film.name}</li>
+            <li class="film-list-item list-item" film-id="${this.film.id}">${this.film.name}</li>
         `;
     }
 }

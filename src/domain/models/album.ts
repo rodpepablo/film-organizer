@@ -12,10 +12,12 @@ export const ZAlbum = z.object({
     path: z.string(),
     films: z.array(
         z.object({
+            id: z.string(),
             name: z.string(),
             path: z.string(),
             images: z.array(
                 z.object({
+                    id: z.string(),
                     name: z.string(),
                     ext: z.string(),
                     path: z.string(),

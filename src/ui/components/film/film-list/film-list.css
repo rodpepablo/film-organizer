@@ -9,20 +9,3 @@
 	color: var(--light-grey);
 	font-size: var(--big-text);
 }
-
-.film-list {
-	margin: 0;
-	padding: 0;
-	list-style: none;
-}
-
-.film-list-item {
-	margin: 0;
-	padding: 1em;
-	border-bottom: 2px solid var(--primary-light);
-	cursor: pointer;
-}
-
-.film-list-item:hover {
-	box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
-}

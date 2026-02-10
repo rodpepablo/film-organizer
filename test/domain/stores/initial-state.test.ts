@@ -3,6 +3,7 @@ import { State } from "../../../src/domain/models/state";
 import {
     ALBUM_MANAGEMENT_MENU,
     FILM_MANAGEMENT_MENU,
+    HOME_SECTION,
 } from "../../../src/infra/constants";
 import createInitialState from "../../../src/domain/stores/initial-state";
 
@@ -12,7 +13,7 @@ describe("Create initial state", () => {
 
         createInitialState(state);
 
-        expect(state.location).toEqual(["home"]);
+        expect(state.location).toEqual([HOME_SECTION]);
     });
     it("Should initialize menus elements", () => {
         const state = {} as State;

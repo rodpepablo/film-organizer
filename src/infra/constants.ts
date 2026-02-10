@@ -1,14 +1,20 @@
 import { CreateNotificationParams } from "../domain/stores/ui";
 
+// NAVIGATION
+export const HOME_SECTION = "home";
 export const FILM_SECTION = "films";
+export const FILM_DETAIL_SECTION = "film";
 
+// MENUS
 export const ALBUM_MANAGEMENT_MENU = "album-menu";
 export const FILM_MANAGEMENT_MENU = "film-management-menu";
 
 export const CREATE_ALBUM_MENU = "create-album-menu";
 export const LOAD_ALBUM_MENU = "load-album-menu";
+export const LIST_FILMS_MENU = "list-films-menu";
 export const ADD_FILM_MENU = "add-film-menu";
 
+// MODALS
 export const CREATE_ALBUM_MODAL = "create-album-modal";
 
 // FORMS

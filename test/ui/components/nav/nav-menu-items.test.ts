@@ -4,11 +4,14 @@ import {
     ADD_FILM_MENU,
     CREATE_ALBUM_MENU,
     CREATE_ALBUM_MODAL,
+    FILM_SECTION,
+    LIST_FILMS_MENU,
     LOAD_ALBUM_MENU,
 } from "../../../../src/infra/constants";
 import {
     ADD_FILM_REQUEST,
     LOAD_ALBUM_REQUEST,
+    NAVIGATE,
     OPEN_MODAL,
 } from "../../../../src/infra/events";
 import { items } from "../../../../src/ui/components/nav/nav/nav-menu-items";
@@ -32,6 +35,15 @@ describe("Nav menu items", () => {
         dom.click();
 
         expect(emit).toHaveBeenCalledWith(LOAD_ALBUM_REQUEST);
+    });
+
+    it("List film rolls should emit a navigation event to the film section", () => {
+        const emit = vi.fn();
+
+        const dom = items[LIST_FILMS_MENU].render(DUMMY_STATE, emit);
+        dom.click();
+
+        expect(emit).toHaveBeenCalledWith(NAVIGATE, { to: [FILM_SECTION] });
     });
 
     it("Add film roll should emit an add film request", () => {

@@ -1,27 +1,32 @@
 import { describe, it, expect } from "vitest";
 import { State } from "../../../../src/domain/models/state";
-import { FILM_SECTION } from "../../../../src/infra/constants";
+import {
+    FILM_DETAIL_SECTION,
+    FILM_SECTION,
+    HOME_SECTION,
+} from "../../../../src/infra/constants";
 import workingSection from "../../../../src/ui/components/general/working-section/working-section";
-import { anAlbum } from "../../../test-util/fixtures";
+import { aFilm, anAlbum } from "../../../test-util/fixtures";
 
 const BASE_STATE = {
-    album: anAlbum(),
+    album: anAlbum({ films: [aFilm()] }),
 };
 
+const SECTIONS = [
+    [HOME_SECTION, "#default-section"],
+    [FILM_SECTION, "#film-section"],
+    [FILM_DETAIL_SECTION, "#film-detail-section"],
+];
+
 describe("Working section", () => {
-    it("should show default location", () => {
-        const state = { location: ["home"] } as State;
+    it.each(SECTIONS)(
+        "should show %s section when selected on location",
+        (location, selector) => {
+            const state = { ...BASE_STATE, location: [location] } as State;
 
-        const dom = workingSection(state, () => { });
+            const dom = workingSection(state, () => { });
 
-        expect(dom.querySelector("#default-section")).not.toBeNull();
-    });
-
-    it("should show films section when base location is film-list", () => {
-        const state = { ...BASE_STATE, location: [FILM_SECTION] } as State;
-
-        const dom = workingSection(state, () => { });
-
-        expect(dom.querySelector("#film-section")).not.toBeNull();
-    });
+            expect(dom.querySelector(selector)).not.toBeNull();
+        },
+    );
 });

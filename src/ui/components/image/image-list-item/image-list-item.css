@@ -1,0 +1,35 @@
+.image-list-item {
+	display: flex;
+	padding: 0.4em;
+}
+
+.image-list-item-preview {
+	height: 60px;
+	width: 60px;
+	margin: 0;
+
+	object-fit: cover;
+	object-position: center;
+	box-sizing: border-box;
+	border: 2px solid var(--primary-color);
+}
+
+.image-list-item-info {
+	padding: 0.5em;
+}
+
+.image-list-item-info > * {
+	display: inline;
+}
+
+.image-list-item-name {
+	font-size: var(--medium-text);
+	color: var(--primary-dark);
+	margin: 0;
+}
+
+.image-list-item-ext {
+	font-size: var(--tiny-text);
+	color: var(--medium-grey);
+	margin: 0 0 0 0.4em;
+}

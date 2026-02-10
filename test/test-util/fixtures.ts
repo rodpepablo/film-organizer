@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { Album } from "../../src/domain/models/album";
-import { Film } from "../../src/domain/models/film";
+import { Film, FilmImage } from "../../src/domain/models/film";
 
 export const anAlbum = (attributes: object = {}): Album => {
     return {
@@ -13,10 +13,20 @@ export const anAlbum = (attributes: object = {}): Album => {
 
 export const aFilm = (attributes: object = {}): Film => {
     return {
-        id: uuidv4.toString(),
+        id: uuidv4().toString(),
         name: "TEST FILM",
         path: "FILM/TIF",
         images: [],
+        ...attributes,
+    };
+};
+
+export const anImage = (attributes: object = {}): FilmImage => {
+    return {
+        id: uuidv4().toString(),
+        name: "TEST IMAGE",
+        ext: "jpg",
+        path: "/PATH/TO/IMAGE.jpg",
         ...attributes,
     };
 };
