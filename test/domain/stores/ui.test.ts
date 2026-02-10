@@ -11,6 +11,7 @@ import {
     NAVIGATE,
     OPEN_MODAL,
     TOGGLE_NAV_MENU,
+    UPDATE_FORM,
 } from "../../../src/infra/events";
 import { CREATE_ALBUM_FORM } from "../../../src/infra/constants";
 import { autoTimeout, expectRender, spiedBus } from "../../test-util/mocking";
@@ -18,6 +19,7 @@ import { IIdGenerator } from "../../../src/infra/id-generator";
 import { State } from "../../../src/domain/models/state";
 import { Notification } from "../../../src/domain/models/ui";
 import config from "../../../src/infra/config";
+import { aForm } from "../../test-util/fixtures";
 
 const BASE_STATE = {
     location: [],
@@ -115,9 +117,7 @@ describe("UI Store", () => {
         const state = {
             ...BASE_STATE,
             forms: {
-                [CREATE_ALBUM_FORM]: {
-                    error: null,
-                },
+                [CREATE_ALBUM_FORM]: aForm(),
             },
         };
 
@@ -128,14 +128,33 @@ describe("UI Store", () => {
         expectRender(bus);
     });
 
-    it("Should clear an error in a form", () => {
+    it("Should update the values in a form", () => {
+        const bus = spiedBus();
+        const state = {
+            ...BASE_STATE,
+            forms: { [CREATE_ALBUM_FORM]: aForm() },
+        };
+
+        const manager = aManagerWith(state, bus);
+        const values = { name: "foo" };
+        manager.updateForm({ form: CREATE_ALBUM_FORM, values });
+
+        expect(state.forms[CREATE_ALBUM_FORM]).toStrictEqual({
+            error: null,
+            values: values,
+        });
+        expect(bus.emit).not.toHaveBeenCalledWith("render");
+    });
+
+    it("Should clear a form", () => {
         const bus = spiedBus();
         const state = {
             ...BASE_STATE,
             forms: {
-                [CREATE_ALBUM_FORM]: {
+                [CREATE_ALBUM_FORM]: aForm({
                     error: ERROR_MSG,
-                },
+                    values: { name: "foo" },
+                }),
             },
         };
 
@@ -210,6 +229,7 @@ describe("UI Store", () => {
             OPEN_MODAL,
             CLOSE_MODAL,
             FORM_ERROR,
+            UPDATE_FORM,
             CLEAR_FORM,
             CREATE_NOTIFICATION,
             DELETE_NOTIFICATION,

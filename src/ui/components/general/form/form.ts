@@ -4,11 +4,11 @@ import Component from "../../../../infra/component";
 import { html } from "../../../../infra/html";
 import { mockFormData } from "../../../../../test/test-util/form-data";
 import { uiFormErrorSelector } from "../../../../infra/selectors/ui";
+import { UPDATE_FORM } from "../../../../infra/events";
 
-type SubmitHandler = (emit: Emit, formData: FormData) => void;
 type FormConfig = {
     formId: string;
-    onSubmit: SubmitHandler;
+    submitEvent: string;
 };
 
 export default class Form implements Component {
@@ -24,24 +24,41 @@ export default class Form implements Component {
         const error = uiFormErrorSelector(state, this.config.formId);
 
         return html`
-            <form class="form" onsubmit=${this.handleSubmit(emit)}>
+            <form class="form" onsubmit=${this.handleSubmit(emit)} onchange=${this.handleChange(emit)}>
                 ${error != null ? html`<span class="form-error">${error}</span>` : null}
                 ${this.content}
             </form>
         `;
     }
 
-    getFormData() {
-        return process.env.NODE_ENV !== "test" ? FormData : mockFormData();
+    private emitFormUpdate(emit: Emit, form: HTMLFormElement) {
+        const values = Array.from(form.querySelectorAll<HTMLInputElement>("input"))
+            .filter((input) => input.hasAttribute("name"))
+            .map((input) => ({
+                name: input.getAttribute("name"),
+                value: input.value,
+            }))
+            .reduce((acc: any, input: { name: string; value: any }) => {
+                acc[input.name] = input.value;
+                return acc;
+            }, {});
+        emit(UPDATE_FORM, { form: this.config.formId, values });
     }
 
-    handleSubmit(emit: Emit) {
+    private handleChange(emit: Emit) {
+        return (e: DOMEvent) => {
+            e.preventDefault();
+            const form = e.currentTarget as HTMLFormElement;
+            this.emitFormUpdate(emit, form);
+        };
+    }
+
+    private handleSubmit(emit: Emit) {
         return (e: DOMEvent) => {
             e.preventDefault();
             const form = e.target as HTMLFormElement;
-            const _FormData = this.getFormData();
-            const formData = new _FormData(form);
-            this.config.onSubmit(emit, formData);
+            this.emitFormUpdate(emit, form);
+            emit(this.config.submitEvent);
         };
     }
 }

@@ -17,5 +17,10 @@ export const uiFormErrorSelector = (
     form: string,
 ): string | null => (form in state.forms ? state.forms[form].error : null);
 
+export const uiFormValuesSelector = (
+    state: Pick<State, "forms">,
+    form: string,
+): any => (form in state.forms ? state.forms[form].values : null);
+
 export const uiNotificationsSelector = (state: Pick<State, "notifications">) =>
     state.notifications;

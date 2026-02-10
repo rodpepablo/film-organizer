@@ -2,8 +2,11 @@ import { jsdomWindow } from "../../src/infra/html";
 
 const window = jsdomWindow();
 
-export const setInputValueTo = (dom: HTMLElement, name: string, value: any) =>
-    (dom.querySelector<HTMLInputElement>(`input[name=${name}]`)!.value = value);
+export const setInputValueTo = (dom: HTMLElement, name: string, value: any) => {
+    const input = dom.querySelector<HTMLInputElement>(`input[name=${name}]`);
+    input!.value = value;
+    input!.dispatchEvent(new window.Event("change", { bubbles: true }));
+};
 
 export const submitForm = (dom: HTMLElement) => {
     const form =

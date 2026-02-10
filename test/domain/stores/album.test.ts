@@ -30,7 +30,7 @@ import {
 import { expectRender, mockedAPI, spiedBus } from "../../test-util/mocking";
 import { Album } from "../../../src/domain/models/album";
 import { State } from "../../../src/domain/models/state";
-import { anAlbum } from "../../test-util/fixtures";
+import { aForm, anAlbum } from "../../test-util/fixtures";
 
 const ALBUM_NAME = "ALBUM_NAME";
 const FOLDER_PATH = "/PATH";
@@ -40,6 +40,9 @@ describe("Album store", () => {
     it("Should create album from request", async () => {
         const state = {
             album: null,
+            forms: {
+                [CREATE_ALBUM_FORM]: aForm({ values: { name: ALBUM_NAME } }),
+            },
         };
         const bus = spiedBus();
         const api = mockedAPI();
@@ -52,7 +55,7 @@ describe("Album store", () => {
         api.fs.getFolder.mockResolvedValue(FOLDER_PATH);
         api.album.createAlbum.mockResolvedValue(expectedAlbum);
 
-        await manager.manageCreateAlbum({ name: ALBUM_NAME });
+        await manager.manageCreateAlbum();
 
         expect(state.album).toStrictEqual(expectedAlbum);
         expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM, {
@@ -71,12 +74,17 @@ describe("Album store", () => {
     it("Should add an error to the form when invalid", async () => {
         const state = {
             album: null,
+            forms: {
+                [CREATE_ALBUM_FORM]: aForm({
+                    values: { name: "" },
+                }),
+            },
         };
         const bus = spiedBus();
         const api = mockedAPI();
         const manager = new AlbumStoreManager(state, bus, api);
 
-        await manager.manageCreateAlbum({ name: "" });
+        await manager.manageCreateAlbum();
 
         expect(state.album).toBeNull();
         expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM, {
@@ -91,6 +99,11 @@ describe("Album store", () => {
     it("Should close the modal and do nothing when the folder dialog is cancelled", async () => {
         const state = {
             album: null,
+            forms: {
+                [CREATE_ALBUM_FORM]: aForm({
+                    values: { name: ALBUM_NAME },
+                }),
+            },
         };
         const bus = spiedBus();
         const api = mockedAPI();
@@ -98,7 +111,7 @@ describe("Album store", () => {
 
         api.fs.getFolder.mockResolvedValue(null);
 
-        await manager.manageCreateAlbum({ name: ALBUM_NAME });
+        await manager.manageCreateAlbum();
 
         expect(state.album).toBeNull();
         expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM, {
@@ -137,7 +150,7 @@ describe("Album store", () => {
 
     it("Should not render or change album on file selection cancel", async () => {
         const currentAlbum = anAlbum({ name: "current_album" });
-        const state = { album: currentAlbum };
+        const state = { album: currentAlbum, forms: {} };
         const bus = spiedBus();
         const api = mockedAPI();
         const manager = new AlbumStoreManager(state, bus, api);
@@ -153,7 +166,7 @@ describe("Album store", () => {
     });
 
     it("Should not render and should show an error if the file is non-compliant", async () => {
-        const state = { album: null };
+        const state = { album: null, forms: {} };
         const bus = spiedBus();
         const api = mockedAPI();
         const manager = new AlbumStoreManager(state, bus, api);
@@ -175,7 +188,7 @@ describe("Album store", () => {
 
     it("Should save the changes to the album", async () => {
         const album = anAlbum();
-        const state = { album };
+        const state = { album, forms: {} };
         const bus = spiedBus();
         const api = mockedAPI();
         const manager = new AlbumStoreManager(state, bus, api);
@@ -191,7 +204,7 @@ describe("Album store", () => {
 
     it("Should notify about errors saving album", async () => {
         const album = anAlbum();
-        const state = { album };
+        const state = { album, forms: {} };
         const bus = spiedBus();
         const api = mockedAPI();
         const manager = new AlbumStoreManager(state, bus, api);

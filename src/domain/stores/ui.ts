@@ -9,6 +9,7 @@ import {
     NAVIGATE,
     OPEN_MODAL,
     TOGGLE_NAV_MENU,
+    UPDATE_FORM,
 } from "../../infra/events";
 import { EventParams, State } from "../models/state";
 import { Notification } from "../models/ui";
@@ -32,6 +33,10 @@ export type FormEventParams = EventParams & {
 
 export type FormErrorParams = FormEventParams & {
     error: string;
+};
+
+export type FormUpdateParams = FormEventParams & {
+    values: Record<string, any>;
 };
 
 export type DeleteNotificationParams = EventParams & Pick<Notification, "id">;
@@ -91,6 +96,11 @@ export class UIStoreManager {
         this.emitter.emit("render");
     };
 
+    updateForm = (params: FormUpdateParams) => {
+        this.initForm(params);
+        this.state.forms[params.form].values = params.values;
+    };
+
     clearForm = (params: FormEventParams) => {
         this.initForm(params);
         this.state.forms[params.form].error = null;
@@ -118,7 +128,10 @@ export class UIStoreManager {
 
     private initForm(params: FormEventParams) {
         if (!(params.form in this.state.forms)) {
-            this.state.forms[params.form] = {};
+            this.state.forms[params.form] = {
+                error: null,
+                values: {},
+            };
         }
     }
 }
@@ -134,6 +147,7 @@ export function uiStore(state: Substate, emitter: Nanobus): void {
     emitter.on(OPEN_MODAL, manager.openModal);
     emitter.on(CLOSE_MODAL, manager.closeModal);
     emitter.on(FORM_ERROR, manager.formError);
+    emitter.on(UPDATE_FORM, manager.updateForm);
     emitter.on(CLEAR_FORM, manager.clearForm);
     emitter.on(CREATE_NOTIFICATION, manager.createNotification);
     emitter.on(DELETE_NOTIFICATION, manager.deleteNotification);

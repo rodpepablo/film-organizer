@@ -22,12 +22,13 @@ import { EventParams, State } from "../models/state";
 import { AlbumValidators } from "../validators/album";
 import { ZAlbum } from "../models/album";
 import { IPCError, IPCErrors } from "../../infra/ipc-service";
+import { uiFormValuesSelector } from "../../infra/selectors/ui";
 
-export type CreateAlbumParams = EventParams & {
+export type CreateAlbumValues = {
     name: string;
 };
 
-type Substate = Pick<State, "album">;
+type Substate = Pick<State, "album" | "forms">;
 
 export class AlbumStoreManager {
     state: Substate;
@@ -40,9 +41,13 @@ export class AlbumStoreManager {
         this.api = api;
     }
 
-    manageCreateAlbum = async (params: CreateAlbumParams): Promise<void> => {
+    manageCreateAlbum = async (): Promise<void> => {
         this.emitter.emit(CLEAR_FORM, { form: CREATE_ALBUM_FORM });
-        const [isValid, error] = AlbumValidators.albumCreation.validate(params);
+        const formValues = uiFormValuesSelector(
+            this.state,
+            CREATE_ALBUM_FORM,
+        ) as CreateAlbumValues;
+        const [isValid, error] = AlbumValidators.albumCreation.validate(formValues);
 
         if (isValid) {
             const path = await this.api.fs.getFolder();
@@ -52,7 +57,7 @@ export class AlbumStoreManager {
                 return;
             }
 
-            const album = await this.api.album.createAlbum(path, params.name);
+            const album = await this.api.album.createAlbum(path, formValues.name);
 
             this.state.album = album;
             this.emitter.emit(CLOSE_MODAL);
