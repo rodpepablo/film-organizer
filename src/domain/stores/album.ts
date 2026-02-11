@@ -10,6 +10,7 @@ import {
 } from "../../infra/constants";
 import {
     CLEAR_FORM,
+    CLEAR_FORM_ERROR,
     CLOSE_MODAL,
     CREATE_ALBUM_REQUEST,
     CREATE_NOTIFICATION,
@@ -18,7 +19,7 @@ import {
     NAVIGATE,
     SAVE_ALBUM_REQUEST,
 } from "../../infra/events";
-import { EventParams, State } from "../models/state";
+import { State } from "../models/state";
 import { AlbumValidators } from "../validators/album";
 import { ZAlbum } from "../models/album";
 import { IPCError, IPCErrors } from "../../infra/ipc-service";
@@ -42,7 +43,7 @@ export class AlbumStoreManager {
     }
 
     manageCreateAlbum = async (): Promise<void> => {
-        this.emitter.emit(CLEAR_FORM, { form: CREATE_ALBUM_FORM });
+        this.emitter.emit(CLEAR_FORM_ERROR, { form: CREATE_ALBUM_FORM });
         const formValues = uiFormValuesSelector(
             this.state,
             CREATE_ALBUM_FORM,
@@ -51,18 +52,15 @@ export class AlbumStoreManager {
 
         if (isValid) {
             const path = await this.api.fs.getFolder();
-            if (path === null) {
+            if (path !== null) {
+                const album = await this.api.album.createAlbum(path, formValues.name);
+
+                this.state.album = album;
                 this.emitter.emit(CLOSE_MODAL);
-                this.emitter.emit("render");
-                return;
+                this.emitter.emit(CREATE_NOTIFICATION, ALBUM_CREATION_SUCCESS);
+                this.emitter.emit(CLEAR_FORM, { form: CREATE_ALBUM_FORM });
+                this.emitter.emit(NAVIGATE, { to: [FILM_SECTION] });
             }
-
-            const album = await this.api.album.createAlbum(path, formValues.name);
-
-            this.state.album = album;
-            this.emitter.emit(CLOSE_MODAL);
-            this.emitter.emit(CREATE_NOTIFICATION, ALBUM_CREATION_SUCCESS);
-            this.emitter.emit(NAVIGATE, { to: [FILM_SECTION] });
         } else {
             this.emitter.emit(FORM_ERROR, {
                 form: CREATE_ALBUM_FORM,

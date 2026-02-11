@@ -19,6 +19,7 @@ import {
 import { INVALID_ALBUM_NAME } from "../../../src/infra/errors";
 import {
     CLEAR_FORM,
+    CLEAR_FORM_ERROR,
     CLOSE_MODAL,
     CREATE_ALBUM_REQUEST,
     CREATE_NOTIFICATION,
@@ -58,7 +59,7 @@ describe("Album store", () => {
         await manager.manageCreateAlbum();
 
         expect(state.album).toStrictEqual(expectedAlbum);
-        expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM, {
+        expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
             form: CREATE_ALBUM_FORM,
         });
         expect(api.album.createAlbum).toHaveBeenCalledWith(FOLDER_PATH, ALBUM_NAME);
@@ -67,6 +68,9 @@ describe("Album store", () => {
             CREATE_NOTIFICATION,
             ALBUM_CREATION_SUCCESS,
         );
+        expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM, {
+            form: CREATE_ALBUM_FORM,
+        });
         expect(bus.emit).toHaveBeenCalledWith(NAVIGATE, { to: [FILM_SECTION] });
         expectRender(bus);
     });
@@ -87,7 +91,7 @@ describe("Album store", () => {
         await manager.manageCreateAlbum();
 
         expect(state.album).toBeNull();
-        expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM, {
+        expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
             form: CREATE_ALBUM_FORM,
         });
         expect(bus.emit).toHaveBeenCalledWith(FORM_ERROR, {
@@ -96,7 +100,7 @@ describe("Album store", () => {
         });
     });
 
-    it("Should close the modal and do nothing when the folder dialog is cancelled", async () => {
+    it("Should clear error and do nothing when the folder dialog is cancelled", async () => {
         const state = {
             album: null,
             forms: {
@@ -114,10 +118,10 @@ describe("Album store", () => {
         await manager.manageCreateAlbum();
 
         expect(state.album).toBeNull();
-        expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM, {
+        expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
             form: CREATE_ALBUM_FORM,
         });
-        expect(bus.emit).toHaveBeenCalledWith(CLOSE_MODAL);
+        expect(bus.emit).not.toHaveBeenCalledWith(CLOSE_MODAL);
         expect(bus.emit).not.toHaveBeenCalledWith(
             CREATE_NOTIFICATION,
             expect.any(String),
@@ -126,7 +130,7 @@ describe("Album store", () => {
     });
 
     it("Should load an album if selected", async () => {
-        const state = { album: null };
+        const state = { album: null } as State;
         const bus = spiedBus();
         const api = mockedAPI();
         const manager = new AlbumStoreManager(state, bus, api);

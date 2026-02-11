@@ -2,31 +2,46 @@ import "./form.css";
 import { State, Emit } from "../../../../domain/models/state";
 import Component from "../../../../infra/component";
 import { html } from "../../../../infra/html";
-import { mockFormData } from "../../../../../test/test-util/form-data";
-import { uiFormErrorSelector } from "../../../../infra/selectors/ui";
+import {
+    uiFormErrorSelector,
+    uiFormValuesSelector,
+} from "../../../../infra/selectors/ui";
 import { UPDATE_FORM } from "../../../../infra/events";
+import { IInput } from "../input/input";
+import Button from "../button/button";
 
 type FormConfig = {
     formId: string;
     submitEvent: string;
+    inputs: IInput[];
+    button?: Button;
 };
 
 export default class Form implements Component {
     config: FormConfig;
-    content: HTMLElement;
 
-    constructor(config: FormConfig, content: HTMLElement) {
+    constructor(config: FormConfig) {
         this.config = config;
-        this.content = content;
     }
 
-    render(state: Pick<State, "forms">, emit: Emit): HTMLElement {
+    render(state: State, emit: Emit): HTMLElement {
         const error = uiFormErrorSelector(state, this.config.formId);
+        const values = uiFormValuesSelector(state, this.config.formId);
+
+        if (values != null)
+            this.config.inputs.forEach((input) => input.setValue(values[input.name]));
+        const inputs = this.config.inputs.map((input) => input.render(state, emit));
+
+        const button =
+            this.config.button != null
+                ? this.config.button.render(state, emit)
+                : new Button({ value: "Send", input: "submit" }).render(state, emit);
 
         return html`
             <form class="form" onsubmit=${this.handleSubmit(emit)} onchange=${this.handleChange(emit)}>
                 ${error != null ? html`<span class="form-error">${error}</span>` : null}
-                ${this.content}
+                ${inputs}
+                ${button}
             </form>
         `;
     }

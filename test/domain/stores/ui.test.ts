@@ -4,6 +4,7 @@ import Nanobus from "nanobus";
 import { uiStore, UIStoreManager } from "../../../src/domain/stores/ui";
 import {
     CLEAR_FORM,
+    CLEAR_FORM_ERROR,
     CLOSE_MODAL,
     CREATE_NOTIFICATION,
     DELETE_NOTIFICATION,
@@ -146,6 +147,26 @@ describe("UI Store", () => {
         expect(bus.emit).not.toHaveBeenCalledWith("render");
     });
 
+    it("Should clear a form error", () => {
+        const bus = spiedBus();
+        const state = {
+            ...BASE_STATE,
+            forms: {
+                [CREATE_ALBUM_FORM]: aForm({
+                    error: ERROR_MSG,
+                    values: { name: "foo" },
+                }),
+            },
+        };
+
+        const manager = aManagerWith(state, bus);
+        manager.clearFormError({ form: CREATE_ALBUM_FORM });
+
+        expect(state.forms[CREATE_ALBUM_FORM].error).toBeNull();
+        expect(state.forms[CREATE_ALBUM_FORM].values).toEqual({ name: "foo" });
+        expectRender(bus);
+    });
+
     it("Should clear a form", () => {
         const bus = spiedBus();
         const state = {
@@ -161,7 +182,7 @@ describe("UI Store", () => {
         const manager = aManagerWith(state, bus);
         manager.clearForm({ form: CREATE_ALBUM_FORM });
 
-        expect(state.forms[CREATE_ALBUM_FORM].error).toBeNull();
+        expect(state.forms[CREATE_ALBUM_FORM]).toEqual({ error: null, values: {} });
         expectRender(bus);
     });
 
@@ -230,6 +251,7 @@ describe("UI Store", () => {
             CLOSE_MODAL,
             FORM_ERROR,
             UPDATE_FORM,
+            CLEAR_FORM_ERROR,
             CLEAR_FORM,
             CREATE_NOTIFICATION,
             DELETE_NOTIFICATION,

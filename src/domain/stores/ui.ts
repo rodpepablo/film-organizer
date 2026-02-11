@@ -1,6 +1,7 @@
 import Nanobus from "nanobus";
 import { IIdGenerator, IdGenerator } from "../../infra/id-generator";
 import {
+    CLEAR_FORM_ERROR,
     CLEAR_FORM,
     CLOSE_MODAL,
     CREATE_NOTIFICATION,
@@ -101,10 +102,20 @@ export class UIStoreManager {
         this.state.forms[params.form].values = params.values;
     };
 
-    clearForm = (params: FormEventParams) => {
+    clearFormError = (params: FormEventParams) => {
         this.initForm(params);
         this.state.forms[params.form].error = null;
         this.emitter.emit("render");
+    };
+
+    clearForm = (params: FormEventParams) => {
+        if (params.form in this.state.forms) {
+            this.state.forms[params.form] = {
+                error: null,
+                values: {},
+            };
+            this.emitter.emit("render");
+        }
     };
 
     createNotification = (params: CreateNotificationParams) => {
@@ -148,6 +159,7 @@ export function uiStore(state: Substate, emitter: Nanobus): void {
     emitter.on(CLOSE_MODAL, manager.closeModal);
     emitter.on(FORM_ERROR, manager.formError);
     emitter.on(UPDATE_FORM, manager.updateForm);
+    emitter.on(CLEAR_FORM_ERROR, manager.clearFormError);
     emitter.on(CLEAR_FORM, manager.clearForm);
     emitter.on(CREATE_NOTIFICATION, manager.createNotification);
     emitter.on(DELETE_NOTIFICATION, manager.deleteNotification);
