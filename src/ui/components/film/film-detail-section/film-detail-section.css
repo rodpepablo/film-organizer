@@ -1,9 +1,11 @@
 .film-detail-header {
 	border-bottom: 2px solid var(--primary-light);
+	display: flex;
+	align-items: center;
 }
 
 .film-detail-header-title {
-	padding: 1em;
+	padding: 1em 0.5em 1em 1em;
 	margin: 0;
 	color: var(--black-color);
 	font-weight: normal;

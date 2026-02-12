@@ -17,7 +17,7 @@ export interface IInput extends Component {
 export default class Input implements IInput {
     private config: InputConfig;
     value: string;
-    private type: string = "text";
+    protected type: string = "text";
     name: string;
 
     constructor(config: InputConfig) {
@@ -31,8 +31,11 @@ export default class Input implements IInput {
     }
 
     render(state: State, emit: Emit): HTMLElement {
+        const containerClass =
+            this.type === "hidden" ? "input-container hidden" : "input-container";
+
         return html`
-            <div class="input-container">
+            <div class="${containerClass}">
                 <label class="input-label">${this.config.label}:</label>
                 <input
                     class="input"

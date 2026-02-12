@@ -29,7 +29,7 @@ export type OpenModalParams = EventParams & {
 };
 
 export type FormEventParams = EventParams & {
-    form: string;
+    formId: string;
 };
 
 export type FormErrorParams = FormEventParams & {
@@ -93,24 +93,24 @@ export class UIStoreManager {
 
     formError = (params: FormErrorParams) => {
         this.initForm(params);
-        this.state.forms[params.form].error = params.error;
+        this.state.forms[params.formId].error = params.error;
         this.emitter.emit("render");
     };
 
     updateForm = (params: FormUpdateParams) => {
         this.initForm(params);
-        this.state.forms[params.form].values = params.values;
+        this.state.forms[params.formId].values = params.values;
     };
 
     clearFormError = (params: FormEventParams) => {
         this.initForm(params);
-        this.state.forms[params.form].error = null;
+        this.state.forms[params.formId].error = null;
         this.emitter.emit("render");
     };
 
     clearForm = (params: FormEventParams) => {
-        if (params.form in this.state.forms) {
-            this.state.forms[params.form] = {
+        if (params.formId in this.state.forms) {
+            this.state.forms[params.formId] = {
                 error: null,
                 values: {},
             };
@@ -138,8 +138,8 @@ export class UIStoreManager {
     };
 
     private initForm(params: FormEventParams) {
-        if (!(params.form in this.state.forms)) {
-            this.state.forms[params.form] = {
+        if (!(params.formId in this.state.forms)) {
+            this.state.forms[params.formId] = {
                 error: null,
                 values: {},
             };

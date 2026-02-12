@@ -3,7 +3,7 @@ import { Album } from "../../src/domain/models/album";
 import { Film, FilmImage } from "../../src/domain/models/film";
 import { Form } from "../../src/domain/models/ui";
 
-export const anAlbum = (attributes: object = {}): Album => {
+export const anAlbum = (attributes: Partial<Album> = {}): Album => {
     return {
         name: "TEST ALBUM",
         path: "/PATH/TO/ALBUM.json",
@@ -12,7 +12,7 @@ export const anAlbum = (attributes: object = {}): Album => {
     } as Album;
 };
 
-export const aFilm = (attributes: object = {}): Film => {
+export const aFilm = (attributes: Partial<Film> = {}): Film => {
     return {
         id: uuidv4().toString(),
         name: "TEST FILM",
@@ -22,7 +22,7 @@ export const aFilm = (attributes: object = {}): Film => {
     };
 };
 
-export const anImage = (attributes: object = {}): FilmImage => {
+export const anImage = (attributes: Partial<FilmImage> = {}): FilmImage => {
     return {
         id: uuidv4().toString(),
         name: "TEST IMAGE",
@@ -32,7 +32,7 @@ export const anImage = (attributes: object = {}): FilmImage => {
     };
 };
 
-export const aForm = (attributes: object = {}): Form => {
+export const aForm = (attributes: Partial<Form> = {}): Form => {
     return {
         error: null,
         values: {},

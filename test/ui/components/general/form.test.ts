@@ -62,7 +62,7 @@ describe("Form Component", () => {
         setInputValueTo(dom, "album", "ALBUM");
 
         expect(emit).toHaveBeenCalledWith(UPDATE_FORM, {
-            form: "123",
+            formId: "123",
             values: {
                 album: "ALBUM",
                 film: "",
@@ -72,7 +72,7 @@ describe("Form Component", () => {
         setInputValueTo(dom, "film", "FILM");
 
         expect(emit).toHaveBeenCalledWith(UPDATE_FORM, {
-            form: "123",
+            formId: "123",
             values: {
                 album: "ALBUM",
                 film: "FILM",
@@ -94,7 +94,7 @@ describe("Form Component", () => {
         submitForm(dom);
 
         expect(emit).toHaveBeenCalledWith(UPDATE_FORM, {
-            form: "123",
+            formId: "123",
             values: { album: "ALBUM" },
         });
         expect(emit).toHaveBeenCalledWith("EVENT");

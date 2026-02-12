@@ -43,7 +43,7 @@ export class AlbumStoreManager {
     }
 
     manageCreateAlbum = async (): Promise<void> => {
-        this.emitter.emit(CLEAR_FORM_ERROR, { form: CREATE_ALBUM_FORM });
+        this.emitter.emit(CLEAR_FORM_ERROR, { formId: CREATE_ALBUM_FORM });
         const formValues = uiFormValuesSelector(
             this.state,
             CREATE_ALBUM_FORM,
@@ -58,12 +58,12 @@ export class AlbumStoreManager {
                 this.state.album = album;
                 this.emitter.emit(CLOSE_MODAL);
                 this.emitter.emit(CREATE_NOTIFICATION, ALBUM_CREATION_SUCCESS);
-                this.emitter.emit(CLEAR_FORM, { form: CREATE_ALBUM_FORM });
+                this.emitter.emit(CLEAR_FORM, { formId: CREATE_ALBUM_FORM });
                 this.emitter.emit(NAVIGATE, { to: [FILM_SECTION] });
             }
         } else {
             this.emitter.emit(FORM_ERROR, {
-                form: CREATE_ALBUM_FORM,
+                formId: CREATE_ALBUM_FORM,
                 error: error.msg,
             });
         }

@@ -60,7 +60,7 @@ describe("Album store", () => {
 
         expect(state.album).toStrictEqual(expectedAlbum);
         expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
-            form: CREATE_ALBUM_FORM,
+            formId: CREATE_ALBUM_FORM,
         });
         expect(api.album.createAlbum).toHaveBeenCalledWith(FOLDER_PATH, ALBUM_NAME);
         expect(bus.emit).toHaveBeenCalledWith(CLOSE_MODAL);
@@ -69,7 +69,7 @@ describe("Album store", () => {
             ALBUM_CREATION_SUCCESS,
         );
         expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM, {
-            form: CREATE_ALBUM_FORM,
+            formId: CREATE_ALBUM_FORM,
         });
         expect(bus.emit).toHaveBeenCalledWith(NAVIGATE, { to: [FILM_SECTION] });
         expectRender(bus);
@@ -92,10 +92,10 @@ describe("Album store", () => {
 
         expect(state.album).toBeNull();
         expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
-            form: CREATE_ALBUM_FORM,
+            formId: CREATE_ALBUM_FORM,
         });
         expect(bus.emit).toHaveBeenCalledWith(FORM_ERROR, {
-            form: CREATE_ALBUM_FORM,
+            formId: CREATE_ALBUM_FORM,
             error: INVALID_ALBUM_NAME,
         });
     });
@@ -119,7 +119,7 @@ describe("Album store", () => {
 
         expect(state.album).toBeNull();
         expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
-            form: CREATE_ALBUM_FORM,
+            formId: CREATE_ALBUM_FORM,
         });
         expect(bus.emit).not.toHaveBeenCalledWith(CLOSE_MODAL);
         expect(bus.emit).not.toHaveBeenCalledWith(

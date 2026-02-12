@@ -20,7 +20,7 @@ describe("Create album modal", () => {
         submitForm(dom);
 
         expect(emit).toHaveBeenCalledWith(UPDATE_FORM, {
-            form: CREATE_ALBUM_FORM,
+            formId: CREATE_ALBUM_FORM,
             values: {
                 name: "NAME",
             },

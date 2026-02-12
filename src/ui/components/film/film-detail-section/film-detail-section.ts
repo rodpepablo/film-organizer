@@ -3,6 +3,13 @@ import { html } from "../../../../infra/html";
 import { State, Emit } from "../../../../domain/models/state";
 import { filmDetailSelector } from "../../../../infra/selectors/film";
 import ImageListItem from "../../image/image-list-item/image-list-item";
+import { OPEN_MODAL, UPDATE_FORM } from "../../../../infra/events";
+import {
+    EDIT_FILM_NAME_FORM,
+    EDIT_FILM_NAME_MODAL,
+} from "../../../../infra/constants";
+import { Film } from "../../../../domain/models/film";
+import Icon from "../../general/icon/icon";
 
 export default (state: State, emit: Emit): HTMLElement => {
     const film = filmDetailSelector(state);
@@ -11,6 +18,11 @@ export default (state: State, emit: Emit): HTMLElement => {
         return html`<article id="film-detail-section">Invalid film</article>`;
 
     const images = film.images.map((image) => new ImageListItem(image));
+    const editIcon = new Icon({
+        type: "actionable",
+        icon: "mdi:pencil",
+        onClick: editName(emit, film),
+    });
 
     return html`
         <article id="film-detail-section">
@@ -18,6 +30,7 @@ export default (state: State, emit: Emit): HTMLElement => {
                 <h4 class="film-detail-header-title">
                     <span>Film:</span>${film.name}
                 </h4>
+                ${editIcon.render(state, emit)}
             </header>
             <section class="film-detail-images">
                 <ul class="film-detail-image-list list">
@@ -27,3 +40,16 @@ export default (state: State, emit: Emit): HTMLElement => {
         </article>
     `;
 };
+
+function editName(emit: Emit, film: Film) {
+    return (e: DOMEvent) => {
+        e.preventDefault();
+        emit(UPDATE_FORM, {
+            formId: EDIT_FILM_NAME_FORM,
+            values: { filmId: film.id, name: film.name },
+        });
+        emit(OPEN_MODAL, {
+            modalId: EDIT_FILM_NAME_MODAL,
+        });
+    };
+}

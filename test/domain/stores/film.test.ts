@@ -3,14 +3,21 @@ import { mock } from "vitest-mock-extended";
 import Nanobus from "nanobus";
 import {
     ADD_FILM_REQUEST,
+    CLEAR_FORM,
+    CLEAR_FORM_ERROR,
+    CLOSE_MODAL,
     CREATE_NOTIFICATION,
+    EDIT_FILM_NAME_REQUEST,
+    FORM_ERROR,
 } from "../../../src/infra/events";
 import { State } from "../../../src/domain/models/state";
 import { filmStore, FilmStoreManager } from "../../../src/domain/stores/film";
-import { anAlbum } from "../../test-util/fixtures";
+import { aFilm, aForm, anAlbum } from "../../test-util/fixtures";
 import { expectRender, mockedAPI, spiedBus } from "../../test-util/mocking";
 import {
+    EDIT_FILM_NAME_FORM,
     FILM_ADDITION_SUCCESS,
+    FILM_NAME_EDIT_SUCCESS,
     FILM_NOT_IN_ALBUM_ERROR,
     UNEXPECTED_ERROR,
 } from "../../../src/infra/constants";
@@ -23,11 +30,7 @@ const ALBUM = anAlbum({ path: ALBUM_PATH });
 
 describe("Film store", () => {
     it("Should add a film from request", async () => {
-        const film = {
-            name: "film",
-            path: "film",
-            images: [{ name: "image", ext: "tif", path: "/path/to/film/image.tif" }],
-        };
+        const film = aFilm();
         const state = { album: ALBUM };
         const bus = spiedBus();
         const api = mockedAPI();
@@ -112,12 +115,99 @@ describe("Film store", () => {
         expectRender(bus);
     });
 
+    it("Should edit film name and create a notification", () => {
+        const film = aFilm({ name: "old name" });
+        const state = {
+            album: anAlbum({ films: [film] }),
+            forms: {
+                [EDIT_FILM_NAME_FORM]: aForm({
+                    values: { filmId: film.id, name: "new name" },
+                }),
+            },
+        };
+        const bus = spiedBus();
+        const api = mockedAPI();
+        const manager = new FilmStoreManager(state, bus, api);
+
+        manager.editFilmName();
+
+        expect(state.album.films[0].name).toEqual("new name");
+        expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
+            formId: EDIT_FILM_NAME_FORM,
+        });
+        expect(bus.emit).toHaveBeenCalledWith(
+            CREATE_NOTIFICATION,
+            FILM_NAME_EDIT_SUCCESS,
+        );
+        expect(bus.emit).toHaveBeenCalledWith(CLOSE_MODAL);
+        expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM, {
+            formId: EDIT_FILM_NAME_FORM,
+        });
+        expectRender(bus);
+    });
+
+    it("Should put an error into the form if name is invalid", () => {
+        const film = aFilm({ name: "old name" });
+        const state = {
+            album: anAlbum({ films: [film] }),
+            forms: {
+                [EDIT_FILM_NAME_FORM]: aForm({
+                    values: { filmId: film.id, name: "" },
+                }),
+            },
+        };
+        const bus = spiedBus();
+        const api = mockedAPI();
+        const manager = new FilmStoreManager(state, bus, api);
+
+        manager.editFilmName();
+
+        expect(state.album.films[0].name).toEqual("old name");
+        expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
+            formId: EDIT_FILM_NAME_FORM,
+        });
+        expect(bus.emit).toHaveBeenCalledWith(FORM_ERROR, {
+            formId: EDIT_FILM_NAME_FORM,
+            error: { msg: expect.any(String) },
+        });
+        expectRender(bus);
+    });
+
+    it("Should close the form and create a notification on error", () => {
+        const state = {
+            album: anAlbum(),
+            forms: {
+                [EDIT_FILM_NAME_FORM]: aForm({
+                    values: { formId: "123", name: "new name" },
+                }),
+            },
+        };
+        const bus = spiedBus();
+        const api = mockedAPI();
+        const manager = new FilmStoreManager(state, bus, api);
+
+        manager.editFilmName();
+
+        expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
+            formId: EDIT_FILM_NAME_FORM,
+        });
+        expect(bus.emit).toHaveBeenCalledWith(
+            CREATE_NOTIFICATION,
+            UNEXPECTED_ERROR,
+        );
+        expect(bus.emit).toHaveBeenCalledWith(CLOSE_MODAL);
+        expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM, {
+            formId: EDIT_FILM_NAME_FORM,
+        });
+        expectRender(bus);
+    });
+
     it("Should register handlers", () => {
         const emitter = mock<Nanobus>();
 
         filmStore({} as State, emitter);
 
-        const events = [ADD_FILM_REQUEST];
+        const events = [ADD_FILM_REQUEST, EDIT_FILM_NAME_REQUEST];
         expect(emitter.on).toHaveBeenCalledTimes(events.length);
         for (let event of events) {
             expect(emitter.on).toHaveBeenCalledWith(event, expect.any(Function));

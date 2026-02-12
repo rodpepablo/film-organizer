@@ -6,10 +6,15 @@ import footer from "../components/footer/footer/footer";
 import ModalComponent from "../components/general/modal/modal";
 import notifications from "../components/general/notifications/notifications";
 import CreateAlbumModal from "../components/album/create-album-modal/create-album-modal";
-import { CREATE_ALBUM_MODAL } from "../../infra/constants";
+import {
+    CREATE_ALBUM_MODAL,
+    EDIT_FILM_NAME_MODAL,
+} from "../../infra/constants";
+import EditFilmNameModal from "../components/film/edit-film-name-modal/edit-film-name-modal";
 
 const modal = new ModalComponent({
     [CREATE_ALBUM_MODAL]: new CreateAlbumModal(),
+    [EDIT_FILM_NAME_MODAL]: new EditFilmNameModal(),
 });
 
 export default (state: State, emit: Emit) => html`

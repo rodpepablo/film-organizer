@@ -1,6 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { State } from "../../../../src/domain/models/state";
-import { FILM_DETAIL_SECTION } from "../../../../src/infra/constants";
+import {
+    EDIT_FILM_NAME_FORM,
+    EDIT_FILM_NAME_MODAL,
+    FILM_DETAIL_SECTION,
+} from "../../../../src/infra/constants";
+import { OPEN_MODAL, UPDATE_FORM } from "../../../../src/infra/events";
 import filmDetailSection from "../../../../src/ui/components/film/film-detail-section/film-detail-section";
 import { aFilm, anAlbum, anImage } from "../../../test-util/fixtures";
 
@@ -42,5 +47,25 @@ describe("FilmDetailSection Component", () => {
             dom.querySelectorAll(".image-list-item-name"),
         ).map((element) => element.innerHTML);
         expect(foundImagesNames).toStrictEqual([image1.name, image2.name]);
+    });
+
+    it("Should open modal with id and name preloaded to edit film name", () => {
+        const film = aFilm();
+        const state = {
+            album: anAlbum({ films: [film] }),
+            location: [FILM_DETAIL_SECTION, film.id],
+        } as State;
+        const emit = vi.fn();
+
+        const dom = filmDetailSection(state, emit);
+        dom.querySelector<HTMLElement>("[icon='mdi:pencil']")?.click();
+
+        expect(emit).toHaveBeenCalledWith(UPDATE_FORM, {
+            formId: EDIT_FILM_NAME_FORM,
+            values: { filmId: film.id, name: film.name },
+        });
+        expect(emit).toHaveBeenCalledWith(OPEN_MODAL, {
+            modalId: EDIT_FILM_NAME_MODAL,
+        });
     });
 });

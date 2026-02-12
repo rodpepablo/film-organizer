@@ -57,7 +57,7 @@ export default class Form implements Component {
                 acc[input.name] = input.value;
                 return acc;
             }, {});
-        emit(UPDATE_FORM, { form: this.config.formId, values });
+        emit(UPDATE_FORM, { formId: this.config.formId, values });
     }
 
     private handleChange(emit: Emit) {

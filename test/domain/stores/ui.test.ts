@@ -107,7 +107,7 @@ describe("UI Store", () => {
         const state = BASE_STATE;
 
         const manager = aManagerWith(state, bus);
-        manager.formError({ form: CREATE_ALBUM_FORM, error: ERROR_MSG });
+        manager.formError({ formId: CREATE_ALBUM_FORM, error: ERROR_MSG });
 
         expect(state.forms[CREATE_ALBUM_FORM].error).toEqual(ERROR_MSG);
         expectRender(bus);
@@ -123,7 +123,7 @@ describe("UI Store", () => {
         };
 
         const manager = aManagerWith(state, bus);
-        manager.formError({ form: CREATE_ALBUM_FORM, error: ERROR_MSG });
+        manager.formError({ formId: CREATE_ALBUM_FORM, error: ERROR_MSG });
 
         expect(state.forms[CREATE_ALBUM_FORM].error).toEqual(ERROR_MSG);
         expectRender(bus);
@@ -138,7 +138,7 @@ describe("UI Store", () => {
 
         const manager = aManagerWith(state, bus);
         const values = { name: "foo" };
-        manager.updateForm({ form: CREATE_ALBUM_FORM, values });
+        manager.updateForm({ formId: CREATE_ALBUM_FORM, values });
 
         expect(state.forms[CREATE_ALBUM_FORM]).toStrictEqual({
             error: null,
@@ -160,7 +160,7 @@ describe("UI Store", () => {
         };
 
         const manager = aManagerWith(state, bus);
-        manager.clearFormError({ form: CREATE_ALBUM_FORM });
+        manager.clearFormError({ formId: CREATE_ALBUM_FORM });
 
         expect(state.forms[CREATE_ALBUM_FORM].error).toBeNull();
         expect(state.forms[CREATE_ALBUM_FORM].values).toEqual({ name: "foo" });
@@ -180,7 +180,7 @@ describe("UI Store", () => {
         };
 
         const manager = aManagerWith(state, bus);
-        manager.clearForm({ form: CREATE_ALBUM_FORM });
+        manager.clearForm({ formId: CREATE_ALBUM_FORM });
 
         expect(state.forms[CREATE_ALBUM_FORM]).toEqual({ error: null, values: {} });
         expectRender(bus);

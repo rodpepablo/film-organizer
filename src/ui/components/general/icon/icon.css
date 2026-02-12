@@ -1,0 +1,16 @@
+iconify-icon {
+	color: var(--primary-dark);
+}
+
+iconify-icon.actionable {
+	color: var(--light-grey);
+	cursor: pointer;
+}
+
+iconify-icon.actionable:hover {
+	color: var(--secondary-color);
+}
+
+iconify-icon.actionable:active {
+	color: var(--secondary-light);
+}

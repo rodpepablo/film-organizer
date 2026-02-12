@@ -1,5 +1,6 @@
 import "normalize.css";
 import "./index.css";
+import "./infra/webcomponents";
 
 import Choo from "choo";
 import Nanobus from "nanobus";

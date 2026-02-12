@@ -15,5 +15,14 @@ describe("Album validators", () => {
                 expect(error.msg).toEqual(INVALID_ALBUM_NAME);
             },
         );
+
+        it("should be valid otherwise", () => {
+            const [isValid, error] = AlbumValidators.albumCreation.validate({
+                name: "valid name",
+            });
+
+            expect(isValid).toBeTruthy();
+            expect(error).toBeNull();
+        });
     });
 });
