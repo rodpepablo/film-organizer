@@ -3,13 +3,13 @@ import { html } from "../../../../infra/html";
 import { State, Emit } from "../../../../domain/models/state";
 import { filmDetailSelector } from "../../../../infra/selectors/film";
 import ImageListItem from "../../image/image-list-item/image-list-item";
-import { OPEN_MODAL, UPDATE_FORM } from "../../../../infra/events";
 import {
     EDIT_FILM_NAME_FORM,
     EDIT_FILM_NAME_MODAL,
 } from "../../../../infra/constants";
 import { Film } from "../../../../domain/models/film";
 import Icon from "../../general/icon/icon";
+import { updateForm, openModal } from "../../../../infra/actions/ui";
 
 export default (state: State, emit: Emit): HTMLElement => {
     const film = filmDetailSelector(state);
@@ -44,11 +44,11 @@ export default (state: State, emit: Emit): HTMLElement => {
 function editName(emit: Emit, film: Film) {
     return (e: DOMEvent) => {
         e.preventDefault();
-        emit(UPDATE_FORM, {
+        updateForm(emit, {
             formId: EDIT_FILM_NAME_FORM,
             values: { filmId: film.id, name: film.name },
         });
-        emit(OPEN_MODAL, {
+        openModal(emit, {
             modalId: EDIT_FILM_NAME_MODAL,
         });
     };

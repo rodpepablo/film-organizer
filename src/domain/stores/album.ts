@@ -9,21 +9,23 @@ import {
     UNEXPECTED_ERROR,
 } from "../../infra/constants";
 import {
-    CLEAR_FORM,
-    CLEAR_FORM_ERROR,
-    CLOSE_MODAL,
     CREATE_ALBUM_REQUEST,
-    CREATE_NOTIFICATION,
-    FORM_ERROR,
     LOAD_ALBUM_REQUEST,
-    NAVIGATE,
     SAVE_ALBUM_REQUEST,
 } from "../../infra/events";
-import { State } from "../models/state";
+import { Emit, State } from "../models/state";
 import { AlbumValidators } from "../validators/album";
 import { ZAlbum } from "../models/album";
 import { IPCError, IPCErrors } from "../../infra/ipc-service";
 import { uiFormValuesSelector } from "../../infra/selectors/ui";
+import {
+    clearFormError,
+    closeModal,
+    createNotification,
+    clearForm,
+    navigate,
+    formError,
+} from "../../infra/actions/ui";
 
 export type CreateAlbumValues = {
     name: string;
@@ -33,17 +35,17 @@ type Substate = Pick<State, "album" | "forms">;
 
 export class AlbumStoreManager {
     state: Substate;
-    emitter: Nanobus;
+    emit: Emit;
     api: Window["api"];
 
     constructor(state: Substate, emitter: Nanobus, api: Window["api"]) {
         this.state = state;
-        this.emitter = emitter;
+        this.emit = emitter.emit.bind(emitter);
         this.api = api;
     }
 
     manageCreateAlbum = async (): Promise<void> => {
-        this.emitter.emit(CLEAR_FORM_ERROR, { formId: CREATE_ALBUM_FORM });
+        clearFormError(this.emit, { formId: CREATE_ALBUM_FORM });
         const formValues = uiFormValuesSelector(
             this.state,
             CREATE_ALBUM_FORM,
@@ -56,18 +58,18 @@ export class AlbumStoreManager {
                 const album = await this.api.album.createAlbum(path, formValues.name);
 
                 this.state.album = album;
-                this.emitter.emit(CLOSE_MODAL);
-                this.emitter.emit(CREATE_NOTIFICATION, ALBUM_CREATION_SUCCESS);
-                this.emitter.emit(CLEAR_FORM, { formId: CREATE_ALBUM_FORM });
-                this.emitter.emit(NAVIGATE, { to: [FILM_SECTION] });
+                closeModal(this.emit);
+                createNotification(this.emit, ALBUM_CREATION_SUCCESS);
+                clearForm(this.emit, { formId: CREATE_ALBUM_FORM });
+                navigate(this.emit, { to: [FILM_SECTION] });
             }
         } else {
-            this.emitter.emit(FORM_ERROR, {
+            formError(this.emit, {
                 formId: CREATE_ALBUM_FORM,
                 error: error.msg,
             });
         }
-        this.emitter.emit("render");
+        this.emit("render");
     };
 
     manageLoadAlbum = async (): Promise<void> => {
@@ -78,19 +80,19 @@ export class AlbumStoreManager {
             try {
                 ZAlbum.parse(album);
                 this.state.album = album;
-                this.emitter.emit(CREATE_NOTIFICATION, ALBUM_LOAD_SUCCESS);
-                this.emitter.emit(NAVIGATE, { to: [FILM_SECTION] });
+                createNotification(this.emit, ALBUM_LOAD_SUCCESS);
+                navigate(this.emit, { to: [FILM_SECTION] });
             } catch {
-                this.emitter.emit(CREATE_NOTIFICATION, ALBUM_LOAD_ERROR);
+                createNotification(this.emit, ALBUM_LOAD_ERROR);
             }
-            this.emitter.emit("render");
+            this.emit("render");
         }
     };
 
     manageSaveAlbum = async (): Promise<void> => {
         try {
             await this.api.album.saveAlbum(this.state.album);
-            this.emitter.emit(CREATE_NOTIFICATION, ALBUM_SAVE_SUCCESS);
+            createNotification(this.emit, ALBUM_SAVE_SUCCESS);
         } catch (error) {
             this.manageErrors({
                 ok: false,
@@ -102,7 +104,7 @@ export class AlbumStoreManager {
 
     manageErrors(error: IPCError) {
         if (process.env.NODE_ENV !== "test") console.log(error);
-        this.emitter.emit(CREATE_NOTIFICATION, UNEXPECTED_ERROR);
+        createNotification(this.emit, UNEXPECTED_ERROR);
     }
 }
 

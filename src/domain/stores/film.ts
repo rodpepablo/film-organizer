@@ -7,18 +7,17 @@ import {
     FILM_NOT_IN_ALBUM_ERROR,
     UNEXPECTED_ERROR,
 } from "../../infra/constants";
-import {
-    ADD_FILM_REQUEST,
-    CLEAR_FORM,
-    CLEAR_FORM_ERROR,
-    CLOSE_MODAL,
-    CREATE_NOTIFICATION,
-    EDIT_FILM_NAME_REQUEST,
-    FORM_ERROR,
-} from "../../infra/events";
-import { State } from "../models/state";
+import { ADD_FILM_REQUEST, EDIT_FILM_NAME_REQUEST } from "../../infra/events";
+import { Emit, State } from "../models/state";
 import { uiFormValuesSelector } from "../../infra/selectors/ui";
 import { FilmValidators } from "../validators/film";
+import {
+    createNotification,
+    clearFormError,
+    clearForm,
+    closeModal,
+    formError,
+} from "../../infra/actions/ui";
 
 type Substate = Pick<State, "album">;
 
@@ -29,12 +28,12 @@ type EditFilmNameParams = {
 
 export class FilmStoreManager {
     state: Substate;
-    emitter: Nanobus;
+    emit: Emit;
     api: Window["api"];
 
     constructor(state: Substate, emitter: Nanobus, api: Window["api"]) {
         this.state = state;
-        this.emitter = emitter;
+        this.emit = emitter.emit.bind(emitter);
         this.api = api;
     }
 
@@ -46,8 +45,8 @@ export class FilmStoreManager {
                 const filmResult = await this.api.film.addFilm(albumPath, filmPath);
                 if (filmResult.ok) {
                     this.state.album.films.push(filmResult.result);
-                    this.emitter.emit(CREATE_NOTIFICATION, FILM_ADDITION_SUCCESS);
-                    this.emitter.emit("render");
+                    createNotification(this.emit, FILM_ADDITION_SUCCESS);
+                    this.emit("render");
                     return;
                 }
                 this.manageErrors(filmResult as IPCError);
@@ -62,7 +61,8 @@ export class FilmStoreManager {
     };
 
     editFilmName = () => {
-        this.emitter.emit(CLEAR_FORM_ERROR, { formId: EDIT_FILM_NAME_FORM });
+        clearFormError(this.emit, { formId: EDIT_FILM_NAME_FORM });
+
         const formValues: EditFilmNameParams = uiFormValuesSelector(
             this.state as State,
             EDIT_FILM_NAME_FORM,
@@ -75,28 +75,28 @@ export class FilmStoreManager {
                     (film) => film.id === formValues.filmId,
                 );
                 film.name = formValues.name;
-                this.emitter.emit(CREATE_NOTIFICATION, FILM_NAME_EDIT_SUCCESS);
+                createNotification(this.emit, FILM_NAME_EDIT_SUCCESS);
             } catch (error) {
                 this.manageErrors({ ok: false, type: IPCErrors.UNEXPECTED_ERROR });
             } finally {
-                this.emitter.emit(CLOSE_MODAL);
-                this.emitter.emit(CLEAR_FORM, { formId: EDIT_FILM_NAME_FORM });
-                this.emitter.emit("render");
+                closeModal(this.emit);
+                clearForm(this.emit, { formId: EDIT_FILM_NAME_FORM });
+                this.emit("render");
             }
         } else {
-            this.emitter.emit(FORM_ERROR, { formId: EDIT_FILM_NAME_FORM, error });
-            this.emitter.emit("render");
+            formError(this.emit, { formId: EDIT_FILM_NAME_FORM, error: error.msg });
+            this.emit("render");
         }
     };
 
     manageErrors(error: IPCError) {
         if (process.env.NODE_ENV !== "test") console.log(error);
         if (error.type === IPCErrors.FILM_FOLDER_OUTSIDE_ALBUM_FOLDER) {
-            this.emitter.emit(CREATE_NOTIFICATION, FILM_NOT_IN_ALBUM_ERROR);
-            this.emitter.emit("render");
+            createNotification(this.emit, FILM_NOT_IN_ALBUM_ERROR);
+            this.emit("render");
         } else {
-            this.emitter.emit(CREATE_NOTIFICATION, UNEXPECTED_ERROR);
-            this.emitter.emit("render");
+            createNotification(this.emit, UNEXPECTED_ERROR);
+            this.emit("render");
         }
     }
 }

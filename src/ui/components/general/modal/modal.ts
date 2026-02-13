@@ -1,10 +1,10 @@
 import "./modal.css";
 import { html } from "../../../../infra/html";
 import { State, Emit } from "../../../../domain/models/state";
-import { CLOSE_MODAL } from "../../../../infra/events";
 import { uiModalSelector } from "../../../../infra/selectors/ui";
 import Component from "../../../../infra/component";
 import { ModalConfig } from "./modal-config";
+import { closeModal } from "../../../../infra/actions/ui";
 
 export default class ModalComponent implements Component {
     modalConfig: ModalConfig;
@@ -32,7 +32,7 @@ export default class ModalComponent implements Component {
         return (e: DOMEvent) => {
             e.stopPropagation();
             e.preventDefault();
-            emit(CLOSE_MODAL);
+            closeModal(emit);
         };
     }
 

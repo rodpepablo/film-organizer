@@ -3,7 +3,7 @@ import { State, Emit } from "../../../../domain/models/state";
 import { html } from "../../../../infra/html";
 import { albumNameSelector } from "../../../../infra/selectors/album";
 import Button from "../../general/button/button";
-import { SAVE_ALBUM_REQUEST } from "../../../../infra/events";
+import { saveAlbum } from "../../../../infra/actions/album";
 
 export default function footer(state: State, emit: Emit): HTMLElement {
     const albumName = albumNameSelector(state);
@@ -39,6 +39,6 @@ function emitSave(emit: Emit) {
     return (e: DOMEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        emit(SAVE_ALBUM_REQUEST);
+        saveAlbum(emit);
     };
 }

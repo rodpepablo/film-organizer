@@ -6,9 +6,9 @@ import {
     uiFormErrorSelector,
     uiFormValuesSelector,
 } from "../../../../infra/selectors/ui";
-import { UPDATE_FORM } from "../../../../infra/events";
 import { IInput } from "../input/input";
 import Button from "../button/button";
+import { updateForm } from "../../../../infra/actions/ui";
 
 type FormConfig = {
     formId: string;
@@ -57,7 +57,7 @@ export default class Form implements Component {
                 acc[input.name] = input.value;
                 return acc;
             }, {});
-        emit(UPDATE_FORM, { formId: this.config.formId, values });
+        updateForm(emit, { formId: this.config.formId, values });
     }
 
     private handleChange(emit: Emit) {

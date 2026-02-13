@@ -168,7 +168,7 @@ describe("Film store", () => {
         });
         expect(bus.emit).toHaveBeenCalledWith(FORM_ERROR, {
             formId: EDIT_FILM_NAME_FORM,
-            error: { msg: expect.any(String) },
+            error: expect.any(String),
         });
         expectRender(bus);
     });

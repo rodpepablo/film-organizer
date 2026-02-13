@@ -3,8 +3,8 @@ import "./nav-menu.css";
 import { State, Emit } from "../../../../domain/models/state";
 import Component from "../../../../infra/component";
 import NavMenuItem from "../nav-menu-item/nav-menu-item";
-import { TOGGLE_NAV_MENU } from "../../../../infra/events";
 import { uiMenuStateSelector } from "../../../../infra/selectors/ui";
+import { toggleNavMenu } from "../../../../infra/actions/ui";
 
 export default class NavMenu implements Component {
     title: string;
@@ -27,9 +27,7 @@ export default class NavMenu implements Component {
         return (e: DOMEvent) => {
             e.preventDefault();
             e.stopPropagation();
-            emit(TOGGLE_NAV_MENU, {
-                menu: this.id,
-            });
+            toggleNavMenu(emit, { menu: this.id });
         };
     }
 

@@ -12,9 +12,10 @@ import {
     TOGGLE_NAV_MENU,
     UPDATE_FORM,
 } from "../../infra/events";
-import { EventParams, State } from "../models/state";
+import { Emit, EventParams, State } from "../models/state";
 import { Notification } from "../models/ui";
 import config from "../../infra/config";
+import { deleteNotification } from "../../infra/actions/ui";
 
 export type NavigateParams = EventParams & {
     to: string[];
@@ -51,7 +52,7 @@ type Substate = Pick<
 
 export class UIStoreManager {
     state: Substate;
-    emitter: Nanobus;
+    emit: Emit;
     idGenerator: IIdGenerator;
     setTimout: Function;
 
@@ -62,39 +63,39 @@ export class UIStoreManager {
         _setTimout: Function,
     ) {
         this.state = state;
-        this.emitter = emitter;
+        this.emit = emitter.emit.bind(emitter);
         this.idGenerator = idGenerator;
         this.setTimout = _setTimout;
     }
 
     navigate = (params: NavigateParams) => {
         this.state.location = params.to;
-        this.emitter.emit("render");
+        this.emit("render");
     };
 
     toggleNavmenu = (params: ToggleNavMenuParams) => {
         if (params.menu in this.state.menus) {
             this.state.menus[params.menu] = !this.state.menus[params.menu];
         }
-        this.emitter.emit("render");
+        this.emit("render");
     };
 
     openModal = (params: OpenModalParams) => {
         this.state.modal.active = true;
         this.state.modal.modalId = params.modalId;
-        this.emitter.emit("render");
+        this.emit("render");
     };
 
     closeModal = () => {
         this.state.modal.active = false;
         this.state.modal.modalId = null;
-        this.emitter.emit("render");
+        this.emit("render");
     };
 
     formError = (params: FormErrorParams) => {
         this.initForm(params);
         this.state.forms[params.formId].error = params.error;
-        this.emitter.emit("render");
+        this.emit("render");
     };
 
     updateForm = (params: FormUpdateParams) => {
@@ -105,7 +106,7 @@ export class UIStoreManager {
     clearFormError = (params: FormEventParams) => {
         this.initForm(params);
         this.state.forms[params.formId].error = null;
-        this.emitter.emit("render");
+        this.emit("render");
     };
 
     clearForm = (params: FormEventParams) => {
@@ -114,7 +115,7 @@ export class UIStoreManager {
                 error: null,
                 values: {},
             };
-            this.emitter.emit("render");
+            this.emit("render");
         }
     };
 
@@ -125,16 +126,16 @@ export class UIStoreManager {
             ...params,
         });
         this.setTimout(() => {
-            this.emitter.emit(DELETE_NOTIFICATION, { id });
+            deleteNotification(this.emit, { id });
         }, config.notifications.ttl);
-        this.emitter.emit("render");
+        this.emit("render");
     };
 
     deleteNotification = (params: DeleteNotificationParams) => {
         this.state.notifications = this.state.notifications.filter(
             (notification) => notification.id !== params.id,
         );
-        this.emitter.emit("render");
+        this.emit("render");
     };
 
     private initForm(params: FormEventParams) {
