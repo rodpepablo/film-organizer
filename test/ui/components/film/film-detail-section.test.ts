@@ -5,8 +5,13 @@ import {
     EDIT_FILM_NAME_MODAL,
     FILM_DETAIL_SECTION,
 } from "../../../../src/infra/constants";
-import { OPEN_MODAL, UPDATE_FORM } from "../../../../src/infra/events";
+import {
+    OPEN_MODAL,
+    SORT_IMAGE_LIST,
+    UPDATE_FORM,
+} from "../../../../src/infra/events";
 import filmDetailSection from "../../../../src/ui/components/film/film-detail-section/film-detail-section";
+import { safeDispatchCustomEvent } from "../../../test-util/dom";
 import { aFilm, anAlbum, anImage } from "../../../test-util/fixtures";
 
 describe("FilmDetailSection Component", () => {
@@ -66,6 +71,35 @@ describe("FilmDetailSection Component", () => {
         });
         expect(emit).toHaveBeenCalledWith(OPEN_MODAL, {
             modalId: EDIT_FILM_NAME_MODAL,
+        });
+    });
+
+    it("Should emit a sortImageList event when list is sorted with dragndrop", () => {
+        const emit = vi.fn();
+        const film = aFilm({ images: [anImage(), anImage()] });
+
+        const state = {
+            album: anAlbum({ films: [film] }),
+            location: [FILM_DETAIL_SECTION, film.id],
+        } as State;
+
+        const dom = filmDetailSection(state, emit);
+        safeDispatchCustomEvent(
+            dom.querySelector<HTMLElement>("sortable-list")!,
+            "sorted",
+            {
+                bubbles: true,
+                composed: true,
+                cancelable: true,
+                detail: {
+                    newOrder: ["1", "2"],
+                },
+            },
+        );
+
+        expect(emit).toHaveBeenCalledWith(SORT_IMAGE_LIST, {
+            filmId: film.id,
+            newOrder: ["1", "2"],
         });
     });
 });

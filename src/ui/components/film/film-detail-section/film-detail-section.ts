@@ -10,6 +10,7 @@ import {
 import { Film } from "../../../../domain/models/film";
 import Icon from "../../general/icon/icon";
 import { updateForm, openModal } from "../../../../infra/actions/ui";
+import { sortImageList } from "../../../../infra/actions/film";
 
 export default (state: State, emit: Emit): HTMLElement => {
     const film = filmDetailSelector(state);
@@ -24,7 +25,7 @@ export default (state: State, emit: Emit): HTMLElement => {
         onClick: editName(emit, film),
     });
 
-    return html`
+    const content = html`
         <article id="film-detail-section">
             <header class="film-detail-header">
                 <h4 class="film-detail-header-title">
@@ -34,12 +35,30 @@ export default (state: State, emit: Emit): HTMLElement => {
             </header>
             <section class="film-detail-images">
                 <ul class="film-detail-image-list list">
-                    ${images.map((image) => image.render(state, emit))}
+                    <sortable-list>
+                        ${images.map((image) => image.render(state, emit))}
+                    </sortable-list>
                 </ul>
             </section>
         </article>
     `;
+
+    content
+        .querySelector("sortable-list")
+        .addEventListener("sorted", onSorted(emit, film.id));
+
+    return content;
 };
+
+function onSorted(emit: Emit, filmId: string) {
+    return (e: CustomEvent) => {
+        e.stopPropagation();
+        sortImageList(emit, {
+            filmId,
+            newOrder: e.detail.newOrder,
+        });
+    };
+}
 
 function editName(emit: Emit, film: Film) {
     return (e: DOMEvent) => {

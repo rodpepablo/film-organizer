@@ -18,3 +18,11 @@ export const submitForm = (dom: HTMLElement) => {
         }),
     );
 };
+
+export const safeDispatchCustomEvent = (
+    dom: HTMLElement,
+    name: string,
+    params: object,
+) => {
+    dom.dispatchEvent(new window.CustomEvent(name, params));
+};

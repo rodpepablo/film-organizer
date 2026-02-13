@@ -18,3 +18,4 @@ export const SAVE_ALBUM_REQUEST = "album::save::request";
 // Film
 export const ADD_FILM_REQUEST = "film::add::request";
 export const EDIT_FILM_NAME_REQUEST = "film-name::edit::request";
+export const SORT_IMAGE_LIST = "image-list::sort";

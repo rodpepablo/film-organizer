@@ -9,10 +9,11 @@ import {
     CREATE_NOTIFICATION,
     EDIT_FILM_NAME_REQUEST,
     FORM_ERROR,
+    SORT_IMAGE_LIST,
 } from "../../../src/infra/events";
 import { State } from "../../../src/domain/models/state";
 import { filmStore, FilmStoreManager } from "../../../src/domain/stores/film";
-import { aFilm, aForm, anAlbum } from "../../test-util/fixtures";
+import { aFilm, aForm, anAlbum, anImage } from "../../test-util/fixtures";
 import { expectRender, mockedAPI, spiedBus } from "../../test-util/mocking";
 import {
     EDIT_FILM_NAME_FORM,
@@ -202,12 +203,54 @@ describe("Film store", () => {
         expectRender(bus);
     });
 
+    it("Should sort image list according to new order", () => {
+        const image1 = anImage();
+        const image2 = anImage();
+        const image3 = anImage();
+        const film = aFilm({ images: [image1, image2, image3] });
+        const state = {
+            album: anAlbum({ films: [aFilm(), film] }),
+        } as State;
+        const bus = spiedBus();
+        const api = mockedAPI();
+        const manager = new FilmStoreManager(state, bus, api);
+
+        const newOrder = [image2.id, image1.id, image3.id];
+        manager.sortImageList({ filmId: film.id, newOrder });
+
+        expect(state.album?.films[1].images.map((image) => image.id)).toEqual(
+            newOrder,
+        );
+        expectRender(bus);
+    });
+
+    it.todo(
+        "Should show an error notification on unexpected behaviour (film doesnt exist)",
+        () => {
+            const film = aFilm();
+            const state = {
+                album: anAlbum({ films: [aFilm(), film] }),
+            } as State;
+            const bus = spiedBus();
+            const api = mockedAPI();
+            const manager = new FilmStoreManager(state, bus, api);
+
+            manager.sortImageList({ filmId: "wrong id", newOrder: [] });
+
+            expect(bus.emit).toHaveBeenCalledWith(
+                CREATE_NOTIFICATION,
+                UNEXPECTED_ERROR,
+            );
+            expectRender(bus);
+        },
+    );
+
     it("Should register handlers", () => {
         const emitter = mock<Nanobus>();
 
         filmStore({} as State, emitter);
 
-        const events = [ADD_FILM_REQUEST, EDIT_FILM_NAME_REQUEST];
+        const events = [ADD_FILM_REQUEST, EDIT_FILM_NAME_REQUEST, SORT_IMAGE_LIST];
         expect(emitter.on).toHaveBeenCalledTimes(events.length);
         for (let event of events) {
             expect(emitter.on).toHaveBeenCalledWith(event, expect.any(Function));

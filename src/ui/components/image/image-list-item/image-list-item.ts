@@ -14,7 +14,7 @@ export default class ImageListItem implements Component {
     render(state: State, emit: Emit): HTMLElement {
         const imgPath = `safe-file://${this.image.path}`;
         return html`
-            <li class="list-item image-list-item">
+            <li class="list-item image-list-item" data-id="${this.image.id}">
                 <img class="image-list-item-preview" src="${imgPath}" />
                 <div class="image-list-item-info">
                     <h6 class="image-list-item-name">${this.image.name}</h6>

@@ -7,7 +7,11 @@ import {
     FILM_NOT_IN_ALBUM_ERROR,
     UNEXPECTED_ERROR,
 } from "../../infra/constants";
-import { ADD_FILM_REQUEST, EDIT_FILM_NAME_REQUEST } from "../../infra/events";
+import {
+    ADD_FILM_REQUEST,
+    EDIT_FILM_NAME_REQUEST,
+    SORT_IMAGE_LIST,
+} from "../../infra/events";
 import { Emit, State } from "../models/state";
 import { uiFormValuesSelector } from "../../infra/selectors/ui";
 import { FilmValidators } from "../validators/film";
@@ -18,12 +22,18 @@ import {
     closeModal,
     formError,
 } from "../../infra/actions/ui";
+import { FilmImage } from "../models/film";
 
 type Substate = Pick<State, "album">;
 
 type EditFilmNameParams = {
     filmId: string;
     name: string;
+};
+
+export type SortImageListParams = {
+    filmId: string;
+    newOrder: string[];
 };
 
 export class FilmStoreManager {
@@ -77,7 +87,11 @@ export class FilmStoreManager {
                 film.name = formValues.name;
                 createNotification(this.emit, FILM_NAME_EDIT_SUCCESS);
             } catch (error) {
-                this.manageErrors({ ok: false, type: IPCErrors.UNEXPECTED_ERROR });
+                this.manageErrors({
+                    ok: false,
+                    type: IPCErrors.UNEXPECTED_ERROR,
+                    message: error,
+                });
             } finally {
                 closeModal(this.emit);
                 clearForm(this.emit, { formId: EDIT_FILM_NAME_FORM });
@@ -87,6 +101,25 @@ export class FilmStoreManager {
             formError(this.emit, { formId: EDIT_FILM_NAME_FORM, error: error.msg });
             this.emit("render");
         }
+    };
+
+    sortImageList = (params: SortImageListParams) => {
+        try {
+            const film = this.state.album.films.find(
+                (film) => film.id === params.filmId,
+            );
+            const indexedImages = Object.fromEntries(
+                film.images.map((image) => [image.id, image]),
+            );
+            film.images = params.newOrder.map((id) => indexedImages[id]);
+        } catch (error) {
+            this.manageErrors({
+                ok: false,
+                type: IPCErrors.UNEXPECTED_ERROR,
+                message: error,
+            });
+        }
+        this.emit("render");
     };
 
     manageErrors(error: IPCError) {
@@ -108,4 +141,5 @@ export function filmStore(state: Substate, emitter: Nanobus) {
 
     emitter.on(ADD_FILM_REQUEST, filmStoreManager.manageAddFilm);
     emitter.on(EDIT_FILM_NAME_REQUEST, filmStoreManager.editFilmName);
+    emitter.on(SORT_IMAGE_LIST, filmStoreManager.sortImageList);
 }

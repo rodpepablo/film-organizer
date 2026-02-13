@@ -28,4 +28,12 @@ describe("ImageListItem Component", () => {
             `(${IMAGE.ext})`,
         );
     });
+
+    it("should add data-id with the image id for sortable", () => {
+        const imageListItem = new ImageListItem(IMAGE);
+
+        const dom = imageListItem.render({} as State, () => { });
+
+        expect(dom.getAttribute("data-id")).toEqual(IMAGE.id);
+    });
 });
