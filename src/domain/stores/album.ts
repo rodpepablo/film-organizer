@@ -12,6 +12,7 @@ import {
     CREATE_ALBUM_REQUEST,
     LOAD_ALBUM_REQUEST,
     SAVE_ALBUM_REQUEST,
+    SORT_FILM_LIST,
 } from "../../infra/events";
 import { Emit, State } from "../models/state";
 import { AlbumValidators } from "../validators/album";
@@ -29,6 +30,10 @@ import {
 
 export type CreateAlbumValues = {
     name: string;
+};
+
+export type SortFilmListParams = {
+    newOrder: string[];
 };
 
 type Substate = Pick<State, "album" | "forms">;
@@ -102,6 +107,14 @@ export class AlbumStoreManager {
         }
     };
 
+    manageSortFilmList = (params: SortFilmListParams) => {
+        const indexedFilms = Object.fromEntries(
+            this.state.album.films.map((film) => [film.id, film]),
+        );
+        this.state.album.films = params.newOrder.map((id) => indexedFilms[id]);
+        this.emit("render");
+    };
+
     manageErrors(error: IPCError) {
         if (process.env.NODE_ENV !== "test") console.log(error);
         createNotification(this.emit, UNEXPECTED_ERROR);
@@ -116,4 +129,5 @@ export function albumStore(state: Substate, emitter: Nanobus) {
     emitter.on(CREATE_ALBUM_REQUEST, albumStoreManager.manageCreateAlbum);
     emitter.on(LOAD_ALBUM_REQUEST, albumStoreManager.manageLoadAlbum);
     emitter.on(SAVE_ALBUM_REQUEST, albumStoreManager.manageSaveAlbum);
+    emitter.on(SORT_FILM_LIST, albumStoreManager.manageSortFilmList);
 }

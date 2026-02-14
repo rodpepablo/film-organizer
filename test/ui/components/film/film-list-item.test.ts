@@ -4,12 +4,12 @@ import FilmListItem from "../../../../src/ui/components/film/film-list/film-list
 import { aFilm } from "../../../test-util/fixtures";
 
 describe("FilmListItem Component", () => {
-    it("Should set the film id as an attribute", () => {
+    it("Should set the data-id attribute with the filmId", () => {
         const film = aFilm();
         const filmListItem = new FilmListItem(film);
 
         const dom = filmListItem.render({} as State, () => { });
 
-        expect(dom.getAttribute("film-id")).toEqual(film.id);
+        expect(dom.getAttribute("data-id")).toEqual(film.id);
     });
 });

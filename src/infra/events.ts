@@ -14,6 +14,7 @@ export const DELETE_NOTIFICATION = "notification::delete";
 export const CREATE_ALBUM_REQUEST = "album::create::request";
 export const LOAD_ALBUM_REQUEST = "album::load::request";
 export const SAVE_ALBUM_REQUEST = "album::save::request";
+export const SORT_FILM_LIST = "film-list::sort";
 
 // Film
 export const ADD_FILM_REQUEST = "film::add::request";

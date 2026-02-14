@@ -27,11 +27,12 @@ import {
     LOAD_ALBUM_REQUEST,
     NAVIGATE,
     SAVE_ALBUM_REQUEST,
+    SORT_FILM_LIST,
 } from "../../../src/infra/events";
 import { expectRender, mockedAPI, spiedBus } from "../../test-util/mocking";
 import { Album } from "../../../src/domain/models/album";
 import { State } from "../../../src/domain/models/state";
-import { aForm, anAlbum } from "../../test-util/fixtures";
+import { aFilm, aForm, anAlbum } from "../../test-util/fixtures";
 
 const ALBUM_NAME = "ALBUM_NAME";
 const FOLDER_PATH = "/PATH";
@@ -224,6 +225,22 @@ describe("Album store", () => {
         );
     });
 
+    it("Should change the film list to reflect the new order", () => {
+        const film1 = aFilm();
+        const film2 = aFilm();
+        const film3 = aFilm();
+        const state = { album: anAlbum({ films: [film1, film2, film3] }) } as State;
+        const bus = spiedBus();
+        const api = mockedAPI();
+        const manager = new AlbumStoreManager(state, bus, api);
+
+        const newOrder = [film3.id, film1.id, film2.id];
+        manager.manageSortFilmList({ newOrder });
+
+        expect(state.album?.films.map((film) => film.id)).toEqual(newOrder);
+        expectRender(bus);
+    });
+
     it("Should register handlers", () => {
         const emitter = mock<Nanobus>();
 
@@ -233,6 +250,7 @@ describe("Album store", () => {
             CREATE_ALBUM_REQUEST,
             LOAD_ALBUM_REQUEST,
             SAVE_ALBUM_REQUEST,
+            SORT_FILM_LIST,
         ];
         expect(emitter.on).toHaveBeenCalledTimes(events.length);
         for (let event of events) {
