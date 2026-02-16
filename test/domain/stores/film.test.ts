@@ -224,26 +224,23 @@ describe("Film store", () => {
         expectRender(bus);
     });
 
-    it.todo(
-        "Should show an error notification on unexpected behaviour (film doesnt exist)",
-        () => {
-            const film = aFilm();
-            const state = {
-                album: anAlbum({ films: [aFilm(), film] }),
-            } as State;
-            const bus = spiedBus();
-            const api = mockedAPI();
-            const manager = new FilmStoreManager(state, bus, api);
+    it("Should show an error notification on unexpected behaviour (film doesnt exist)", () => {
+        const film = aFilm();
+        const state = {
+            album: anAlbum({ films: [aFilm(), film] }),
+        } as State;
+        const bus = spiedBus();
+        const api = mockedAPI();
+        const manager = new FilmStoreManager(state, bus, api);
 
-            manager.sortImageList({ filmId: "wrong id", newOrder: [] });
+        manager.sortImageList({ filmId: "wrong id", newOrder: [] });
 
-            expect(bus.emit).toHaveBeenCalledWith(
-                CREATE_NOTIFICATION,
-                UNEXPECTED_ERROR,
-            );
-            expectRender(bus);
-        },
-    );
+        expect(bus.emit).toHaveBeenCalledWith(
+            CREATE_NOTIFICATION,
+            UNEXPECTED_ERROR,
+        );
+        expectRender(bus);
+    });
 
     it("Should register handlers", () => {
         const emitter = mock<Nanobus>();

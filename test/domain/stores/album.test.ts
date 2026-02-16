@@ -32,197 +32,225 @@ import {
 import { expectRender, mockedAPI, spiedBus } from "../../test-util/mocking";
 import { Album } from "../../../src/domain/models/album";
 import { State } from "../../../src/domain/models/state";
-import { aFilm, aForm, anAlbum } from "../../test-util/fixtures";
+import { aFilm, aForm, anAlbum, anImage } from "../../test-util/fixtures";
 
 const ALBUM_NAME = "ALBUM_NAME";
 const FOLDER_PATH = "/PATH";
 const FILE_PATH = "/PATH/TO/FILE.json";
 
 describe("Album store", () => {
-    it("Should create album from request", async () => {
-        const state = {
-            album: null,
-            forms: {
-                [CREATE_ALBUM_FORM]: aForm({ values: { name: ALBUM_NAME } }),
-            },
-        };
-        const bus = spiedBus();
-        const api = mockedAPI();
-        const manager = new AlbumStoreManager(state, bus, api);
-        const expectedAlbum = anAlbum({
-            name: ALBUM_NAME,
-            path: join(FOLDER_PATH, `${ALBUM_NAME}.json`),
+    describe("Create album", () => {
+        it("Should create album from request", async () => {
+            const state = {
+                album: null,
+                forms: {
+                    [CREATE_ALBUM_FORM]: aForm({ values: { name: ALBUM_NAME } }),
+                },
+            };
+            const bus = spiedBus();
+            const api = mockedAPI();
+            const manager = new AlbumStoreManager(state, bus, api);
+            const expectedAlbum = anAlbum({
+                name: ALBUM_NAME,
+                path: join(FOLDER_PATH, `${ALBUM_NAME}.json`),
+            });
+
+            api.fs.getFolder.mockResolvedValue(FOLDER_PATH);
+            api.album.createAlbum.mockResolvedValue(expectedAlbum);
+
+            await manager.manageCreateAlbum();
+
+            expect(state.album).toStrictEqual(expectedAlbum);
+            expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
+                formId: CREATE_ALBUM_FORM,
+            });
+            expect(api.album.createAlbum).toHaveBeenCalledWith(
+                FOLDER_PATH,
+                ALBUM_NAME,
+            );
+            expect(bus.emit).toHaveBeenCalledWith(CLOSE_MODAL);
+            expect(bus.emit).toHaveBeenCalledWith(
+                CREATE_NOTIFICATION,
+                ALBUM_CREATION_SUCCESS,
+            );
+            expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM, {
+                formId: CREATE_ALBUM_FORM,
+            });
+            expect(bus.emit).toHaveBeenCalledWith(NAVIGATE, { to: [FILM_SECTION] });
+            expectRender(bus);
         });
 
-        api.fs.getFolder.mockResolvedValue(FOLDER_PATH);
-        api.album.createAlbum.mockResolvedValue(expectedAlbum);
+        it("Should add an error to the form when invalid", async () => {
+            const state = {
+                album: null,
+                forms: {
+                    [CREATE_ALBUM_FORM]: aForm({
+                        values: { name: "" },
+                    }),
+                },
+            };
+            const bus = spiedBus();
+            const api = mockedAPI();
+            const manager = new AlbumStoreManager(state, bus, api);
 
-        await manager.manageCreateAlbum();
+            await manager.manageCreateAlbum();
 
-        expect(state.album).toStrictEqual(expectedAlbum);
-        expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
-            formId: CREATE_ALBUM_FORM,
+            expect(state.album).toBeNull();
+            expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
+                formId: CREATE_ALBUM_FORM,
+            });
+            expect(bus.emit).toHaveBeenCalledWith(FORM_ERROR, {
+                formId: CREATE_ALBUM_FORM,
+                error: INVALID_ALBUM_NAME,
+            });
         });
-        expect(api.album.createAlbum).toHaveBeenCalledWith(FOLDER_PATH, ALBUM_NAME);
-        expect(bus.emit).toHaveBeenCalledWith(CLOSE_MODAL);
-        expect(bus.emit).toHaveBeenCalledWith(
-            CREATE_NOTIFICATION,
-            ALBUM_CREATION_SUCCESS,
-        );
-        expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM, {
-            formId: CREATE_ALBUM_FORM,
-        });
-        expect(bus.emit).toHaveBeenCalledWith(NAVIGATE, { to: [FILM_SECTION] });
-        expectRender(bus);
-    });
 
-    it("Should add an error to the form when invalid", async () => {
-        const state = {
-            album: null,
-            forms: {
-                [CREATE_ALBUM_FORM]: aForm({
-                    values: { name: "" },
-                }),
-            },
-        };
-        const bus = spiedBus();
-        const api = mockedAPI();
-        const manager = new AlbumStoreManager(state, bus, api);
+        it("Should clear error and do nothing when the folder dialog is cancelled", async () => {
+            const state = {
+                album: null,
+                forms: {
+                    [CREATE_ALBUM_FORM]: aForm({
+                        values: { name: ALBUM_NAME },
+                    }),
+                },
+            };
+            const bus = spiedBus();
+            const api = mockedAPI();
+            const manager = new AlbumStoreManager(state, bus, api);
 
-        await manager.manageCreateAlbum();
+            api.fs.getFolder.mockResolvedValue(null);
 
-        expect(state.album).toBeNull();
-        expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
-            formId: CREATE_ALBUM_FORM,
-        });
-        expect(bus.emit).toHaveBeenCalledWith(FORM_ERROR, {
-            formId: CREATE_ALBUM_FORM,
-            error: INVALID_ALBUM_NAME,
+            await manager.manageCreateAlbum();
+
+            expect(state.album).toBeNull();
+            expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
+                formId: CREATE_ALBUM_FORM,
+            });
+            expect(bus.emit).not.toHaveBeenCalledWith(CLOSE_MODAL);
+            expect(bus.emit).not.toHaveBeenCalledWith(
+                CREATE_NOTIFICATION,
+                expect.any(String),
+            );
+            expectRender(bus);
         });
     });
 
-    it("Should clear error and do nothing when the folder dialog is cancelled", async () => {
-        const state = {
-            album: null,
-            forms: {
-                [CREATE_ALBUM_FORM]: aForm({
-                    values: { name: ALBUM_NAME },
-                }),
-            },
-        };
-        const bus = spiedBus();
-        const api = mockedAPI();
-        const manager = new AlbumStoreManager(state, bus, api);
+    describe("Load album", () => {
+        it("Should load an album if selected", async () => {
+            const state = { album: null } as State;
+            const bus = spiedBus();
+            const api = mockedAPI();
+            const manager = new AlbumStoreManager(state, bus, api);
+            const expectedAlbum = anAlbum({ name: ALBUM_NAME, path: FILE_PATH });
 
-        api.fs.getFolder.mockResolvedValue(null);
+            api.fs.getFile.mockResolvedValue(FILE_PATH);
+            api.album.loadAlbum.mockResolvedValue(expectedAlbum);
 
-        await manager.manageCreateAlbum();
+            await manager.manageLoadAlbum();
 
-        expect(state.album).toBeNull();
-        expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
-            formId: CREATE_ALBUM_FORM,
+            expect(state.album).toStrictEqual(expectedAlbum);
+            expect(api.fs.getFile).toHaveBeenCalledWith();
+            expect(api.album.loadAlbum).toHaveBeenCalledWith(FILE_PATH);
+            expect(bus.emit).toHaveBeenCalledWith(
+                CREATE_NOTIFICATION,
+                ALBUM_LOAD_SUCCESS,
+            );
+            expect(bus.emit).toHaveBeenCalledWith(NAVIGATE, { to: [FILM_SECTION] });
+            expectRender(bus);
         });
-        expect(bus.emit).not.toHaveBeenCalledWith(CLOSE_MODAL);
-        expect(bus.emit).not.toHaveBeenCalledWith(
-            CREATE_NOTIFICATION,
-            expect.any(String),
-        );
-        expectRender(bus);
+
+        it("Should not render or change album on file selection cancel", async () => {
+            const currentAlbum = anAlbum({ name: "current_album" });
+            const state = { album: currentAlbum, forms: {} };
+            const bus = spiedBus();
+            const api = mockedAPI();
+            const manager = new AlbumStoreManager(state, bus, api);
+
+            api.fs.getFile.mockResolvedValue(null);
+
+            await manager.manageLoadAlbum();
+
+            expect(state.album).toStrictEqual(currentAlbum);
+            expect(api.fs.getFile).toHaveBeenCalledWith();
+            expect(api.album.loadAlbum).not.toHaveBeenCalled();
+            expect(bus.emit).not.toHaveBeenCalledWith("render");
+        });
+
+        it("Should not render and should show an error if the file is non-compliant", async () => {
+            const state = { album: null, forms: {} };
+            const bus = spiedBus();
+            const api = mockedAPI();
+            const manager = new AlbumStoreManager(state, bus, api);
+
+            api.fs.getFile.mockResolvedValue(FILE_PATH);
+            api.album.loadAlbum.mockResolvedValue({ invalid: 3 } as unknown as Album);
+
+            await manager.manageLoadAlbum();
+
+            expect(state.album).toStrictEqual(null);
+            expect(api.fs.getFile).toHaveBeenCalledWith();
+            expect(api.album.loadAlbum).toHaveBeenCalledWith(FILE_PATH);
+            expect(bus.emit).toHaveBeenCalledWith(
+                CREATE_NOTIFICATION,
+                ALBUM_LOAD_ERROR,
+            );
+            expectRender(bus);
+        });
     });
 
-    it("Should load an album if selected", async () => {
-        const state = { album: null } as State;
-        const bus = spiedBus();
-        const api = mockedAPI();
-        const manager = new AlbumStoreManager(state, bus, api);
-        const expectedAlbum = anAlbum({ name: ALBUM_NAME, path: FILE_PATH });
+    describe("Save album", () => {
+        it("Should save the changes to the album and replace state with postprocess album", async () => {
+            const renamed = anImage({
+                name: "renamed",
+                ext: "jpg",
+                path: "/path/to/image1.jpg",
+            });
+            const savedImage = anImage({
+                ...renamed,
+                name: "renamed",
+                path: "/path/to/renamed.jpg",
+            });
+            const film = aFilm({ images: [renamed] });
+            const album = anAlbum({ films: [film] });
+            const state = { album, forms: {} };
+            const bus = spiedBus();
+            const api = mockedAPI();
+            const manager = new AlbumStoreManager(state, bus, api);
 
-        api.fs.getFile.mockResolvedValue(FILE_PATH);
-        api.album.loadAlbum.mockResolvedValue(expectedAlbum);
+            const expectedAlbum = anAlbum({
+                ...album,
+                films: [aFilm({ ...film, images: [savedImage] })],
+            });
+            api.album.saveAlbum.mockResolvedValue(expectedAlbum);
 
-        await manager.manageLoadAlbum();
+            await manager.manageSaveAlbum();
 
-        expect(state.album).toStrictEqual(expectedAlbum);
-        expect(api.fs.getFile).toHaveBeenCalledWith();
-        expect(api.album.loadAlbum).toHaveBeenCalledWith(FILE_PATH);
-        expect(bus.emit).toHaveBeenCalledWith(
-            CREATE_NOTIFICATION,
-            ALBUM_LOAD_SUCCESS,
-        );
-        expect(bus.emit).toHaveBeenCalledWith(NAVIGATE, { to: [FILM_SECTION] });
-        expectRender(bus);
-    });
+            expect(api.album.saveAlbum).toHaveBeenCalledWith(album);
+            expect(state.album).toStrictEqual(expectedAlbum);
+            expect(bus.emit).toHaveBeenCalledWith(
+                CREATE_NOTIFICATION,
+                ALBUM_SAVE_SUCCESS,
+            );
+            expectRender(bus);
+        });
 
-    it("Should not render or change album on file selection cancel", async () => {
-        const currentAlbum = anAlbum({ name: "current_album" });
-        const state = { album: currentAlbum, forms: {} };
-        const bus = spiedBus();
-        const api = mockedAPI();
-        const manager = new AlbumStoreManager(state, bus, api);
+        it("Should notify about errors saving album", async () => {
+            const album = anAlbum();
+            const state = { album, forms: {} };
+            const bus = spiedBus();
+            const api = mockedAPI();
+            const manager = new AlbumStoreManager(state, bus, api);
 
-        api.fs.getFile.mockResolvedValue(null);
+            api.album.saveAlbum.mockRejectedValue(new Error());
 
-        await manager.manageLoadAlbum();
+            await manager.manageSaveAlbum();
 
-        expect(state.album).toStrictEqual(currentAlbum);
-        expect(api.fs.getFile).toHaveBeenCalledWith();
-        expect(api.album.loadAlbum).not.toHaveBeenCalled();
-        expect(bus.emit).not.toHaveBeenCalledWith("render");
-    });
-
-    it("Should not render and should show an error if the file is non-compliant", async () => {
-        const state = { album: null, forms: {} };
-        const bus = spiedBus();
-        const api = mockedAPI();
-        const manager = new AlbumStoreManager(state, bus, api);
-
-        api.fs.getFile.mockResolvedValue(FILE_PATH);
-        api.album.loadAlbum.mockResolvedValue({ invalid: 3 } as unknown as Album);
-
-        await manager.manageLoadAlbum();
-
-        expect(state.album).toStrictEqual(null);
-        expect(api.fs.getFile).toHaveBeenCalledWith();
-        expect(api.album.loadAlbum).toHaveBeenCalledWith(FILE_PATH);
-        expect(bus.emit).toHaveBeenCalledWith(
-            CREATE_NOTIFICATION,
-            ALBUM_LOAD_ERROR,
-        );
-        expectRender(bus);
-    });
-
-    it("Should save the changes to the album", async () => {
-        const album = anAlbum();
-        const state = { album, forms: {} };
-        const bus = spiedBus();
-        const api = mockedAPI();
-        const manager = new AlbumStoreManager(state, bus, api);
-
-        await manager.manageSaveAlbum();
-
-        expect(api.album.saveAlbum).toHaveBeenCalledWith(album);
-        expect(bus.emit).toHaveBeenCalledWith(
-            CREATE_NOTIFICATION,
-            ALBUM_SAVE_SUCCESS,
-        );
-    });
-
-    it("Should notify about errors saving album", async () => {
-        const album = anAlbum();
-        const state = { album, forms: {} };
-        const bus = spiedBus();
-        const api = mockedAPI();
-        const manager = new AlbumStoreManager(state, bus, api);
-
-        api.album.saveAlbum.mockRejectedValue(new Error());
-
-        await manager.manageSaveAlbum();
-
-        expect(api.album.saveAlbum).toHaveBeenCalledWith(album);
-        expect(bus.emit).toHaveBeenCalledWith(
-            CREATE_NOTIFICATION,
-            UNEXPECTED_ERROR,
-        );
+            expect(api.album.saveAlbum).toHaveBeenCalledWith(album);
+            expect(bus.emit).toHaveBeenCalledWith(
+                CREATE_NOTIFICATION,
+                UNEXPECTED_ERROR,
+            );
+        });
     });
 
     it("Should change the film list to reflect the new order", () => {

@@ -23,7 +23,7 @@ contextBridge.exposeInMainWorld("api", {
             ipcRenderer.invoke(CREATE_ALBUM_HANDLER, path, name),
         loadAlbum: (path: string): Promise<Album> =>
             ipcRenderer.invoke(LOAD_ALBUM_HANDLER, path),
-        saveAlbum: (album: Album): Promise<void> =>
+        saveAlbum: (album: Album): Promise<Album> =>
             ipcRenderer.invoke(SAVE_ALBUM_HANDLER, album),
     },
     film: {

@@ -18,7 +18,7 @@ export default (state: State, emit: Emit): HTMLElement => {
     if (film == null)
         return html`<article id="film-detail-section">Invalid film</article>`;
 
-    const images = film.images.map((image) => new ImageListItem(image));
+    const images = film.images.map((image) => new ImageListItem(image, film.id));
     const editIcon = new Icon({
         type: "actionable",
         icon: "mdi:pencil",

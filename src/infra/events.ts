@@ -20,3 +20,6 @@ export const SORT_FILM_LIST = "film-list::sort";
 export const ADD_FILM_REQUEST = "film::add::request";
 export const EDIT_FILM_NAME_REQUEST = "film-name::edit::request";
 export const SORT_IMAGE_LIST = "image-list::sort";
+
+// FilmImage
+export const EDIT_IMAGE_NAME_REQUEST = "image-name::edit::request";

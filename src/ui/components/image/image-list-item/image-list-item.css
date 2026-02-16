@@ -18,8 +18,9 @@
 	padding: 0.5em;
 }
 
-.image-list-item-info > * {
-	display: inline;
+.image-list-item-info {
+	display: flex;
+	align-items: center;
 }
 
 .image-list-item-name {
@@ -32,4 +33,8 @@
 	font-size: var(--tiny-text);
 	color: var(--medium-grey);
 	margin: 0 0 0 0.4em;
+}
+
+.image-list-item-info iconify-icon {
+	margin-left: 0.5em;
 }

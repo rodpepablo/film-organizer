@@ -9,12 +9,15 @@ import CreateAlbumModal from "../components/album/create-album-modal/create-albu
 import {
     CREATE_ALBUM_MODAL,
     EDIT_FILM_NAME_MODAL,
+    EDIT_IMAGE_NAME_MODAL,
 } from "../../infra/constants";
 import EditFilmNameModal from "../components/film/edit-film-name-modal/edit-film-name-modal";
+import EditImageNameModal from "../components/film/edit-image-name-modal/edit-image-name-modal";
 
 const modal = new ModalComponent({
     [CREATE_ALBUM_MODAL]: new CreateAlbumModal(),
     [EDIT_FILM_NAME_MODAL]: new EditFilmNameModal(),
+    [EDIT_IMAGE_NAME_MODAL]: new EditImageNameModal(),
 });
 
 export default (state: State, emit: Emit) => html`

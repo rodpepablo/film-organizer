@@ -1,5 +1,5 @@
 import fs from "fs/promises";
-import { join } from "path";
+import { join, dirname } from "path";
 import { IAlbumService } from "../ports/album";
 import { IIPCService } from "../../infra/ipc-service";
 import { Album } from "../models/album";
@@ -8,6 +8,7 @@ import {
     CREATE_ALBUM_HANDLER,
     SAVE_ALBUM_HANDLER,
 } from "../../infra/ipc-events";
+import { Film, FilmImage } from "../models/film";
 
 type Event = Electron.IpcMainInvokeEvent;
 
@@ -28,6 +29,12 @@ export default class AlbumService implements IAlbumService, IIPCService {
         return album;
     };
 
+    load(ipcMain: Electron.IpcMain): void {
+        ipcMain.handle(CREATE_ALBUM_HANDLER, this.createAlbum);
+        ipcMain.handle(LOAD_ALBUM_HANDLER, this.loadAlbum);
+        ipcMain.handle(SAVE_ALBUM_HANDLER, this.saveAlbum);
+    }
+
     loadAlbum = async (_: Event, path: string): Promise<Album> => {
         const content = await fs.readFile(path, { encoding: "utf-8" });
         const album: Album = JSON.parse(content);
@@ -35,15 +42,44 @@ export default class AlbumService implements IAlbumService, IIPCService {
         return { ...album, path };
     };
 
-    saveAlbum = async (_: Event, album: Album): Promise<void> => {
-        return fs.writeFile(album.path, JSON.stringify(album), {
+    saveAlbum = async (_: Event, album: Album): Promise<Album> => {
+        const savedAlbum = {
+            ...album,
+            films: album.films.map(this.parseFilm),
+        };
+
+        await fs.writeFile(album.path, JSON.stringify(savedAlbum), {
             encoding: "utf-8",
         });
+
+        await Promise.all(
+            album.films.map((film) => {
+                return film.images.map(this.postProcessImage);
+            }),
+        );
+
+        return savedAlbum;
     };
 
-    load(ipcMain: Electron.IpcMain): void {
-        ipcMain.handle(CREATE_ALBUM_HANDLER, this.createAlbum);
-        ipcMain.handle(LOAD_ALBUM_HANDLER, this.loadAlbum);
-        ipcMain.handle(SAVE_ALBUM_HANDLER, this.saveAlbum);
+    private postProcessImage(image: FilmImage): Promise<void> {
+        return fs.rename(
+            image.path,
+            join(dirname(image.path), `${image.name}.${image.ext}`),
+        );
     }
+
+    private parseFilm = (film: Film): Film => {
+        return {
+            ...film,
+            images: film.images.map(this.parseImage),
+        };
+    };
+
+    private parseImage = (image: FilmImage): FilmImage => {
+        const imageDirname = dirname(image.path);
+        return {
+            ...image,
+            path: join(imageDirname, `${image.name}.${image.ext}`),
+        };
+    };
 }

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { mock } from "vitest-mock-extended";
 import { join } from "path";
+import fs from "fs/promises";
 import electron, { IpcMainInvokeEvent } from "electron";
 import AlbumService from "../../../src/domain/services/album";
 import {
@@ -8,6 +9,8 @@ import {
     loadJSON,
     saveJSON,
     removeDirectory,
+    createFolder,
+    createDummyFile,
 } from "../../test-util/file-system";
 import { Album } from "../../../src/domain/models/album";
 import {
@@ -15,7 +18,7 @@ import {
     CREATE_ALBUM_HANDLER,
     SAVE_ALBUM_HANDLER,
 } from "../../../src/infra/ipc-events";
-import { aFilm, anAlbum } from "../../test-util/fixtures";
+import { aFilm, anAlbum, anImage } from "../../test-util/fixtures";
 
 const NAME = "album_name";
 
@@ -70,18 +73,64 @@ describe("AlbumService", () => {
 
     it("Should save an album", async () => {
         const albumPath = join(temporalDirectory, "test.json");
-        const previousAlbum = anAlbum({ path: albumPath });
+        const image1 = anImage({
+            name: "image1",
+            ext: "jpg",
+            path: join(temporalDirectory, "film", "image1.jpg"),
+        });
+        const image2 = anImage({
+            name: "image2",
+            ext: "jpg",
+            path: join(temporalDirectory, "film", "image2.jpg"),
+        });
+        const film = aFilm({
+            name: "film",
+            path: "film",
+            images: [image1, image2],
+        });
+        const previousAlbum = anAlbum({ path: albumPath, films: [film] });
+
         saveJSON(albumPath, previousAlbum);
+        createFolder(temporalDirectory, "film");
+        createDummyFile(temporalDirectory, "film", "image1.jpg");
+        createDummyFile(temporalDirectory, "film", "image2.jpg");
+
         const albumService = new AlbumService();
 
+        const renamedImage = anImage({
+            ...image2,
+            name: "renamed",
+        });
         const album = anAlbum({
+            ...previousAlbum,
             name: "new_name",
             path: albumPath,
-            films: [aFilm()],
+            films: [aFilm({ ...film, images: [image1, renamedImage] })],
         });
-        await albumService.saveAlbum(EVENT, album);
 
-        expect(loadJSON(albumPath)).toStrictEqual(album);
+        const savedAlbum = await albumService.saveAlbum(EVENT, album);
+
+        const expectedAlbum = anAlbum({
+            ...album,
+            films: [
+                aFilm({
+                    ...film,
+                    images: [
+                        image1,
+                        anImage({
+                            ...renamedImage,
+                            path: join(temporalDirectory, "film", "renamed.jpg"),
+                        }),
+                    ],
+                }),
+            ],
+        });
+        expect(loadJSON(albumPath)).toStrictEqual(expectedAlbum);
+        expect(savedAlbum).toStrictEqual(expectedAlbum);
+        const savedImages = await fs.readdir(join(temporalDirectory, "film"));
+        expect(savedImages).toHaveLength(2);
+        expect(savedImages).toContain("image1.jpg");
+        expect(savedImages).toContain("renamed.jpg");
     });
 
     it("Should load IPC handlers", () => {

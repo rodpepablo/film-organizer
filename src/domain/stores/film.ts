@@ -22,7 +22,6 @@ import {
     closeModal,
     formError,
 } from "../../infra/actions/ui";
-import { FilmImage } from "../models/film";
 
 type Substate = Pick<State, "album">;
 

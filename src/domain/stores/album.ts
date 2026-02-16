@@ -96,8 +96,9 @@ export class AlbumStoreManager {
 
     manageSaveAlbum = async (): Promise<void> => {
         try {
-            await this.api.album.saveAlbum(this.state.album);
+            this.state.album = await this.api.album.saveAlbum(this.state.album);
             createNotification(this.emit, ALBUM_SAVE_SUCCESS);
+            this.emit("render");
         } catch (error) {
             this.manageErrors({
                 ok: false,

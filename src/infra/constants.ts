@@ -17,10 +17,12 @@ export const ADD_FILM_MENU = "add-film-menu";
 // MODALS
 export const CREATE_ALBUM_MODAL = "create-album-modal";
 export const EDIT_FILM_NAME_MODAL = "edit-film-name-modal";
+export const EDIT_IMAGE_NAME_MODAL = "edit-image-name-modal";
 
 // FORMS
 export const CREATE_ALBUM_FORM = "create-album-form";
 export const EDIT_FILM_NAME_FORM = "edit-film-name-form";
+export const EDIT_IMAGE_NAME_FORM = "edit-image-name-form";
 
 // NOTIFICATIONS
 const success = (message: string): CreateNotificationParams => ({
@@ -41,6 +43,10 @@ export const FILM_ADDITION_SUCCESS = success("Film added successfully");
 export const FILM_NOT_IN_ALBUM_ERROR = error(
     "Film has to be located in the same path or deeper than the album file",
 );
-export const FILM_NAME_EDIT_SUCCESS = success("Film name chaged successfully");
+export const FILM_NAME_EDIT_SUCCESS = success("Film name changed successfully");
+
+export const IMAGE_NAME_EDIT_SUCCESS = success(
+    "Image name changed successfully",
+);
 
 export const UNEXPECTED_ERROR = error("Unexpected error");

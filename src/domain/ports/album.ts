@@ -7,5 +7,5 @@ export interface IAlbumService {
         name: string,
     ): Promise<Album>;
     loadAlbum(event: Electron.IpcMainInvokeEvent, path: string): Promise<Album>;
-    saveAlbum(event: Electron.IpcMainInvokeEvent, album: Album): Promise<void>;
+    saveAlbum(event: Electron.IpcMainInvokeEvent, album: Album): Promise<Album>;
 }
