@@ -11,16 +11,20 @@ import {
     FORM_ERROR,
     NAVIGATE,
     OPEN_MODAL,
+    SHOW_FILM_INFO,
     TOGGLE_NAV_MENU,
     UPDATE_FORM,
 } from "../../../src/infra/events";
-import { CREATE_ALBUM_FORM } from "../../../src/infra/constants";
+import {
+    CREATE_ALBUM_FORM,
+    FILM_INFO_MODAL,
+} from "../../../src/infra/constants";
 import { autoTimeout, expectRender, spiedBus } from "../../test-util/mocking";
 import { IIdGenerator } from "../../../src/infra/id-generator";
 import { State } from "../../../src/domain/models/state";
 import { Notification } from "../../../src/domain/models/ui";
 import config from "../../../src/infra/config";
-import { aForm } from "../../test-util/fixtures";
+import { aFilm, aForm, anAlbum } from "../../test-util/fixtures";
 
 const BASE_STATE = {
     location: [],
@@ -28,6 +32,7 @@ const BASE_STATE = {
     modal: { active: false, modalId: null },
     forms: {},
     notifications: [],
+    selectedFilm: null,
 };
 const TIMEOUT_MOCK = () => { };
 const DUMB_ID_GENERATOR = mock<IIdGenerator>();
@@ -239,6 +244,33 @@ describe("UI Store", () => {
         expectRender(bus);
     });
 
+    describe("Show info", () => {
+        it("Should open a modal and load the selected film", () => {
+            const film = aFilm();
+            const state = {
+                ...BASE_STATE,
+                album: anAlbum({ films: [film] }),
+                selectedFilm: null,
+            };
+            const bus = spiedBus();
+            const manager = new UIStoreManager(
+                state,
+                bus,
+                DUMB_ID_GENERATOR,
+                TIMEOUT_MOCK,
+            );
+
+            manager.showFilmInfo({ filmId: film.id });
+
+            expect(state.selectedFilm).toEqual(film.id);
+            expect(state.modal).toEqual({
+                modalId: FILM_INFO_MODAL,
+                active: true,
+            });
+            expectRender(bus);
+        });
+    });
+
     it("Should register handlers", () => {
         const emitter = mock<Nanobus>();
 
@@ -255,6 +287,7 @@ describe("UI Store", () => {
             CLEAR_FORM,
             CREATE_NOTIFICATION,
             DELETE_NOTIFICATION,
+            SHOW_FILM_INFO,
         ];
         expect(emitter.on).toHaveBeenCalledTimes(events.length);
         for (let event of events) {
@@ -266,7 +299,7 @@ describe("UI Store", () => {
 function aManagerWith(
     state: Pick<
         State,
-        "location" | "menus" | "modal" | "forms" | "notifications"
+        "location" | "menus" | "modal" | "forms" | "notifications" | "selectedFilm"
     >,
     bus: Nanobus,
 ) {

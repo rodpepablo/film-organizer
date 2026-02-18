@@ -11,6 +11,7 @@ import {
     openModal,
     toggleNavMenu,
     updateForm,
+    showFilmInfo,
 } from "../../../src/infra/actions/ui";
 import {
     CLEAR_FORM,
@@ -23,6 +24,7 @@ import {
     OPEN_MODAL,
     TOGGLE_NAV_MENU,
     UPDATE_FORM,
+    SHOW_FILM_INFO,
 } from "../../../src/infra/events";
 
 describe("Ui actions", () => {
@@ -42,5 +44,6 @@ describe("Ui actions", () => {
         testAction(deleteNotification, DELETE_NOTIFICATION, {
             id: "123",
         });
+        testAction(showFilmInfo, SHOW_FILM_INFO, { filmId: "123" });
     });
 });

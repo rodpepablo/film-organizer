@@ -53,6 +53,13 @@ describe("Film Service", () => {
                 id: "f-1",
                 name: "gold-012026",
                 path: filmPath,
+                info: {
+                    camera: "",
+                    lens: "",
+                    filmStock: "",
+                    shotISO: "",
+                    filmStockExpiration: "",
+                },
                 images: [
                     {
                         id: "i-1",

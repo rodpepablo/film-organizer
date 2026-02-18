@@ -1,0 +1,63 @@
+import "./film-info-modal.css";
+import { filmInfoSelector } from "../../../../infra/selectors/film";
+import { State, Emit } from "../../../../domain/models/state";
+import Component from "../../../../infra/component";
+import { html } from "../../../../infra/html";
+import Button from "../../general/button/button";
+import { FilmInfo } from "../../../../domain/models/film";
+import { updateForm } from "../../../../infra/actions/ui";
+import { EDIT_FILM_INFO_FORM } from "../../../../infra/constants";
+import { openModal } from "../../../../infra/actions/ui";
+import { EDIT_FILM_INFO_MODAL } from "../../../../infra/constants";
+
+const infoItems = [
+    { label: "Camera", name: "camera" },
+    { label: "Lens", name: "lens" },
+    { label: "Film Stock", name: "filmStock" },
+    { label: "Shot ISO", name: "shotISO" },
+    { label: "Film Expiration Status", name: "filmStockExpiration" },
+];
+
+export default class FilmInfoModal implements Component {
+    render(state: State, emit: Emit): HTMLElement {
+        const info = filmInfoSelector(state);
+
+        const items = infoItems.map(
+            (infoItem) => html`<li class="film-info-modal-item">
+                <b>${infoItem.label}:</b>${(info as Record<string, any>)[infoItem.name]}
+            </li>`,
+        );
+
+        const editButton = new Button({
+            value: "Edit",
+            input: "button",
+            onclick: editMode(emit, info, state.selectedFilm),
+        });
+
+        return html`
+            <div class="film-info-modal">
+                <h5 class="center subtitle modal-title">Film Info</h5>
+                <ul>
+                    ${items}
+                </ul>
+                ${editButton.render(state, emit)}
+            </div>
+        `;
+    }
+}
+
+function editMode(emit: Emit, info: FilmInfo, filmId: string) {
+    return (e: DOMEvent) => {
+        e.preventDefault();
+        updateForm(emit, {
+            formId: EDIT_FILM_INFO_FORM,
+            values: {
+                ...info,
+                filmId,
+            },
+        });
+        openModal(emit, {
+            modalId: EDIT_FILM_INFO_MODAL,
+        });
+    };
+}

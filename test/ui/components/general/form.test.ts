@@ -148,6 +148,23 @@ describe("Form Component", () => {
         const button = dom.querySelector("button");
         expect(button).not.toBeNull();
     });
+
+    it("Should create a cancel event when cancelEvent passed and emit it on click", () => {
+        const mock = vi.fn();
+        const config = {
+            formId: "123",
+            submitEvent: "submit",
+            onCancel: mock,
+            inputs: [],
+        };
+        const emit = vi.fn();
+        const form = new Form(config);
+
+        const dom = form.render(STATE, emit);
+        dom.querySelector<HTMLElement>("button.cancel")?.click();
+
+        expect(mock).toHaveBeenCalledOnce();
+    });
 });
 
 function anInput(name: string): Input {

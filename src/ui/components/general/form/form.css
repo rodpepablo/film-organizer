@@ -9,6 +9,10 @@
 	margin: 0.5em 0;
 }
 
+.form > button {
+	margin: 1em 0;
+}
+
 .form > :not(button) {
 	align-self: stretch;
 }

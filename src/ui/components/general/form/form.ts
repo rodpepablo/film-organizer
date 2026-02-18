@@ -13,6 +13,7 @@ import { updateForm } from "../../../../infra/actions/ui";
 type FormConfig = {
     formId: string;
     submitEvent: string;
+    onCancel?: Function;
     inputs: IInput[];
     button?: Button;
 };
@@ -37,11 +38,24 @@ export default class Form implements Component {
                 ? this.config.button.render(state, emit)
                 : new Button({ value: "Send", input: "submit" }).render(state, emit);
 
+        const cancelButton =
+            this.config.onCancel != null
+                ? new Button({
+                    value: "Cancel",
+                    input: "button",
+                    type: "cancel",
+                    onclick: this.handleCancel(emit),
+                }).render(state, emit)
+                : html``;
+
         return html`
             <form class="form" onsubmit=${this.handleSubmit(emit)} onchange=${this.handleChange(emit)}>
                 ${error != null ? html`<span class="form-error">${error}</span>` : null}
                 ${inputs}
-                ${button}
+                <div class="modal-buttons">
+                    ${button}
+                    ${cancelButton}
+                </div>
             </form>
         `;
     }
@@ -74,6 +88,12 @@ export default class Form implements Component {
             const form = e.target as HTMLFormElement;
             this.emitFormUpdate(emit, form);
             emit(this.config.submitEvent);
+        };
+    }
+
+    private handleCancel(emit: Emit) {
+        return (e: DOMEvent) => {
+            this.config.onCancel(e);
         };
     }
 }

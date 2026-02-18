@@ -4,9 +4,10 @@ import Component from "../../../../infra/component";
 import { State, Emit } from "../../../../domain/models/state";
 
 type ButtonConfig = {
+    class?: string;
     value: string;
     input?: "submit" | "button";
-    type?: "tiny" | "";
+    type?: "tiny" | "cancel" | "";
     onclick?: (e: DOMEvent) => void;
 };
 
@@ -19,9 +20,17 @@ export default class Button implements Component {
 
     render(state: State, emit: Emit): HTMLButtonElement {
         const type = this.config.input || "button";
+        const classes = ["button"];
+        if (this.config.type != null) {
+            classes.push(this.config.type);
+        }
+        if (this.config.class != null) {
+            classes.push(this.config.class);
+        }
+
         return html`
             <button
-                class="${this.config.type + " button"}"
+                class="${classes.join(" ")}"
                 type="${type}"
                 onclick=${this.config.onclick}
             >

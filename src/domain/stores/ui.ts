@@ -11,43 +11,17 @@ import {
     OPEN_MODAL,
     TOGGLE_NAV_MENU,
     UPDATE_FORM,
+    SHOW_FILM_INFO,
 } from "../../infra/events";
 import { Emit, EventParams, State } from "../models/state";
 import { Notification } from "../models/ui";
 import config from "../../infra/config";
 import { deleteNotification } from "../../infra/actions/ui";
-
-export type NavigateParams = EventParams & {
-    to: string[];
-};
-
-export type ToggleNavMenuParams = EventParams & {
-    menu: string;
-};
-
-export type OpenModalParams = EventParams & {
-    modalId: string;
-};
-
-export type FormEventParams = EventParams & {
-    formId: string;
-};
-
-export type FormErrorParams = FormEventParams & {
-    error: string;
-};
-
-export type FormUpdateParams = FormEventParams & {
-    values: Record<string, any>;
-};
-
-export type DeleteNotificationParams = EventParams & Pick<Notification, "id">;
-export type CreateNotificationParams = EventParams &
-    Pick<Notification, "type" | "message">;
+import { FILM_INFO_MODAL } from "../../infra/constants";
 
 type Substate = Pick<
     State,
-    "location" | "menus" | "modal" | "forms" | "notifications"
+    "location" | "menus" | "modal" | "forms" | "notifications" | "selectedFilm"
 >;
 
 export class UIStoreManager {
@@ -138,6 +112,12 @@ export class UIStoreManager {
         this.emit("render");
     };
 
+    showFilmInfo = (params: ShowFilmInfoParams) => {
+        this.state.selectedFilm = params.filmId;
+        this.openModal({ modalId: FILM_INFO_MODAL });
+        this.emit("render");
+    };
+
     private initForm(params: FormEventParams) {
         if (!(params.formId in this.state.forms)) {
             this.state.forms[params.formId] = {
@@ -164,4 +144,37 @@ export function uiStore(state: Substate, emitter: Nanobus): void {
     emitter.on(CLEAR_FORM, manager.clearForm);
     emitter.on(CREATE_NOTIFICATION, manager.createNotification);
     emitter.on(DELETE_NOTIFICATION, manager.deleteNotification);
+    emitter.on(SHOW_FILM_INFO, manager.showFilmInfo);
 }
+
+export type NavigateParams = EventParams & {
+    to: string[];
+};
+
+export type ToggleNavMenuParams = EventParams & {
+    menu: string;
+};
+
+export type OpenModalParams = EventParams & {
+    modalId: string;
+};
+
+export type FormEventParams = EventParams & {
+    formId: string;
+};
+
+export type FormErrorParams = FormEventParams & {
+    error: string;
+};
+
+export type FormUpdateParams = FormEventParams & {
+    values: Record<string, any>;
+};
+
+export type DeleteNotificationParams = EventParams & Pick<Notification, "id">;
+export type CreateNotificationParams = EventParams &
+    Pick<Notification, "type" | "message">;
+
+export type ShowFilmInfoParams = {
+    filmId: string;
+};

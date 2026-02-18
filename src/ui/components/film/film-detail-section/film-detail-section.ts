@@ -9,7 +9,11 @@ import {
 } from "../../../../infra/constants";
 import { Film } from "../../../../domain/models/film";
 import Icon from "../../general/icon/icon";
-import { updateForm, openModal } from "../../../../infra/actions/ui";
+import {
+    updateForm,
+    openModal,
+    showFilmInfo,
+} from "../../../../infra/actions/ui";
 import { sortImageList } from "../../../../infra/actions/film";
 
 export default (state: State, emit: Emit): HTMLElement => {
@@ -24,6 +28,11 @@ export default (state: State, emit: Emit): HTMLElement => {
         icon: "mdi:pencil",
         onClick: editName(emit, film),
     });
+    const infoIcon = new Icon({
+        type: "actionable",
+        icon: "mdi:info",
+        onClick: showInfo(emit, film.id),
+    });
 
     const content = html`
         <article id="film-detail-section">
@@ -32,6 +41,7 @@ export default (state: State, emit: Emit): HTMLElement => {
                     <span>Film:</span>${film.name}
                 </h4>
                 ${editIcon.render(state, emit)}
+                ${infoIcon.render(state, emit)}
             </header>
             <section class="film-detail-images">
                 <ul class="film-detail-image-list list">
@@ -70,5 +80,12 @@ function editName(emit: Emit, film: Film) {
         openModal(emit, {
             modalId: EDIT_FILM_NAME_MODAL,
         });
+    };
+}
+
+function showInfo(emit: Emit, filmId: string) {
+    return (e: DOMEvent) => {
+        e.preventDefault();
+        showFilmInfo(emit, { filmId: filmId });
     };
 }

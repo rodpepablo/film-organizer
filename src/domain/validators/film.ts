@@ -1,5 +1,6 @@
-import { INVALID_FILM_NAME } from "../../infra/errors";
+import { INVALID_FILM_NAME, INVALID_SHOT_ISO } from "../../infra/errors";
 import { ValidationResult, Validator } from "../models/validation";
+import { EditFilmInfoValues } from "../stores/film";
 
 class EditFilmNameValidator implements Validator {
     validate(data: any): ValidationResult {
@@ -11,6 +12,17 @@ class EditFilmNameValidator implements Validator {
     }
 }
 
+class EditFilmInfoValidator implements Validator {
+    validate(data: EditFilmInfoValues): ValidationResult {
+        if (data.shotISO != "" && !Number.isInteger(Number(data.shotISO))) {
+            return [false, { msg: INVALID_SHOT_ISO }];
+        }
+
+        return [true, null];
+    }
+}
+
 export const FilmValidators = {
     filmNameEdit: new EditFilmNameValidator(),
+    filmInfoEdit: new EditFilmInfoValidator(),
 };

@@ -7,6 +7,7 @@ import {
 } from "../../../../src/infra/constants";
 import {
     OPEN_MODAL,
+    SHOW_FILM_INFO,
     SORT_IMAGE_LIST,
     UPDATE_FORM,
 } from "../../../../src/infra/events";
@@ -101,5 +102,20 @@ describe("FilmDetailSection Component", () => {
             filmId: film.id,
             newOrder: ["1", "2"],
         });
+    });
+
+    it("Should emit a showFilmInfo event when info icon is clicked", () => {
+        const emit = vi.fn();
+        const film = aFilm();
+
+        const state = {
+            album: anAlbum({ films: [film] }),
+            location: [FILM_DETAIL_SECTION, film.id],
+        } as State;
+
+        const dom = filmDetailSection(state, emit);
+        dom.querySelector<HTMLElement>("[icon='mdi:info']")?.click();
+
+        expect(emit).toHaveBeenCalledWith(SHOW_FILM_INFO, { filmId: film.id });
     });
 });

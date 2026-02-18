@@ -24,7 +24,7 @@ describe("Button Component", () => {
     it("should configure styles", () => {
         const button = new Button({ value: "send", type: "tiny" });
         expect(button.render({} as State, () => { }).getAttribute("class")).toEqual(
-            "tiny button",
+            "button tiny",
         );
     });
 
@@ -35,5 +35,17 @@ describe("Button Component", () => {
         button.render({} as State, () => { }).click();
 
         expect(mock).toHaveBeenCalled();
+    });
+
+    it("should configure extra classes", () => {
+        const button = new Button({
+            value: "send",
+            onclick: vi.fn(),
+            class: "cancel",
+        });
+
+        const dom = button.render({} as State, () => { });
+
+        expect(dom.className).toEqual("button cancel");
     });
 });

@@ -8,6 +8,7 @@ export interface State extends IState {
     modal: Modal;
     forms: Forms;
     notifications: Notification[];
+    selectedFilm: string | null;
     album: Album | null;
 }
 

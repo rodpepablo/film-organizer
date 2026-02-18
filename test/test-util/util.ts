@@ -16,3 +16,20 @@ export const testAction = (
         expect(emit).toHaveBeenCalledWith(event);
     }
 };
+
+export function testHasInputs(
+    dom: HTMLElement,
+    expectedInputs: { name: string; type: string }[],
+) {
+    const inputs = Array.from(
+        dom.querySelectorAll<HTMLInputElement>("input"),
+    ).map((input) => ({
+        type: input.type,
+        name: input.name,
+    }));
+
+    expect(inputs).toHaveLength(expectedInputs.length);
+    for (let input of inputs) {
+        expect(expectedInputs).toContainEqual(input);
+    }
+}

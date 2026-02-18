@@ -57,3 +57,9 @@ body {
 .hidden {
 	display: none !important;
 }
+
+.modal-title {
+	border: 2px solid var(--primary-color);
+	margin: 1em;
+	padding: 1em;
+}

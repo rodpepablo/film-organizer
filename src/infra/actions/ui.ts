@@ -8,6 +8,7 @@ import {
     FormEventParams,
     CreateNotificationParams,
     DeleteNotificationParams,
+    ShowFilmInfoParams,
 } from "../../domain/stores/ui";
 import {
     CLEAR_FORM,
@@ -20,6 +21,7 @@ import {
     OPEN_MODAL,
     TOGGLE_NAV_MENU,
     UPDATE_FORM,
+    SHOW_FILM_INFO,
 } from "../events";
 
 export const navigate = (emit: Emit, params: NavigateParams) =>
@@ -45,3 +47,5 @@ export const deleteNotification = (
     emit: Emit,
     params: DeleteNotificationParams,
 ) => emit(DELETE_NOTIFICATION, params);
+export const showFilmInfo = (emit: Emit, params: ShowFilmInfoParams) =>
+    emit(SHOW_FILM_INFO, params);

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { FILM_DETAIL_SECTION } from "../../../src/infra/constants";
 import {
     filmDetailSelector,
+    filmInfoSelector,
     filmsSelector,
 } from "../../../src/infra/selectors/film";
 import { aFilm, anAlbum } from "../../test-util/fixtures";
@@ -32,5 +33,13 @@ describe("Films selector", () => {
 
         state.location = [FILM_DETAIL_SECTION, "other"];
         expect(filmDetailSelector(state)).toEqual(null);
+    });
+
+    it("filmInfoSelector", () => {
+        expect(filmInfoSelector({ album: null, selectedFilm: null })).toBeNull();
+
+        const film = aFilm();
+        const state = { album: anAlbum({ films: [film] }), selectedFilm: film.id };
+        expect(filmInfoSelector(state)).toEqual(film.info);
     });
 });

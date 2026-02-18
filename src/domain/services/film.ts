@@ -41,10 +41,17 @@ export default class FilmService implements IFilmService, IIPCService {
                 };
             });
 
-        const film = {
+        const film: Film = {
             id: this.idGenerator.generate(),
             name: basename(filmPath),
             path: filmRelativePath,
+            info: {
+                camera: "",
+                lens: "",
+                filmStock: "",
+                shotISO: "",
+                filmStockExpiration: "",
+            },
             images: filmImages,
         };
 
