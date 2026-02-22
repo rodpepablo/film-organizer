@@ -3,7 +3,7 @@ export default {
         ttl: 7000,
     },
     images: {
-        supportedFormats: ["tif", "jpg", "jpeg"],
+        supportedFormats: ["tif", "jpg", "jpeg", "bmp"],
         requiresPreview: ["tif"],
     },
 };

@@ -63,6 +63,10 @@ export default class FilmService implements IFilmService, IIPCService {
     }
 
     private filterSupportedFormats(file: string) {
-        return config.images.supportedFormats.indexOf(file.split(".")[1]) >= 0;
+        return (
+            config.images.supportedFormats.indexOf(
+                file.split(".")[1].toLowerCase(),
+            ) >= 0
+        );
     }
 }
