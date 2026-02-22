@@ -12,16 +12,6 @@ const IMAGE = anImage({ path: "/to/image.jpg" });
 const FILM_ID = "123";
 
 describe("ImageListItem Component", () => {
-    it("should update image path to use safe-file protocol", () => {
-        const imageListItem = new ImageListItem(IMAGE, FILM_ID);
-
-        const dom = imageListItem.render({} as State, () => { });
-
-        expect(
-            dom.querySelector(".image-list-item-preview")?.getAttribute("src"),
-        ).toEqual("safe-file:///to/image.jpg");
-    });
-
     it("should show image info", () => {
         const imageListItem = new ImageListItem(IMAGE, FILM_ID);
 

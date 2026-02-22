@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { mock } from "vitest-mock-extended";
+import { mock, mocked } from "vitest-mock-extended";
 import Nanobus from "nanobus";
 import { State } from "../../../src/domain/models/state";
 import {
@@ -10,11 +10,18 @@ import {
     CLEAR_FORM,
     CLEAR_FORM_ERROR,
     CLOSE_MODAL,
+    CREATE_IMAGE_PREVIEW_REQUEST,
     CREATE_NOTIFICATION,
     EDIT_IMAGE_NAME_REQUEST,
     FORM_ERROR,
 } from "../../../src/infra/events";
-import { aFilm, aForm, anAlbum, anImage } from "../../test-util/fixtures";
+import {
+    aFilm,
+    aForm,
+    anAlbum,
+    anImage,
+    aState,
+} from "../../test-util/fixtures";
 import {
     EDIT_IMAGE_NAME_FORM,
     IMAGE_NAME_EDIT_SUCCESS,
@@ -23,6 +30,7 @@ import {
 import { Form } from "../../../src/domain/models/ui";
 import { expectRender, mockedAPI, spiedBus } from "../../test-util/mocking";
 import { INVALID_IMAGE_NAME } from "../../../src/infra/errors";
+import { IPCErrors } from "../../../src/infra/ipc-service";
 
 describe("Film Image store", () => {
     describe("Edit film Image", () => {
@@ -129,12 +137,94 @@ describe("Film Image store", () => {
         });
     });
 
+    describe("Create Image Preview", () => {
+        it("should update previewPath", async () => {
+            const image = anImage({ previewPath: null });
+            const film = aFilm({ images: [image, anImage()] });
+            const album = anAlbum({ films: [film, aFilm()] });
+            const state = aState({ album });
+            const bus = spiedBus();
+            const api = mockedAPI();
+            const manager = new FilmImageStoreManager(state, bus, api);
+
+            const previewPath = "/preview/path.jpg";
+            api.image.createPreviewImage.mockResolvedValue({
+                ok: true,
+                result: previewPath,
+            });
+
+            await manager.createImagePreview({ imageId: image.id });
+
+            expect(state.album?.films[0].images[0].previewPath).toEqual(previewPath);
+            expectRender(bus);
+        });
+
+        it("Should update loading before and after generating the preview", async () => {
+            const image = anImage({ previewPath: null, loading: false });
+            const film = aFilm({ images: [image] });
+            const album = anAlbum({ films: [film] });
+            const state = aState({ album });
+            const bus = spiedBus();
+            const api = mockedAPI();
+            const manager = new FilmImageStoreManager(state, bus, api);
+
+            const previewPath = "/preview/path.jpg";
+            api.image.createPreviewImage.mockImplementation((image) => {
+                expect(image.loading).toBeTruthy();
+                return Promise.resolve({ ok: true, result: previewPath });
+            });
+
+            await manager.createImagePreview({ imageId: image.id });
+
+            expect(state.album?.films[0].images[0].loading).toBeFalsy();
+        });
+
+        it("Should manage error from ipc handler", async () => {
+            const image = anImage({ previewPath: null });
+            const film = aFilm({ images: [image, anImage()] });
+            const album = anAlbum({ films: [film, aFilm()] });
+            const state = aState({ album });
+            const bus = spiedBus();
+            const api = mockedAPI();
+            const manager = new FilmImageStoreManager(state, bus, api);
+
+            api.image.createPreviewImage.mockResolvedValue({
+                ok: false,
+                type: IPCErrors.UNEXPECTED_ERROR,
+            });
+
+            await manager.createImagePreview({ imageId: image.id });
+
+            expect(state.album?.films[0].images[0].previewPath).toBeNull();
+            expect(bus.emit).toHaveBeenCalledWith(
+                CREATE_NOTIFICATION,
+                UNEXPECTED_ERROR,
+            );
+            expectRender(bus);
+        });
+
+        it("Should manage unexpected error", async () => {
+            const state = aState({ album: null });
+            const bus = spiedBus();
+            const api = mockedAPI();
+            const manager = new FilmImageStoreManager(state, bus, api);
+
+            await manager.createImagePreview({ imageId: "123" });
+
+            expect(bus.emit).toHaveBeenCalledWith(
+                CREATE_NOTIFICATION,
+                UNEXPECTED_ERROR,
+            );
+            expectRender(bus);
+        });
+    });
+
     it("Should register hanlders", () => {
         const emitter = mock<Nanobus>();
 
         filmImageStore({} as State, emitter);
 
-        const events = [EDIT_IMAGE_NAME_REQUEST];
+        const events = [EDIT_IMAGE_NAME_REQUEST, CREATE_IMAGE_PREVIEW_REQUEST];
         expect(emitter.on).toHaveBeenCalledTimes(events.length);
         for (let event of events) {
             expect(emitter.on).toHaveBeenCalledWith(event, expect.any(Function));

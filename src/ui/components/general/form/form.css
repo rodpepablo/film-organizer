@@ -1,20 +1,15 @@
 .form {
+	padding: 0 2em;
+}
+
+.form-inputs {
 	display: flex;
 	flex-direction: column;
-	padding: 0 2em;
-	align-items: center;
-}
-
-.form > * {
-	margin: 0.5em 0;
-}
-
-.form > button {
-	margin: 1em 0;
-}
-
-.form > :not(button) {
 	align-self: stretch;
+}
+
+.form-inputs > * {
+	margin: 0.5em 0;
 }
 
 .form .form-error {
@@ -25,4 +20,10 @@
 	max-width: 400px;
 	padding: 0.5em;
 	border-radius: 2px;
+}
+
+.form .form-buttons {
+	margin: 1em auto;
+	display: flex;
+	justify-content: center;
 }

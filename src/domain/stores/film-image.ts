@@ -7,7 +7,10 @@ import {
 import { IPCErrors } from "../../infra/ipc-service";
 import { IPCError } from "../../infra/ipc-service";
 import { uiFormValuesSelector } from "../../infra/selectors/ui";
-import { EDIT_IMAGE_NAME_REQUEST } from "../../infra/events";
+import {
+    CREATE_IMAGE_PREVIEW_REQUEST,
+    EDIT_IMAGE_NAME_REQUEST,
+} from "../../infra/events";
 import { State, Emit } from "../models/state";
 import {
     clearFormError,
@@ -17,12 +20,7 @@ import {
     formError,
 } from "../../infra/actions/ui";
 import { ImageValidators } from "../validators/film-image";
-
-export type EditFilmNameValues = {
-    filmId: string;
-    imageId: string;
-    name: string;
-};
+import { FilmImage } from "../models/film";
 
 export class FilmImageStoreManager {
     state: State;
@@ -75,7 +73,44 @@ export class FilmImageStoreManager {
         }
     };
 
-    manageErrors(error: IPCError) {
+    createImagePreview = async (params: CreateImagePreviewParams) => {
+        let image: FilmImage = null;
+        try {
+            const { filmIndex, imageIndex } = this.findImage(params.imageId);
+            image = this.state.album.films[filmIndex].images[imageIndex];
+            image.loading = true;
+            const previewPath = await this.api.image.createPreviewImage(image);
+            image.loading = false;
+            if (previewPath.ok) {
+                image.previewPath = previewPath.result;
+            } else {
+                this.manageErrors(previewPath as IPCError);
+            }
+        } catch (error) {
+            if (image != null) image.loading = false;
+            this.manageErrors({
+                ok: false,
+                type: IPCErrors.UNEXPECTED_ERROR,
+                message: error,
+            });
+        }
+        this.emit("render");
+    };
+
+    private findImage(imageId: string): {
+        filmIndex: number;
+        imageIndex: number;
+    } {
+        for (let i = 0; i < this.state.album.films.length; i++) {
+            const film = this.state.album.films[i];
+            const j = film.images.findIndex((image) => image.id === imageId);
+            if (j >= 0) {
+                return { filmIndex: i, imageIndex: j };
+            }
+        }
+    }
+
+    private manageErrors(error: IPCError) {
         if (process.env.NODE_ENV === "development") console.log(error);
         if (error.type === IPCErrors.UNEXPECTED_ERROR)
             createNotification(this.emit, UNEXPECTED_ERROR);
@@ -88,4 +123,18 @@ export function filmImageStore(state: State, emitter: Nanobus) {
     const filmImageStoreManager = new FilmImageStoreManager(state, emitter, api);
 
     emitter.on(EDIT_IMAGE_NAME_REQUEST, filmImageStoreManager.editFilmName);
+    emitter.on(
+        CREATE_IMAGE_PREVIEW_REQUEST,
+        filmImageStoreManager.createImagePreview,
+    );
 }
+
+export type EditFilmNameValues = {
+    filmId: string;
+    imageId: string;
+    name: string;
+};
+
+export type CreateImagePreviewParams = {
+    imageId: string;
+};

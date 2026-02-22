@@ -1,6 +1,6 @@
 import "electron";
 import { Album } from "./domain/models/album";
-import { Film } from "./domain/models/film";
+import { Film, FilmImage } from "./domain/models/film";
 import { IPCResult } from "./infra/ipc-service";
 
 declare global {
@@ -17,6 +17,9 @@ declare global {
             };
             film: {
                 addFilm(albumPath: string, filmPath: string): Promise<IPCResult<Film>>;
+            };
+            image: {
+                createPreviewImage(image: FilmImage): Promise<IPCResult<string>>;
             };
         };
     }

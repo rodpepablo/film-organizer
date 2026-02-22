@@ -25,3 +25,4 @@ export const EDIT_FILM_INFO_REQUEST = "film-info::edit::request";
 
 // FilmImage
 export const EDIT_IMAGE_NAME_REQUEST = "image-name::edit::request";
+export const CREATE_IMAGE_PREVIEW_REQUEST = "image-preview::create::request";

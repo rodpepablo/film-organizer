@@ -51,8 +51,10 @@ export default class Form implements Component {
         return html`
             <form class="form" onsubmit=${this.handleSubmit(emit)} onchange=${this.handleChange(emit)}>
                 ${error != null ? html`<span class="form-error">${error}</span>` : null}
-                ${inputs}
-                <div class="modal-buttons">
+                <div class="form-inputs">
+                    ${inputs}
+                </div>
+                <div class="form-buttons">
                     ${button}
                     ${cancelButton}
                 </div>

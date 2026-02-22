@@ -13,6 +13,12 @@ import { Film, FilmImage } from "../models/film";
 type Event = Electron.IpcMainInvokeEvent;
 
 export default class AlbumService implements IAlbumService, IIPCService {
+    load(ipcMain: Electron.IpcMain): void {
+        ipcMain.handle(CREATE_ALBUM_HANDLER, this.createAlbum);
+        ipcMain.handle(LOAD_ALBUM_HANDLER, this.loadAlbum);
+        ipcMain.handle(SAVE_ALBUM_HANDLER, this.saveAlbum);
+    }
+
     createAlbum = async (
         _: Event,
         path: string,
@@ -28,12 +34,6 @@ export default class AlbumService implements IAlbumService, IIPCService {
 
         return album;
     };
-
-    load(ipcMain: Electron.IpcMain): void {
-        ipcMain.handle(CREATE_ALBUM_HANDLER, this.createAlbum);
-        ipcMain.handle(LOAD_ALBUM_HANDLER, this.loadAlbum);
-        ipcMain.handle(SAVE_ALBUM_HANDLER, this.saveAlbum);
-    }
 
     loadAlbum = async (_: Event, path: string): Promise<Album> => {
         const content = await fs.readFile(path, { encoding: "utf-8" });
@@ -80,6 +80,7 @@ export default class AlbumService implements IAlbumService, IIPCService {
         return {
             ...image,
             path: join(imageDirname, `${image.name}.${image.ext}`),
+            previewPath: null,
         };
     };
 }

@@ -34,7 +34,7 @@ afterEach(() => {
 });
 
 describe("AlbumService", () => {
-    it("Should save an album to a designated file", async () => {
+    it("Should create an album in a designated file", async () => {
         const albumService = new AlbumService();
 
         const createdAlbum = await albumService.createAlbum(
@@ -75,8 +75,8 @@ describe("AlbumService", () => {
         const albumPath = join(temporalDirectory, "test.json");
         const image1 = anImage({
             name: "image1",
-            ext: "jpg",
-            path: join(temporalDirectory, "film", "image1.jpg"),
+            ext: "tif",
+            path: join(temporalDirectory, "film", "image1.tif"),
         });
         const image2 = anImage({
             name: "image2",
@@ -92,11 +92,15 @@ describe("AlbumService", () => {
 
         saveJSON(albumPath, previousAlbum);
         createFolder(temporalDirectory, "film");
-        createDummyFile(temporalDirectory, "film", "image1.jpg");
+        createDummyFile(temporalDirectory, "film", "image1.tif");
         createDummyFile(temporalDirectory, "film", "image2.jpg");
 
         const albumService = new AlbumService();
 
+        const imageWithPreview = anImage({
+            ...image1,
+            previewPath: "/preview/path.jpg",
+        });
         const renamedImage = anImage({
             ...image2,
             name: "renamed",
@@ -105,7 +109,7 @@ describe("AlbumService", () => {
             ...previousAlbum,
             name: "new_name",
             path: albumPath,
-            films: [aFilm({ ...film, images: [image1, renamedImage] })],
+            films: [aFilm({ ...film, images: [imageWithPreview, renamedImage] })],
         });
 
         const savedAlbum = await albumService.saveAlbum(EVENT, album);
@@ -116,7 +120,10 @@ describe("AlbumService", () => {
                 aFilm({
                     ...film,
                     images: [
-                        image1,
+                        anImage({
+                            ...imageWithPreview,
+                            previewPath: null,
+                        }),
                         anImage({
                             ...renamedImage,
                             path: join(temporalDirectory, "film", "renamed.jpg"),
@@ -129,7 +136,7 @@ describe("AlbumService", () => {
         expect(savedAlbum).toStrictEqual(expectedAlbum);
         const savedImages = await fs.readdir(join(temporalDirectory, "film"));
         expect(savedImages).toHaveLength(2);
-        expect(savedImages).toContain("image1.jpg");
+        expect(savedImages).toContain("image1.tif");
         expect(savedImages).toContain("renamed.jpg");
     });
 

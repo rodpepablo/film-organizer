@@ -3,6 +3,8 @@ export interface FilmImage {
     name: string;
     ext: string;
     path: string;
+    previewPath?: string | null;
+    loading?: boolean;
 }
 
 export interface FilmInfo {

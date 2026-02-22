@@ -4,5 +4,6 @@ export default {
     },
     images: {
         supportedFormats: ["tif", "jpg", "jpeg"],
+        requiresPreview: ["tif"],
     },
 };

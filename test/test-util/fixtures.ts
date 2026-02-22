@@ -61,6 +61,8 @@ export const anImage = (attributes: Partial<FilmImage> = {}): FilmImage => {
         name: "TEST IMAGE",
         ext: "jpg",
         path: "/PATH/TO/IMAGE.jpg",
+        previewPath: null,
+        loading: false,
         ...attributes,
     };
 };
