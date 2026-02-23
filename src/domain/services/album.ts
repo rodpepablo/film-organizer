@@ -1,4 +1,5 @@
 import fs from "fs/promises";
+import electron from "electron";
 import { join, dirname } from "path";
 import { IAlbumService } from "../ports/album";
 import { IIPCService } from "../../infra/ipc-service";
@@ -52,19 +53,30 @@ export default class AlbumService implements IAlbumService, IIPCService {
             encoding: "utf-8",
         });
 
-        await Promise.all(
-            album.films.map((film) => {
-                return film.images.map(this.postProcessImage);
-            }),
-        );
+        await Promise.all(album.films.map(this.postProcessFilm));
 
         return savedAlbum;
     };
 
-    private postProcessImage(image: FilmImage): Promise<void> {
-        return fs.rename(
-            image.path,
-            join(dirname(image.path), `${image.name}.${image.ext}`),
+    private async postProcessFilm(film: Film): Promise<void[]> {
+        // Rename images to their id before renaming to the saved name
+        // to avoid problems when swaping names between images.
+        await Promise.all(
+            film.images.map((image) =>
+                fs.rename(
+                    image.path,
+                    join(dirname(image.path), `${image.id}.${image.ext}`),
+                ),
+            ),
+        );
+
+        return Promise.all(
+            film.images.map((image) =>
+                fs.rename(
+                    join(dirname(image.path), `${image.id}.${image.ext}`),
+                    join(dirname(image.path), `${image.name}.${image.ext}`),
+                ),
+            ),
         );
     }
 

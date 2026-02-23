@@ -140,6 +140,79 @@ describe("AlbumService", () => {
         expect(savedImages).toContain("renamed.jpg");
     });
 
+    it("Swaping names between images should not raise an error on os renaming", async () => {
+        const albumPath = join(temporalDirectory, "test.json");
+        const image1 = anImage({
+            name: "image1",
+            ext: "jpg",
+            path: join(temporalDirectory, "film", "image1.jpg"),
+        });
+        const image2 = anImage({
+            name: "image2",
+            ext: "jpg",
+            path: join(temporalDirectory, "film", "image2.jpg"),
+        });
+        const film = aFilm({
+            name: "film",
+            path: "film",
+            images: [image1, image2],
+        });
+        const previousAlbum = anAlbum({ path: albumPath, films: [film] });
+
+        saveJSON(albumPath, previousAlbum);
+        createFolder(temporalDirectory, "film");
+        createDummyFile(temporalDirectory, "film", "image1.jpg");
+        createDummyFile(temporalDirectory, "film", "image2.jpg");
+
+        const albumService = new AlbumService();
+
+        const renamedImage1 = anImage({
+            ...image1,
+            name: "image2",
+        });
+
+        const renamedImage2 = anImage({
+            ...image2,
+            name: "image1",
+        });
+        const album = anAlbum({
+            ...previousAlbum,
+            films: [
+                aFilm({
+                    ...film,
+                    images: [renamedImage1, renamedImage2],
+                }),
+            ],
+        });
+
+        const savedAlbum = await albumService.saveAlbum(EVENT, album);
+
+        const expectedAlbum = anAlbum({
+            ...album,
+            films: [
+                aFilm({
+                    ...film,
+                    images: [
+                        anImage({
+                            ...renamedImage1,
+                            path: join(temporalDirectory, "film", "image2.jpg"),
+                        }),
+                        anImage({
+                            ...renamedImage2,
+                            path: join(temporalDirectory, "film", "image1.jpg"),
+                        }),
+                    ],
+                }),
+            ],
+        });
+        expect(loadJSON(albumPath)).toStrictEqual(expectedAlbum);
+        expect(savedAlbum).toStrictEqual(expectedAlbum);
+        const savedImages = await fs.readdir(join(temporalDirectory, "film"));
+        expect(savedImages).toHaveLength(2);
+        expect(savedImages).toContain("image1.jpg");
+        expect(savedImages).toContain("image2.jpg");
+    });
+
     it("Should load IPC handlers", () => {
         const albumService = new AlbumService();
         const ipcMain = mock<electron.IpcMain>();
