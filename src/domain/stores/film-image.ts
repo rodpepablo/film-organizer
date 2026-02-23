@@ -75,11 +75,11 @@ export class FilmImageStoreManager {
                 type: IPCErrors.UNEXPECTED_ERROR,
                 message: error,
             });
-        } finally {
-            closeModal(this.emit);
-            clearForm(this.emit, { formId: EDIT_IMAGE_NAME_FORM });
-            this.emit("render");
         }
+
+        closeModal(this.emit);
+        clearForm(this.emit, { formId: EDIT_IMAGE_NAME_FORM });
+        this.emit("render");
     };
 
     createImagePreview = async (params: CreateImagePreviewParams) => {

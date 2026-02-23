@@ -104,6 +104,8 @@ describe("Film Image store", () => {
                 formId: EDIT_IMAGE_NAME_FORM,
                 error: INVALID_IMAGE_NAME,
             });
+            expect(bus.emit).not.toHaveBeenCalledWith(CLOSE_MODAL);
+            expect(bus.emit).not.toHaveBeenCalledWith(CLEAR_FORM, expect.anything());
             expectRender(bus);
         });
 
