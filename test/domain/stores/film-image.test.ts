@@ -31,9 +31,10 @@ import { Form } from "../../../src/domain/models/ui";
 import { expectRender, mockedAPI, spiedBus } from "../../test-util/mocking";
 import { INVALID_IMAGE_NAME } from "../../../src/infra/errors";
 import { IPCErrors } from "../../../src/infra/ipc-service";
+import DateWrapper, { IDateWrapper } from "../../../src/infra/date-wrapper";
 
 describe("Film Image store", () => {
-    describe("Edit film Image", () => {
+    describe("Edit film image name", () => {
         it("Should update film name and create a success notification", () => {
             const image = anImage({ name: "old name" });
             const film = aFilm({ images: [image, anImage()] });
@@ -51,11 +52,15 @@ describe("Film Image store", () => {
             } as State;
             const bus = spiedBus();
             const api = mockedAPI();
-            const manager = new FilmImageStoreManager(state, bus, api);
+            const date = mock<IDateWrapper>();
+            const manager = aManagerWith(state, bus, api, date);
+
+            date.now.mockReturnValue("new date");
 
             manager.editFilmName();
 
             expect(state.album?.films[0].images[0].name).toEqual("new name");
+            expect(state.album?.films[0].images[0].lastUpdated).toEqual("new date");
             expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
                 formId: EDIT_IMAGE_NAME_FORM,
             });
@@ -87,7 +92,7 @@ describe("Film Image store", () => {
             } as State;
             const bus = spiedBus();
             const api = mockedAPI();
-            const manager = new FilmImageStoreManager(state, bus, api);
+            const manager = aManagerWith(state, bus, api);
 
             manager.editFilmName();
 
@@ -118,7 +123,7 @@ describe("Film Image store", () => {
             } as State;
             const bus = spiedBus();
             const api = mockedAPI();
-            const manager = new FilmImageStoreManager(state, bus, api);
+            const manager = aManagerWith(state, bus, api);
 
             manager.editFilmName();
 
@@ -145,7 +150,7 @@ describe("Film Image store", () => {
             const state = aState({ album });
             const bus = spiedBus();
             const api = mockedAPI();
-            const manager = new FilmImageStoreManager(state, bus, api);
+            const manager = aManagerWith(state, bus, api);
 
             const previewPath = "/preview/path.jpg";
             api.image.createPreviewImage.mockResolvedValue({
@@ -166,7 +171,7 @@ describe("Film Image store", () => {
             const state = aState({ album });
             const bus = spiedBus();
             const api = mockedAPI();
-            const manager = new FilmImageStoreManager(state, bus, api);
+            const manager = aManagerWith(state, bus, api);
 
             const previewPath = "/preview/path.jpg";
             api.image.createPreviewImage.mockImplementation((image) => {
@@ -186,7 +191,7 @@ describe("Film Image store", () => {
             const state = aState({ album });
             const bus = spiedBus();
             const api = mockedAPI();
-            const manager = new FilmImageStoreManager(state, bus, api);
+            const manager = aManagerWith(state, bus, api);
 
             api.image.createPreviewImage.mockResolvedValue({
                 ok: false,
@@ -207,7 +212,7 @@ describe("Film Image store", () => {
             const state = aState({ album: null });
             const bus = spiedBus();
             const api = mockedAPI();
-            const manager = new FilmImageStoreManager(state, bus, api);
+            const manager = aManagerWith(state, bus, api);
 
             await manager.createImagePreview({ imageId: "123" });
 
@@ -231,3 +236,12 @@ describe("Film Image store", () => {
         }
     });
 });
+
+function aManagerWith(
+    state: State,
+    bus: Nanobus,
+    api: Window["api"],
+    date: IDateWrapper = new DateWrapper(),
+) {
+    return new FilmImageStoreManager(state, bus, api, date);
+}

@@ -1,10 +1,9 @@
-export interface FilmImage {
+export interface Film {
     id: string;
     name: string;
-    ext: string;
     path: string;
-    previewPath?: string | null;
-    loading?: boolean;
+    info: FilmInfo;
+    images: FilmImage[];
 }
 
 export interface FilmInfo {
@@ -15,10 +14,12 @@ export interface FilmInfo {
     filmStockExpiration: string;
 }
 
-export interface Film {
+export interface FilmImage {
     id: string;
     name: string;
+    ext: string;
     path: string;
-    info: FilmInfo;
-    images: FilmImage[];
+    previewPath?: string | null;
+    loading?: boolean;
+    lastUpdated?: string;
 }

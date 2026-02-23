@@ -5,13 +5,15 @@ import ImageComponent from "../../../../src/ui/components/image/image/image";
 import { anImage } from "../../../test-util/fixtures";
 
 describe("ImageListItem Component", () => {
-    it("should update image path to use safe-file protocol", () => {
-        const image = anImage({ path: "/to/image.jpg" });
+    it("should update image path to use safe-file protocol and update date", () => {
+        const image = anImage({ path: "/to/image.jpg", lastUpdated: "last_date" });
         const imageComponent = new ImageComponent(image);
 
         const dom = imageComponent.render({} as State, () => { });
 
-        expect(dom.getAttribute("src")).toEqual("safe-file:///to/image.jpg");
+        expect(dom.getAttribute("src")).toEqual(
+            "safe-file:///to/image.jpg?v=last_date",
+        );
     });
 
     it("if image format needs convertion and preview path is defined, use it", () => {

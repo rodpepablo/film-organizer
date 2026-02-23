@@ -43,8 +43,8 @@ app.whenReady().then(() => {
 
     // Register save file protocol for loading the images in the app
     protocol.registerFileProtocol("safe-file", (request, callback) => {
-        const filePath = request.url.replace("safe-file://", "");
-        callback(path.normalize(filePath));
+        const url = new URL(request.url);
+        callback({ path: url.pathname });
     });
 
     // load services

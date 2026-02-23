@@ -16,8 +16,10 @@ export default class ImageComponent implements Component {
 
     render(state: State, emit: Emit): HTMLElement {
         const path = this.checkPreviewPath(emit);
+        const lastUpdated =
+            this.image.lastUpdated != null ? `?v=${this.image.lastUpdated}` : "";
         if (path != null) {
-            const safePath = `safe-file://${path}`;
+            const safePath = `safe-file://${path}${lastUpdated}`;
 
             return html`<img class="image" src="${safePath}" />`;
         }

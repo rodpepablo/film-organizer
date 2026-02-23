@@ -21,16 +21,24 @@ import {
 } from "../../infra/actions/ui";
 import { ImageValidators } from "../validators/film-image";
 import { FilmImage } from "../models/film";
+import DateWrapper, { IDateWrapper } from "../../infra/date-wrapper";
 
 export class FilmImageStoreManager {
     state: State;
     emit: Emit;
     api: Window["api"];
+    date: IDateWrapper;
 
-    constructor(state: State, emitter: Nanobus, api: Window["api"]) {
+    constructor(
+        state: State,
+        emitter: Nanobus,
+        api: Window["api"],
+        date: DateWrapper,
+    ) {
         this.state = state;
         this.emit = emitter.emit.bind(emitter);
         this.api = api;
+        this.date = date;
     }
 
     editFilmName = () => {
@@ -58,6 +66,7 @@ export class FilmImageStoreManager {
             );
             const image = film.images.find((image) => image.id === values.imageId);
             image.name = values.name;
+            image.lastUpdated = this.date.now();
 
             createNotification(this.emit, IMAGE_NAME_EDIT_SUCCESS);
         } catch (error) {
@@ -81,6 +90,7 @@ export class FilmImageStoreManager {
             image.loading = true;
             const previewPath = await this.api.image.createPreviewImage(image);
             image.loading = false;
+
             if (previewPath.ok) {
                 image.previewPath = previewPath.result;
             } else {
@@ -120,7 +130,12 @@ export class FilmImageStoreManager {
 export function filmImageStore(state: State, emitter: Nanobus) {
     const api =
         process.env.NODE_ENV !== "test" ? window.api : ({} as Window["api"]);
-    const filmImageStoreManager = new FilmImageStoreManager(state, emitter, api);
+    const filmImageStoreManager = new FilmImageStoreManager(
+        state,
+        emitter,
+        api,
+        new DateWrapper(),
+    );
 
     emitter.on(EDIT_IMAGE_NAME_REQUEST, filmImageStoreManager.editFilmName);
     emitter.on(
