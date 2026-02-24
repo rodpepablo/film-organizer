@@ -1,3 +1,7 @@
+#film-detail-section {
+	height: 100%;
+}
+
 .film-detail-header {
 	border-bottom: 2px solid var(--primary-light);
 	display: flex;
@@ -14,4 +18,9 @@
 .film-detail-header-title > span {
 	font-weight: bold;
 	margin-right: 1em;
+}
+
+.film-detail-images {
+	overflow-y: scroll;
+	height: calc(100% - 46px);
 }
