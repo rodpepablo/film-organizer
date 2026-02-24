@@ -4,10 +4,10 @@ import {
 } from "../../infra/errors";
 import {
     ValidationResult,
-    ValidatorWithAlbumContext,
+    ValidatorWithCollectionContext,
 } from "../models/validation";
 
-class EditImageNameValidator extends ValidatorWithAlbumContext {
+class EditImageNameValidator extends ValidatorWithCollectionContext {
     validate(data: EditImageNameValidationSubject): ValidationResult {
         super.validate(data);
 

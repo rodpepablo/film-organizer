@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { State } from "../../../src/domain/models/state";
 import {
-    ALBUM_MANAGEMENT_MENU,
+    COLLECTION_MANAGEMENT_MENU,
     FILM_MANAGEMENT_MENU,
     HOME_SECTION,
 } from "../../../src/infra/constants";
@@ -21,7 +21,7 @@ describe("Create initial state", () => {
         createInitialState(state);
 
         expect(state.menus).toStrictEqual({
-            [ALBUM_MANAGEMENT_MENU]: false,
+            [COLLECTION_MANAGEMENT_MENU]: false,
             [FILM_MANAGEMENT_MENU]: false,
         });
     });
@@ -53,11 +53,11 @@ describe("Create initial state", () => {
         expect(state.notifications).toEqual([]);
     });
 
-    it("Should initialize album", () => {
+    it("Should initialize collection", () => {
         const state = {} as State;
 
         createInitialState(state);
 
-        expect(state.album).toStrictEqual(null);
+        expect(state.collection).toStrictEqual(null);
     });
 });

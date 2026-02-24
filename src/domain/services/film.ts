@@ -18,14 +18,14 @@ export default class FilmService implements IFilmService, IIPCService {
 
     addFilm = async (
         _: Event,
-        albumPath: string,
+        collectionPath: string,
         filmPath: string,
     ): Promise<IPCResult<Film>> => {
-        const albumFolder = dirname(albumPath);
-        if (!filmPath.startsWith(albumFolder))
-            return { ok: false, type: IPCErrors.FILM_FOLDER_OUTSIDE_ALBUM_FOLDER };
+        const collectionFolder = dirname(collectionPath);
+        if (!filmPath.startsWith(collectionFolder))
+            return { ok: false, type: IPCErrors.FILM_FOLDER_OUTSIDE_COLLECTION_FOLDER };
 
-        const filmRelativePath = relative(albumFolder, filmPath);
+        const filmRelativePath = relative(collectionFolder, filmPath);
 
         const files = await fs.readdir(filmPath);
 

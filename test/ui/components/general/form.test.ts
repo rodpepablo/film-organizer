@@ -11,10 +11,10 @@ const STATE = { forms: {} } as State;
 
 describe("Form Component", () => {
     it("Should inject the content into the form", () => {
-        const config = { formId: "", submitEvent: "", inputs: [anInput("album")] };
+        const config = { formId: "", submitEvent: "", inputs: [anInput("collection")] };
         const form = new Form(config);
         const dom = form.render(STATE, () => { });
-        const input = dom.querySelector('input[name="album"]');
+        const input = dom.querySelector('input[name="collection"]');
 
         expect(input).not.toBeNull();
     });
@@ -23,7 +23,7 @@ describe("Form Component", () => {
         const config = {
             formId: "FORM",
             submitEvent: "",
-            inputs: [anInput("album")],
+            inputs: [anInput("collection")],
         };
         const form = new Form(config);
         const state = {
@@ -40,7 +40,7 @@ describe("Form Component", () => {
         const config = {
             formId: "FORM",
             submitEvent: "",
-            inputs: [anInput("album")],
+            inputs: [anInput("collection")],
         };
         const form = new Form(config);
         const state = { forms: {} } as State;
@@ -54,17 +54,17 @@ describe("Form Component", () => {
         const config = {
             formId: "123",
             submitEvent: "",
-            inputs: [anInput("album"), anInput("film")],
+            inputs: [anInput("collection"), anInput("film")],
         };
         const form = new Form(config);
         const dom = form.render(STATE, emit);
 
-        setInputValueTo(dom, "album", "ALBUM");
+        setInputValueTo(dom, "collection", "COLLECTION");
 
         expect(emit).toHaveBeenCalledWith(UPDATE_FORM, {
             formId: "123",
             values: {
-                album: "ALBUM",
+                collection: "COLLECTION",
                 film: "",
             },
         });
@@ -74,7 +74,7 @@ describe("Form Component", () => {
         expect(emit).toHaveBeenCalledWith(UPDATE_FORM, {
             formId: "123",
             values: {
-                album: "ALBUM",
+                collection: "COLLECTION",
                 film: "FILM",
             },
         });
@@ -85,17 +85,17 @@ describe("Form Component", () => {
         const config = {
             formId: "123",
             submitEvent: "EVENT",
-            inputs: [anInput("album")],
+            inputs: [anInput("collection")],
         };
         const form = new Form(config);
         const dom = form.render(STATE, emit);
 
-        setInputValueTo(dom, "album", "ALBUM");
+        setInputValueTo(dom, "collection", "COLLECTION");
         submitForm(dom);
 
         expect(emit).toHaveBeenCalledWith(UPDATE_FORM, {
             formId: "123",
-            values: { album: "ALBUM" },
+            values: { collection: "COLLECTION" },
         });
         expect(emit).toHaveBeenCalledWith("EVENT");
     });
@@ -104,11 +104,11 @@ describe("Form Component", () => {
         const config = {
             formId: "FORM",
             submitEvent: "EVENT",
-            inputs: [anInput("album")],
+            inputs: [anInput("collection")],
         };
         const state = {
             forms: {
-                FORM: aForm({ values: { album: "ALBUM_VALUE" } }),
+                FORM: aForm({ values: { collection: "COLLECTION_VALUE" } }),
             },
         } as unknown as State;
         const form = new Form(config);
@@ -116,7 +116,7 @@ describe("Form Component", () => {
         const dom = form.render(state, () => { });
 
         expect(dom.querySelector<HTMLInputElement>("input")?.value).toEqual(
-            "ALBUM_VALUE",
+            "COLLECTION_VALUE",
         );
     });
 

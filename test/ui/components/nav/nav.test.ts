@@ -2,13 +2,13 @@ import { describe, expect, it } from "vitest";
 import { State } from "../../../../src/domain/models/state";
 import Nav from "../../../../src/ui/components/nav/nav/nav";
 import { items } from "../../../../src/ui/components/nav/nav/nav-menu-items";
-import { anAlbum } from "../../../test-util/fixtures";
+import { aCollection } from "../../../test-util/fixtures";
 
-const ALBUM = anAlbum();
+const COLLECTION = aCollection();
 
 describe("Nav", () => {
     it("Should contain menus and items", () => {
-        const nav = Nav({ menus: {}, album: ALBUM } as State, () => { });
+        const nav = Nav({ menus: {}, collection: COLLECTION } as State, () => { });
 
         const menus = Array.from(nav.querySelectorAll(".nav-menu-title")).map(
             (x) => x.innerHTML,
@@ -18,7 +18,7 @@ describe("Nav", () => {
         );
 
         expect(menus).toHaveLength(2);
-        expect(menus).toContain("Album Management");
+        expect(menus).toContain("Collection Management");
         expect(menus).toContain("Film Management");
 
         const itemList = Object.values(items);
@@ -28,14 +28,14 @@ describe("Nav", () => {
         }
     });
 
-    it("Should only show album management menu when no menu loaded", () => {
-        const nav = Nav({ menus: {}, album: null } as State, () => { });
+    it("Should only show collection management menu when no menu loaded", () => {
+        const nav = Nav({ menus: {}, collection: null } as State, () => { });
 
         const menus = Array.from(nav.querySelectorAll(".nav-menu-title")).map(
             (x) => x.innerHTML,
         );
 
         expect(menus).toHaveLength(1);
-        expect(menus).toContain("Album Management");
+        expect(menus).toContain("Collection Management");
     });
 });

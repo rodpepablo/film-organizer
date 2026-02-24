@@ -1,5 +1,5 @@
 import { IState } from "choo";
-import { Album } from "./album";
+import { Collection } from "./collection";
 import { Location, Menus, Modal, Forms, Notification } from "./ui";
 
 export interface State extends IState {
@@ -9,7 +9,7 @@ export interface State extends IState {
     forms: Forms;
     notifications: Notification[];
     selectedFilm: string | null;
-    album: Album | null;
+    collection: Collection | null;
 }
 
 export type EventParams = {};

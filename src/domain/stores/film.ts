@@ -7,7 +7,7 @@ import {
     FILM_ADDITION_SUCCESS,
     FILM_INFO_MODAL,
     FILM_NAME_EDIT_SUCCESS,
-    FILM_NOT_IN_ALBUM_ERROR,
+    FILM_NOT_IN_COLLECTION_ERROR,
     UNEXPECTED_ERROR,
 } from "../../infra/constants";
 import {
@@ -42,12 +42,12 @@ export class FilmStoreManager {
 
     manageAddFilm = async (): Promise<void> => {
         try {
-            const albumPath = this.state.album.path;
+            const collectionPath = this.state.collection.path;
             const filmPath = await this.api.fs.getFolder();
             if (filmPath !== null) {
-                const filmResult = await this.api.film.addFilm(albumPath, filmPath);
+                const filmResult = await this.api.film.addFilm(collectionPath, filmPath);
                 if (filmResult.ok) {
-                    this.state.album.films.push(filmResult.result);
+                    this.state.collection.films.push(filmResult.result);
                     createNotification(this.emit, FILM_ADDITION_SUCCESS);
                     this.emit("render");
                     return;
@@ -74,7 +74,7 @@ export class FilmStoreManager {
 
         if (is_valid) {
             try {
-                const film = this.state.album.films.find(
+                const film = this.state.collection.films.find(
                     (film) => film.id === formValues.filmId,
                 );
                 film.name = formValues.name;
@@ -98,7 +98,7 @@ export class FilmStoreManager {
 
     sortImageList = (params: SortImageListParams) => {
         try {
-            const film = this.state.album.films.find(
+            const film = this.state.collection.films.find(
                 (film) => film.id === params.filmId,
             );
             const indexedImages = Object.fromEntries(
@@ -131,7 +131,7 @@ export class FilmStoreManager {
             }
 
             const filmId = values.filmId;
-            const film = this.state.album.films.find((film) => film.id === filmId);
+            const film = this.state.collection.films.find((film) => film.id === filmId);
             film.info = this.parseFilmInfo(values);
 
             createNotification(this.emit, EDIT_FILM_INFO_SUCCESS);
@@ -150,8 +150,8 @@ export class FilmStoreManager {
 
     manageErrors(error: IPCError) {
         if (process.env.NODE_ENV !== "test") console.log(error);
-        if (error.type === IPCErrors.FILM_FOLDER_OUTSIDE_ALBUM_FOLDER) {
-            createNotification(this.emit, FILM_NOT_IN_ALBUM_ERROR);
+        if (error.type === IPCErrors.FILM_FOLDER_OUTSIDE_COLLECTION_FOLDER) {
+            createNotification(this.emit, FILM_NOT_IN_COLLECTION_ERROR);
             this.emit("render");
         } else {
             createNotification(this.emit, UNEXPECTED_ERROR);

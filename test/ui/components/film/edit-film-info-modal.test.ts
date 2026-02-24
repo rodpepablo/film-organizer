@@ -6,7 +6,7 @@ import {
 } from "../../../../src/infra/events";
 import EditFilmInfoModal from "../../../../src/ui/components/film/edit-film-info-modal/edit-film-info-modal";
 import { submitForm } from "../../../test-util/dom";
-import { aFilm, aForm, anAlbum, aState } from "../../../test-util/fixtures";
+import { aFilm, aForm, aCollection, aState } from "../../../test-util/fixtures";
 import { testHasInputs } from "../../../test-util/util";
 
 describe("Edit Film Info Modal", () => {
@@ -41,7 +41,7 @@ describe("Edit Film Info Modal", () => {
         const modal = new EditFilmInfoModal();
         const film = aFilm();
         const state = aState({
-            album: anAlbum({
+            collection: aCollection({
                 films: [film],
             }),
             forms: {

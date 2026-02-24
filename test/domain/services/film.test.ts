@@ -28,7 +28,7 @@ describe("Film Service", () => {
     it("add film should read the target folder and create the model with images", async () => {
         const idGenerator = mock<IIdGenerator>();
         const filmService = new FilmService(idGenerator);
-        const albumPath = join(temporalPath, "album.json");
+        const collectionPath = join(temporalPath, "collection.json");
         const filmPath = "gold-012026";
         const fullFilmPath = join(temporalPath, filmPath);
         createFolder(temporalPath, filmPath);
@@ -43,7 +43,7 @@ describe("Film Service", () => {
 
         const filmResult = await filmService.addFilm(
             EVENT,
-            albumPath,
+            collectionPath,
             fullFilmPath,
         );
 
@@ -78,17 +78,17 @@ describe("Film Service", () => {
         });
     });
 
-    it("If filmPath not inside albumPath raise error", async () => {
+    it("If filmPath not inside collectionPath raise error", async () => {
         const idGenerator = mock<IIdGenerator>();
         const filmService = new FilmService(idGenerator);
-        const albumPath = join(temporalPath, "album.json");
+        const collectionPath = join(temporalPath, "collection.json");
         const filmPath = join(temporalPath, "..", "wrong-directory");
 
-        const filmResult = await filmService.addFilm(EVENT, albumPath, filmPath);
+        const filmResult = await filmService.addFilm(EVENT, collectionPath, filmPath);
 
         expect(filmResult).toStrictEqual({
             ok: false,
-            type: IPCErrors.FILM_FOLDER_OUTSIDE_ALBUM_FOLDER,
+            type: IPCErrors.FILM_FOLDER_OUTSIDE_COLLECTION_FOLDER,
         });
     });
 

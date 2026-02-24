@@ -1,5 +1,5 @@
 import { app, dialog, ipcMain } from "electron";
-import AlbumService from "./album";
+import CollectionService from "./collection";
 import FSService from "./fs";
 import FilmService from "./film";
 import { IdGenerator } from "../../infra/id-generator";
@@ -11,12 +11,12 @@ export default function loadServices() {
     const sharpImageProcessing = new SharpImageProcessing(app.getPath("temp"));
 
     const fsService = new FSService(dialog);
-    const albumService = new AlbumService();
+    const collectionService = new CollectionService();
     const filmService = new FilmService(idGenerator);
     const filmImageService = new FilmImageService(sharpImageProcessing);
 
     fsService.load(ipcMain);
-    albumService.load(ipcMain);
+    collectionService.load(ipcMain);
     filmService.load(ipcMain);
     filmImageService.load(ipcMain);
 }

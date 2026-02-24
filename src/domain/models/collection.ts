@@ -1,13 +1,13 @@
 import { z } from "zod";
 import { Film } from "./film";
 
-export interface Album {
+export interface Collection {
     name: string;
     path: string;
     films: Film[];
 }
 
-export const ZAlbum = z.object({
+export const ZCollection = z.object({
     name: z.string(),
     path: z.string(),
     films: z.array(

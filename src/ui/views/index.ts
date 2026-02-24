@@ -5,9 +5,9 @@ import mainContent from "../components/general/main-content/main-content";
 import footer from "../components/footer/footer/footer";
 import ModalComponent from "../components/general/modal/modal";
 import notifications from "../components/general/notifications/notifications";
-import CreateAlbumModal from "../components/album/create-album-modal/create-album-modal";
+import CreateCollectionModal from "../components/collection/create-collection-modal/create-collection-modal";
 import {
-    CREATE_ALBUM_MODAL,
+    CREATE_COLLECTION_MODAL,
     EDIT_FILM_INFO_MODAL,
     EDIT_FILM_NAME_MODAL,
     EDIT_IMAGE_NAME_MODAL,
@@ -19,7 +19,7 @@ import FilmInfoModal from "../components/film/film-info-modal/film-info-modal";
 import EditFilmInfoModal from "../components/film/edit-film-info-modal/edit-film-info-modal";
 
 const modal = new ModalComponent({
-    [CREATE_ALBUM_MODAL]: new CreateAlbumModal(),
+    [CREATE_COLLECTION_MODAL]: new CreateCollectionModal(),
     [EDIT_FILM_NAME_MODAL]: new EditFilmNameModal(),
     [EDIT_IMAGE_NAME_MODAL]: new EditImageNameModal(),
     [FILM_INFO_MODAL]: new FilmInfoModal(),

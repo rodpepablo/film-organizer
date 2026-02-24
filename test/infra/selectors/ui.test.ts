@@ -13,8 +13,8 @@ import { aForm } from "../../test-util/fixtures";
 describe("UI selectors", () => {
     it("baseLocationSelector should get first element in location", () => {
         expect(baseLocationSelector({ location: ["home"] })).toEqual("home");
-        expect(baseLocationSelector({ location: ["album", "123"] })).toEqual(
-            "album",
+        expect(baseLocationSelector({ location: ["collection", "123"] })).toEqual(
+            "collection",
         );
     });
 

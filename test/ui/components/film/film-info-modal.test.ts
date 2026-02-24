@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { aFilm, anAlbum } from "../../../test-util/fixtures";
+import { aFilm, aCollection } from "../../../test-util/fixtures";
 import FilmInfoModal from "../../../../src/ui/components/film/film-info-modal/film-info-modal";
 import { State } from "../../../../src/domain/models/state";
 import { OPEN_MODAL, UPDATE_FORM } from "../../../../src/infra/events";
@@ -12,7 +12,7 @@ describe("FilmInfoModal", () => {
     it("Should show film info", () => {
         const emit = vi.fn();
         const film = aFilm();
-        const state = { album: anAlbum({ films: [film] }), selectedFilm: film.id };
+        const state = { collection: aCollection({ films: [film] }), selectedFilm: film.id };
 
         const filmInfoModal = new FilmInfoModal();
         const dom = filmInfoModal.render(state as State, emit);
@@ -31,7 +31,7 @@ describe("FilmInfoModal", () => {
     it("Should emit an open modal and update the form of the edit view on button click", () => {
         const emit = vi.fn();
         const film = aFilm();
-        const state = { album: anAlbum({ films: [film] }), selectedFilm: film.id };
+        const state = { collection: aCollection({ films: [film] }), selectedFilm: film.id };
 
         const filmInfoModal = new FilmInfoModal();
         const dom = filmInfoModal.render(state as State, emit);

@@ -1,61 +1,61 @@
 import fs from "fs/promises";
 import electron from "electron";
 import { join, dirname } from "path";
-import { IAlbumService } from "../ports/album";
+import { ICollectionService } from "../ports/collection";
 import { IIPCService } from "../../infra/ipc-service";
-import { Album } from "../models/album";
+import { Collection } from "../models/collection";
 import {
-    LOAD_ALBUM_HANDLER,
-    CREATE_ALBUM_HANDLER,
-    SAVE_ALBUM_HANDLER,
+    LOAD_COLLECTION_HANDLER,
+    CREATE_COLLECTION_HANDLER,
+    SAVE_COLLECTION_HANDLER,
 } from "../../infra/ipc-events";
 import { Film, FilmImage } from "../models/film";
 
 type Event = Electron.IpcMainInvokeEvent;
 
-export default class AlbumService implements IAlbumService, IIPCService {
+export default class CollectionService implements ICollectionService, IIPCService {
     load(ipcMain: Electron.IpcMain): void {
-        ipcMain.handle(CREATE_ALBUM_HANDLER, this.createAlbum);
-        ipcMain.handle(LOAD_ALBUM_HANDLER, this.loadAlbum);
-        ipcMain.handle(SAVE_ALBUM_HANDLER, this.saveAlbum);
+        ipcMain.handle(CREATE_COLLECTION_HANDLER, this.createCollection);
+        ipcMain.handle(LOAD_COLLECTION_HANDLER, this.loadCollection);
+        ipcMain.handle(SAVE_COLLECTION_HANDLER, this.saveCollection);
     }
 
-    createAlbum = async (
+    createCollection = async (
         _: Event,
         path: string,
         name: string,
-    ): Promise<Album> => {
-        const album = {
+    ): Promise<Collection> => {
+        const collection = {
             name,
             path: join(path, `${name}.json`),
             films: [],
-        } as Album;
+        } as Collection;
 
-        await fs.writeFile(album.path, JSON.stringify(album));
+        await fs.writeFile(collection.path, JSON.stringify(collection));
 
-        return album;
+        return collection;
     };
 
-    loadAlbum = async (_: Event, path: string): Promise<Album> => {
+    loadCollection = async (_: Event, path: string): Promise<Collection> => {
         const content = await fs.readFile(path, { encoding: "utf-8" });
-        const album: Album = JSON.parse(content);
+        const collection: Collection = JSON.parse(content);
 
-        return { ...album, path };
+        return { ...collection, path };
     };
 
-    saveAlbum = async (_: Event, album: Album): Promise<Album> => {
-        const savedAlbum = {
-            ...album,
-            films: album.films.map(this.parseFilm),
+    saveCollection = async (_: Event, collection: Collection): Promise<Collection> => {
+        const savedCollection = {
+            ...collection,
+            films: collection.films.map(this.parseFilm),
         };
 
-        await fs.writeFile(album.path, JSON.stringify(savedAlbum), {
+        await fs.writeFile(collection.path, JSON.stringify(savedCollection), {
             encoding: "utf-8",
         });
 
-        await Promise.all(album.films.map(this.postProcessFilm));
+        await Promise.all(collection.films.map(this.postProcessFilm));
 
-        return savedAlbum;
+        return savedCollection;
     };
 
     private async postProcessFilm(film: Film): Promise<void[]> {

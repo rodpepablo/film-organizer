@@ -4,7 +4,7 @@ import { Film } from "../models/film";
 export interface IFilmService {
     addFilm(
         _: Electron.IpcMainInvokeEvent,
-        albumPath: string,
+        collectionPath: string,
         filmPath: string,
     ): Promise<IPCResult<Film>>;
 }

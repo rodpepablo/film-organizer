@@ -7,7 +7,7 @@ import {
     GET_FOLDER_HANDLER,
 } from "../../../src/infra/ipc-events";
 
-describe("AlbumService", () => {
+describe("CollectionService", () => {
     it("Should get the folder path if selected", async () => {
         const dialog = mock<electron.Dialog>();
         const fsService = new FSService(dialog);

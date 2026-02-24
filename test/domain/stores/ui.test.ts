@@ -16,7 +16,7 @@ import {
     UPDATE_FORM,
 } from "../../../src/infra/events";
 import {
-    CREATE_ALBUM_FORM,
+    CREATE_COLLECTION_FORM,
     FILM_INFO_MODAL,
 } from "../../../src/infra/constants";
 import { autoTimeout, expectRender, spiedBus } from "../../test-util/mocking";
@@ -24,7 +24,7 @@ import { IIdGenerator } from "../../../src/infra/id-generator";
 import { State } from "../../../src/domain/models/state";
 import { Notification } from "../../../src/domain/models/ui";
 import config from "../../../src/infra/config";
-import { aFilm, aForm, anAlbum } from "../../test-util/fixtures";
+import { aFilm, aForm, aCollection } from "../../test-util/fixtures";
 
 const BASE_STATE = {
     location: [],
@@ -44,10 +44,10 @@ describe("UI Store", () => {
         const state = { ...BASE_STATE };
         const manager = aManagerWith(state, bus);
 
-        manager.navigate({ to: ["album", "123"] });
+        manager.navigate({ to: ["collection", "123"] });
 
         expectRender(bus);
-        expect(state.location).toEqual(["album", "123"]);
+        expect(state.location).toEqual(["collection", "123"]);
     });
 
     it.each([true, false])(
@@ -112,9 +112,9 @@ describe("UI Store", () => {
         const state = BASE_STATE;
 
         const manager = aManagerWith(state, bus);
-        manager.formError({ formId: CREATE_ALBUM_FORM, error: ERROR_MSG });
+        manager.formError({ formId: CREATE_COLLECTION_FORM, error: ERROR_MSG });
 
-        expect(state.forms[CREATE_ALBUM_FORM].error).toEqual(ERROR_MSG);
+        expect(state.forms[CREATE_COLLECTION_FORM].error).toEqual(ERROR_MSG);
         expectRender(bus);
     });
 
@@ -123,14 +123,14 @@ describe("UI Store", () => {
         const state = {
             ...BASE_STATE,
             forms: {
-                [CREATE_ALBUM_FORM]: aForm(),
+                [CREATE_COLLECTION_FORM]: aForm(),
             },
         };
 
         const manager = aManagerWith(state, bus);
-        manager.formError({ formId: CREATE_ALBUM_FORM, error: ERROR_MSG });
+        manager.formError({ formId: CREATE_COLLECTION_FORM, error: ERROR_MSG });
 
-        expect(state.forms[CREATE_ALBUM_FORM].error).toEqual(ERROR_MSG);
+        expect(state.forms[CREATE_COLLECTION_FORM].error).toEqual(ERROR_MSG);
         expectRender(bus);
     });
 
@@ -138,14 +138,14 @@ describe("UI Store", () => {
         const bus = spiedBus();
         const state = {
             ...BASE_STATE,
-            forms: { [CREATE_ALBUM_FORM]: aForm() },
+            forms: { [CREATE_COLLECTION_FORM]: aForm() },
         };
 
         const manager = aManagerWith(state, bus);
         const values = { name: "foo" };
-        manager.updateForm({ formId: CREATE_ALBUM_FORM, values });
+        manager.updateForm({ formId: CREATE_COLLECTION_FORM, values });
 
-        expect(state.forms[CREATE_ALBUM_FORM]).toStrictEqual({
+        expect(state.forms[CREATE_COLLECTION_FORM]).toStrictEqual({
             error: null,
             values: values,
         });
@@ -157,7 +157,7 @@ describe("UI Store", () => {
         const state = {
             ...BASE_STATE,
             forms: {
-                [CREATE_ALBUM_FORM]: aForm({
+                [CREATE_COLLECTION_FORM]: aForm({
                     error: ERROR_MSG,
                     values: { name: "foo" },
                 }),
@@ -165,10 +165,10 @@ describe("UI Store", () => {
         };
 
         const manager = aManagerWith(state, bus);
-        manager.clearFormError({ formId: CREATE_ALBUM_FORM });
+        manager.clearFormError({ formId: CREATE_COLLECTION_FORM });
 
-        expect(state.forms[CREATE_ALBUM_FORM].error).toBeNull();
-        expect(state.forms[CREATE_ALBUM_FORM].values).toEqual({ name: "foo" });
+        expect(state.forms[CREATE_COLLECTION_FORM].error).toBeNull();
+        expect(state.forms[CREATE_COLLECTION_FORM].values).toEqual({ name: "foo" });
         expectRender(bus);
     });
 
@@ -177,7 +177,7 @@ describe("UI Store", () => {
         const state = {
             ...BASE_STATE,
             forms: {
-                [CREATE_ALBUM_FORM]: aForm({
+                [CREATE_COLLECTION_FORM]: aForm({
                     error: ERROR_MSG,
                     values: { name: "foo" },
                 }),
@@ -185,9 +185,9 @@ describe("UI Store", () => {
         };
 
         const manager = aManagerWith(state, bus);
-        manager.clearForm({ formId: CREATE_ALBUM_FORM });
+        manager.clearForm({ formId: CREATE_COLLECTION_FORM });
 
-        expect(state.forms[CREATE_ALBUM_FORM]).toEqual({ error: null, values: {} });
+        expect(state.forms[CREATE_COLLECTION_FORM]).toEqual({ error: null, values: {} });
         expectRender(bus);
     });
 
@@ -249,7 +249,7 @@ describe("UI Store", () => {
             const film = aFilm();
             const state = {
                 ...BASE_STATE,
-                album: anAlbum({ films: [film] }),
+                collection: aCollection({ films: [film] }),
                 selectedFilm: null,
             };
             const bus = spiedBus();

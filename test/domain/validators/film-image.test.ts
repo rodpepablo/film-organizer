@@ -4,7 +4,7 @@ import {
     INVALID_DUPLICATED_IMAGE_NAME,
     INVALID_IMAGE_NAME,
 } from "../../../src/infra/errors";
-import { aFilm, anAlbum, anImage } from "../../test-util/fixtures";
+import { aFilm, aCollection, anImage } from "../../test-util/fixtures";
 
 const IMAGE_1 = anImage({ name: "image1" });
 const IMAGE_2 = anImage({ name: "image2" });
@@ -13,9 +13,9 @@ describe("IMAGE validators", () => {
     describe("edit image name", () => {
         it("should be invalid if empty", () => {
             const film = aFilm({ images: [IMAGE_1] });
-            const album = anAlbum({ films: [film] });
+            const collection = aCollection({ films: [film] });
             const [isValid, error] = ImageValidators.filmNameEdit
-                .withContext(album)
+                .withContext(collection)
                 .validate({
                     name: "",
                     filmId: film.id,
@@ -28,10 +28,10 @@ describe("IMAGE validators", () => {
 
         it("should be invalid if name already chosen by another image", () => {
             const film = aFilm({ images: [IMAGE_1, IMAGE_2] });
-            const album = anAlbum({ films: [film] });
+            const collection = aCollection({ films: [film] });
 
             const [isValid, error] = ImageValidators.filmNameEdit
-                .withContext(album)
+                .withContext(collection)
                 .validate({
                     name: IMAGE_2.name,
                     filmId: film.id,
@@ -44,9 +44,9 @@ describe("IMAGE validators", () => {
 
         it("should be valid if not empty", () => {
             const film = aFilm({ images: [IMAGE_1, IMAGE_2] });
-            const album = anAlbum({ films: [film] });
+            const collection = aCollection({ films: [film] });
             const [isValid, error] = ImageValidators.filmNameEdit
-                .withContext(album)
+                .withContext(collection)
                 .validate({
                     name: "film name",
                     filmId: film.id,

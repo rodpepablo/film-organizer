@@ -1,5 +1,5 @@
 import "electron";
-import { Album } from "./domain/models/album";
+import { Collection } from "./domain/models/collection";
 import { Film, FilmImage } from "./domain/models/film";
 import { IPCResult } from "./infra/ipc-service";
 
@@ -10,13 +10,13 @@ declare global {
                 getFolder(): Promise<string | null>;
                 getFile(): Promise<string | null>;
             };
-            album: {
-                createAlbum(path: string, name: string): Promise<Album>;
-                loadAlbum(path: string): Promise<Album>;
-                saveAlbum(album: Album): Promise<Album>;
+            collection: {
+                createCollection(path: string, name: string): Promise<Collection>;
+                loadCollection(path: string): Promise<Collection>;
+                saveCollection(collection: Collection): Promise<Collection>;
             };
             film: {
-                addFilm(albumPath: string, filmPath: string): Promise<IPCResult<Film>>;
+                addFilm(collectionPath: string, filmPath: string): Promise<IPCResult<Film>>;
             };
             image: {
                 createPreviewImage(image: FilmImage): Promise<IPCResult<string>>;

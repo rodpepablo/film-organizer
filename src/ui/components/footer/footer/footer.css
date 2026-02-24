@@ -6,24 +6,24 @@
 	box-sizing: border-box;
 }
 
-.footer .footer-album {
+.footer .footer-collection {
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
 }
 
-.footer .footer-album-info {
+.footer .footer-collection-info {
 	display: flex;
 	margin-left: 1em;
 }
 
-.footer .footer-album-title {
+.footer .footer-collection-title {
 	font-size: var(--small-text);
 	margin: 0;
 	font-weight: 400;
 }
 
-.footer .footer-album-span {
+.footer .footer-collection-span {
 	font-weight: bold;
 	margin: 0;
 	margin-right: 0.6em;

@@ -14,7 +14,7 @@ export default (state: State, emit: Emit): HTMLElement => {
         return html`
             <div class="film-list-empty">
                 <h4 class="film-list-empty-msg center">
-                    No films added to the album
+                    No films added to the collection
                 </h4>
             </div>
         `;

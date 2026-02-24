@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { Album } from "../../src/domain/models/album";
+import { Collection } from "../../src/domain/models/collection";
 import { Film, FilmImage, FilmInfo } from "../../src/domain/models/film";
 import { State } from "../../src/domain/models/state";
 import { Form } from "../../src/domain/models/ui";
@@ -19,18 +19,18 @@ export const aState = (attributes: Partial<State> = {}): State => {
         modal: { active: false, modalId: null },
         forms: {},
         selectedFilm: null,
-        album: anAlbum(),
+        collection: aCollection(),
         ...attributes,
     };
 };
 
-export const anAlbum = (attributes: Partial<Album> = {}): Album => {
+export const aCollection = (attributes: Partial<Collection> = {}): Collection => {
     return {
-        name: "TEST ALBUM",
-        path: "/PATH/TO/ALBUM.json",
+        name: "TEST COLLECTION",
+        path: "/PATH/TO/COLLECTION.json",
         films: [],
         ...attributes,
-    } as Album;
+    } as Collection;
 };
 
 export const aFilm = (attributes: Partial<Film> = {}): Film => {

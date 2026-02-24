@@ -10,10 +10,10 @@ export const CLEAR_FORM = "form::clear";
 export const CREATE_NOTIFICATION = "notification::create";
 export const DELETE_NOTIFICATION = "notification::delete";
 
-// Albums
-export const CREATE_ALBUM_REQUEST = "album::create::request";
-export const LOAD_ALBUM_REQUEST = "album::load::request";
-export const SAVE_ALBUM_REQUEST = "album::save::request";
+// Collections
+export const CREATE_COLLECTION_REQUEST = "collection::create::request";
+export const LOAD_COLLECTION_REQUEST = "collection::load::request";
+export const SAVE_COLLECTION_REQUEST = "collection::save::request";
 export const SORT_FILM_LIST = "film-list::sort";
 
 // Film

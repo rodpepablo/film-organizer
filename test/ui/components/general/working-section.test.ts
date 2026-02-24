@@ -6,10 +6,10 @@ import {
     HOME_SECTION,
 } from "../../../../src/infra/constants";
 import workingSection from "../../../../src/ui/components/general/working-section/working-section";
-import { aFilm, anAlbum } from "../../../test-util/fixtures";
+import { aFilm, aCollection } from "../../../test-util/fixtures";
 
 const BASE_STATE = {
-    album: anAlbum({ films: [aFilm()] }),
+    collection: aCollection({ films: [aFilm()] }),
 };
 
 const SECTIONS = [

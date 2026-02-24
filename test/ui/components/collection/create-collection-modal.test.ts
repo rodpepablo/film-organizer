@@ -1,18 +1,18 @@
 import { describe, it, expect, vi } from "vitest";
 import { State } from "../../../../src/domain/models/state";
-import { CREATE_ALBUM_FORM } from "../../../../src/infra/constants";
+import { CREATE_COLLECTION_FORM } from "../../../../src/infra/constants";
 import {
-    CREATE_ALBUM_REQUEST,
+    CREATE_COLLECTION_REQUEST,
     UPDATE_FORM,
 } from "../../../../src/infra/events";
-import CreateAlbumModal from "../../../../src/ui/components/album/create-album-modal/create-album-modal";
+import CreateCollectionModal from "../../../../src/ui/components/collection/create-collection-modal/create-collection-modal";
 import { setInputValueTo, submitForm } from "../../../test-util/dom";
 
 const DUMMY_STATE = { forms: {} } as State;
 
-describe("Create album modal", () => {
+describe("Create collection modal", () => {
     it("Should emit a create event with the form info", () => {
-        const modal = new CreateAlbumModal();
+        const modal = new CreateCollectionModal();
         const emit = vi.fn();
 
         const dom = modal.render(DUMMY_STATE, emit);
@@ -20,11 +20,11 @@ describe("Create album modal", () => {
         submitForm(dom);
 
         expect(emit).toHaveBeenCalledWith(UPDATE_FORM, {
-            formId: CREATE_ALBUM_FORM,
+            formId: CREATE_COLLECTION_FORM,
             values: {
                 name: "NAME",
             },
         });
-        expect(emit).toHaveBeenCalledWith(CREATE_ALBUM_REQUEST);
+        expect(emit).toHaveBeenCalledWith(CREATE_COLLECTION_REQUEST);
     });
 });

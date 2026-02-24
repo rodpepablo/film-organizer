@@ -1,13 +1,13 @@
 import { contextBridge, ipcRenderer } from "electron";
-import { Album } from "./domain/models/album";
+import { Collection } from "./domain/models/collection";
 import { Film, FilmImage } from "./domain/models/film";
 import {
     GET_FILE_HANDLER,
     GET_FOLDER_HANDLER,
-    LOAD_ALBUM_HANDLER,
-    CREATE_ALBUM_HANDLER,
+    LOAD_COLLECTION_HANDLER,
+    CREATE_COLLECTION_HANDLER,
     ADD_FILM_HANDLER,
-    SAVE_ALBUM_HANDLER,
+    SAVE_COLLECTION_HANDLER,
     CREATE_IMAGE_PREVIEW_HANDLER,
 } from "./infra/ipc-events";
 import { IPCResult } from "./infra/ipc-service";
@@ -19,17 +19,17 @@ contextBridge.exposeInMainWorld("api", {
             ipcRenderer.invoke(GET_FOLDER_HANDLER),
         getFile: (): Promise<string | null> => ipcRenderer.invoke(GET_FILE_HANDLER),
     },
-    album: {
-        createAlbum: (path: string, name: string): Promise<Album> =>
-            ipcRenderer.invoke(CREATE_ALBUM_HANDLER, path, name),
-        loadAlbum: (path: string): Promise<Album> =>
-            ipcRenderer.invoke(LOAD_ALBUM_HANDLER, path),
-        saveAlbum: (album: Album): Promise<Album> =>
-            ipcRenderer.invoke(SAVE_ALBUM_HANDLER, album),
+    collection: {
+        createCollection: (path: string, name: string): Promise<Collection> =>
+            ipcRenderer.invoke(CREATE_COLLECTION_HANDLER, path, name),
+        loadCollection: (path: string): Promise<Collection> =>
+            ipcRenderer.invoke(LOAD_COLLECTION_HANDLER, path),
+        saveCollection: (collection: Collection): Promise<Collection> =>
+            ipcRenderer.invoke(SAVE_COLLECTION_HANDLER, collection),
     },
     film: {
-        addFilm: (albumPath: string, filmPath: string): Promise<IPCResult<Film>> =>
-            ipcRenderer.invoke(ADD_FILM_HANDLER, albumPath, filmPath),
+        addFilm: (collectionPath: string, filmPath: string): Promise<IPCResult<Film>> =>
+            ipcRenderer.invoke(ADD_FILM_HANDLER, collectionPath, filmPath),
     },
     image: {
         createPreviewImage: (image: FilmImage): Promise<IPCResult<string>> =>

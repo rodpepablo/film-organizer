@@ -5,7 +5,7 @@ import { html } from "../../../../infra/html";
 export default function defaultSection(state: State, emit: Emit) {
     return html`
         <section id="default-section">
-            <h4 class="default-section-title">No album selected</h4>
+            <h4 class="default-section-title">No collection selected</h4>
         </section>
     `;
 }

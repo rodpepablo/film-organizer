@@ -5,26 +5,26 @@ import {
     filmInfoSelector,
     filmsSelector,
 } from "../../../src/infra/selectors/film";
-import { aFilm, anAlbum } from "../../test-util/fixtures";
+import { aFilm, aCollection } from "../../test-util/fixtures";
 
 describe("Films selector", () => {
     it("filmsSelector", () => {
-        expect(filmsSelector({ album: null })).toBeNull();
+        expect(filmsSelector({ collection: null })).toBeNull();
 
         const state = {
-            album: anAlbum({
+            collection: aCollection({
                 films: [aFilm()],
             }),
         };
-        expect(filmsSelector(state)).toStrictEqual(state.album.films);
+        expect(filmsSelector(state)).toStrictEqual(state.collection.films);
     });
 
     it("filmDetailSelector", () => {
-        expect(filmDetailSelector({ album: null, location: [] })).toBeNull();
+        expect(filmDetailSelector({ collection: null, location: [] })).toBeNull();
 
         const film = aFilm();
         const state = {
-            album: anAlbum({
+            collection: aCollection({
                 films: [film],
             }),
             location: [FILM_DETAIL_SECTION, film.id],
@@ -36,10 +36,10 @@ describe("Films selector", () => {
     });
 
     it("filmInfoSelector", () => {
-        expect(filmInfoSelector({ album: null, selectedFilm: null })).toBeNull();
+        expect(filmInfoSelector({ collection: null, selectedFilm: null })).toBeNull();
 
         const film = aFilm();
-        const state = { album: anAlbum({ films: [film] }), selectedFilm: film.id };
+        const state = { collection: aCollection({ films: [film] }), selectedFilm: film.id };
         expect(filmInfoSelector(state)).toEqual(film.info);
     });
 });

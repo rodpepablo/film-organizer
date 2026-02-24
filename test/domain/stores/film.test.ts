@@ -19,7 +19,7 @@ import {
     aFilm,
     aFilmInfo,
     aForm,
-    anAlbum,
+    aCollection,
     anImage,
     aState,
 } from "../../test-util/fixtures";
@@ -31,22 +31,22 @@ import {
     FILM_ADDITION_SUCCESS,
     FILM_INFO_MODAL,
     FILM_NAME_EDIT_SUCCESS,
-    FILM_NOT_IN_ALBUM_ERROR,
+    FILM_NOT_IN_COLLECTION_ERROR,
     UNEXPECTED_ERROR,
 } from "../../../src/infra/constants";
 import { IPCErrors } from "../../../src/infra/ipc-service";
 import { INVALID_SHOT_ISO } from "../../../src/infra/errors";
 
-const ALBUM_PATH = "/path";
+const COLLECTION_PATH = "/path";
 const FILM_PATH = "/path/to/film";
 
-const ALBUM = anAlbum({ path: ALBUM_PATH });
+const COLLECTION = aCollection({ path: COLLECTION_PATH });
 
 describe("Film store", () => {
     describe("Add film", () => {
         it("Should add a film from request", async () => {
             const film = aFilm();
-            const state = aState({ album: ALBUM });
+            const state = aState({ collection: COLLECTION });
             const bus = spiedBus();
             const api = mockedAPI();
             const manager = new FilmStoreManager(state, bus, api);
@@ -56,12 +56,12 @@ describe("Film store", () => {
 
             await manager.manageAddFilm();
 
-            expect(state.album).toStrictEqual({
-                ...ALBUM,
+            expect(state.collection).toStrictEqual({
+                ...COLLECTION,
                 films: [film],
             });
             expect(api.fs.getFolder).toHaveBeenCalledOnce();
-            expect(api.film.addFilm).toHaveBeenCalledWith(ALBUM_PATH, FILM_PATH);
+            expect(api.film.addFilm).toHaveBeenCalledWith(COLLECTION_PATH, FILM_PATH);
             expect(bus.emit).toHaveBeenCalledWith(
                 CREATE_NOTIFICATION,
                 FILM_ADDITION_SUCCESS,
@@ -70,7 +70,7 @@ describe("Film store", () => {
         });
 
         it("Shouldn't do anything if folder selection is cancelled", async () => {
-            const state = aState({ album: ALBUM });
+            const state = aState({ collection: COLLECTION });
             const bus = spiedBus();
             const api = mockedAPI();
             const manager = new FilmStoreManager(state, bus, api);
@@ -79,14 +79,14 @@ describe("Film store", () => {
 
             await manager.manageAddFilm();
 
-            expect(state.album).toStrictEqual(ALBUM);
+            expect(state.collection).toStrictEqual(COLLECTION);
             expect(api.fs.getFolder).toHaveBeenCalledOnce();
             expect(api.film.addFilm).not.toHaveBeenCalled();
             expect(bus.emit).not.toHaveBeenCalled();
         });
 
-        it("Should create an error notification if film path not inside album", async () => {
-            const state = aState({ album: ALBUM });
+        it("Should create an error notification if film path not inside collection", async () => {
+            const state = aState({ collection: COLLECTION });
             const bus = spiedBus();
             const api = mockedAPI();
             const manager = new FilmStoreManager(state, bus, api);
@@ -94,23 +94,23 @@ describe("Film store", () => {
             api.fs.getFolder.mockResolvedValue(FILM_PATH);
             api.film.addFilm.mockResolvedValue({
                 ok: false,
-                type: IPCErrors.FILM_FOLDER_OUTSIDE_ALBUM_FOLDER,
+                type: IPCErrors.FILM_FOLDER_OUTSIDE_COLLECTION_FOLDER,
             });
 
             await manager.manageAddFilm();
 
-            expect(state.album).toStrictEqual(ALBUM);
+            expect(state.collection).toStrictEqual(COLLECTION);
             expect(api.fs.getFolder).toHaveBeenCalledOnce();
-            expect(api.film.addFilm).toHaveBeenCalledWith(ALBUM_PATH, FILM_PATH);
+            expect(api.film.addFilm).toHaveBeenCalledWith(COLLECTION_PATH, FILM_PATH);
             expect(bus.emit).toHaveBeenCalledWith(
                 CREATE_NOTIFICATION,
-                FILM_NOT_IN_ALBUM_ERROR,
+                FILM_NOT_IN_COLLECTION_ERROR,
             );
             expectRender(bus);
         });
 
         it("Should create an error notification on runtime error", async () => {
-            const state = aState({ album: ALBUM });
+            const state = aState({ collection: COLLECTION });
             const bus = spiedBus();
             const api = mockedAPI();
             const manager = new FilmStoreManager(state, bus, api);
@@ -120,9 +120,9 @@ describe("Film store", () => {
 
             await manager.manageAddFilm();
 
-            expect(state.album).toStrictEqual(ALBUM);
+            expect(state.collection).toStrictEqual(COLLECTION);
             expect(api.fs.getFolder).toHaveBeenCalledOnce();
-            expect(api.film.addFilm).toHaveBeenCalledWith(ALBUM_PATH, FILM_PATH);
+            expect(api.film.addFilm).toHaveBeenCalledWith(COLLECTION_PATH, FILM_PATH);
             expect(bus.emit).toHaveBeenCalledWith(
                 CREATE_NOTIFICATION,
                 UNEXPECTED_ERROR,
@@ -135,7 +135,7 @@ describe("Film store", () => {
         it("Should edit film name and create a notification", () => {
             const film = aFilm({ name: "old name" });
             const state = aState({
-                album: anAlbum({ films: [film] }),
+                collection: aCollection({ films: [film] }),
                 forms: {
                     [EDIT_FILM_NAME_FORM]: aForm({
                         values: { filmId: film.id, name: "new name" },
@@ -148,7 +148,7 @@ describe("Film store", () => {
 
             manager.editFilmName();
 
-            expect(state.album?.films[0].name).toEqual("new name");
+            expect(state.collection?.films[0].name).toEqual("new name");
             expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
                 formId: EDIT_FILM_NAME_FORM,
             });
@@ -166,7 +166,7 @@ describe("Film store", () => {
         it("Should put an error into the form if name is invalid", () => {
             const film = aFilm({ name: "old name" });
             const state = aState({
-                album: anAlbum({ films: [film] }),
+                collection: aCollection({ films: [film] }),
                 forms: {
                     [EDIT_FILM_NAME_FORM]: aForm({
                         values: { filmId: film.id, name: "" },
@@ -179,7 +179,7 @@ describe("Film store", () => {
 
             manager.editFilmName();
 
-            expect(state.album?.films[0].name).toEqual("old name");
+            expect(state.collection?.films[0].name).toEqual("old name");
             expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
                 formId: EDIT_FILM_NAME_FORM,
             });
@@ -192,7 +192,7 @@ describe("Film store", () => {
 
         it("Should close the form and create a notification on error", () => {
             const state = aState({
-                album: anAlbum(),
+                collection: aCollection(),
                 forms: {
                     [EDIT_FILM_NAME_FORM]: aForm({
                         values: { formId: "123", name: "new name" },
@@ -227,7 +227,7 @@ describe("Film store", () => {
             const image3 = anImage();
             const film = aFilm({ images: [image1, image2, image3] });
             const state = aState({
-                album: anAlbum({ films: [aFilm(), film] }),
+                collection: aCollection({ films: [aFilm(), film] }),
             });
             const bus = spiedBus();
             const api = mockedAPI();
@@ -236,7 +236,7 @@ describe("Film store", () => {
             const newOrder = [image2.id, image1.id, image3.id];
             manager.sortImageList({ filmId: film.id, newOrder });
 
-            expect(state.album?.films[1].images.map((image) => image.id)).toEqual(
+            expect(state.collection?.films[1].images.map((image) => image.id)).toEqual(
                 newOrder,
             );
             expectRender(bus);
@@ -245,7 +245,7 @@ describe("Film store", () => {
         it("Should show an error notification on unexpected behaviour (film doesnt exist)", () => {
             const film = aFilm();
             const state = aState({
-                album: anAlbum({ films: [aFilm(), film] }),
+                collection: aCollection({ films: [aFilm(), film] }),
             });
             const bus = spiedBus();
             const api = mockedAPI();
@@ -273,7 +273,7 @@ describe("Film store", () => {
         it("Should edit info, open info modal, reset form and create a notification on success", () => {
             const film = aFilm();
             const state = aState({
-                album: anAlbum({ films: [film] }),
+                collection: aCollection({ films: [film] }),
                 forms: {
                     [EDIT_FILM_INFO_FORM]: aForm({
                         values: {
@@ -289,7 +289,7 @@ describe("Film store", () => {
 
             manager.editFilmInfo();
 
-            expect(state.album?.films[0].info).toStrictEqual(EDITED_FIELDS);
+            expect(state.collection?.films[0].info).toStrictEqual(EDITED_FIELDS);
             expect(bus.emit).toHaveBeenCalledWith(
                 CREATE_NOTIFICATION,
                 EDIT_FILM_INFO_SUCCESS,
@@ -303,7 +303,7 @@ describe("Film store", () => {
         it("Should add form error if info values dont pass validation", () => {
             const film = aFilm();
             const state = aState({
-                album: anAlbum({ films: [film] }),
+                collection: aCollection({ films: [film] }),
                 forms: {
                     [EDIT_FILM_INFO_FORM]: aForm({
                         values: {
@@ -320,7 +320,7 @@ describe("Film store", () => {
 
             manager.editFilmInfo();
 
-            expect(state.album?.films[0].info).toStrictEqual(film.info);
+            expect(state.collection?.films[0].info).toStrictEqual(film.info);
             expect(bus.emit).toHaveBeenCalledWith(FORM_ERROR, {
                 formId: EDIT_FILM_INFO_FORM,
                 error: INVALID_SHOT_ISO,
@@ -331,7 +331,7 @@ describe("Film store", () => {
         it("Should close form and create a notification on unexpected error", () => {
             const film = aFilm();
             const state = aState({
-                album: anAlbum({ films: [film] }),
+                collection: aCollection({ films: [film] }),
                 forms: {
                     [EDIT_FILM_INFO_FORM]: aForm({
                         values: {
@@ -347,7 +347,7 @@ describe("Film store", () => {
 
             manager.editFilmInfo();
 
-            expect(state.album?.films[0].info).toStrictEqual(film.info);
+            expect(state.collection?.films[0].info).toStrictEqual(film.info);
             expect(bus.emit).toHaveBeenCalledWith(
                 CREATE_NOTIFICATION,
                 UNEXPECTED_ERROR,

@@ -50,7 +50,7 @@ export class FilmImageStoreManager {
 
         try {
             const [isValid, error] = ImageValidators.filmNameEdit
-                .withContext(this.state.album)
+                .withContext(this.state.collection)
                 .validate(values);
             if (!isValid) {
                 formError(this.emit, {
@@ -61,7 +61,7 @@ export class FilmImageStoreManager {
                 return;
             }
 
-            const film = this.state.album.films.find(
+            const film = this.state.collection.films.find(
                 (film) => film.id === values.filmId,
             );
             const image = film.images.find((image) => image.id === values.imageId);
@@ -86,7 +86,7 @@ export class FilmImageStoreManager {
         let image: FilmImage = null;
         try {
             const { filmIndex, imageIndex } = this.findImage(params.imageId);
-            image = this.state.album.films[filmIndex].images[imageIndex];
+            image = this.state.collection.films[filmIndex].images[imageIndex];
             image.loading = true;
             const previewPath = await this.api.image.createPreviewImage(image);
             image.loading = false;
@@ -111,8 +111,8 @@ export class FilmImageStoreManager {
         filmIndex: number;
         imageIndex: number;
     } {
-        for (let i = 0; i < this.state.album.films.length; i++) {
-            const film = this.state.album.films[i];
+        for (let i = 0; i < this.state.collection.films.length; i++) {
+            const film = this.state.collection.films[i];
             const j = film.images.findIndex((image) => image.id === imageId);
             if (j >= 0) {
                 return { filmIndex: i, imageIndex: j };

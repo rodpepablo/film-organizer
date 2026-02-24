@@ -13,11 +13,11 @@ import {
 } from "../../../../src/infra/events";
 import filmDetailSection from "../../../../src/ui/components/film/film-detail-section/film-detail-section";
 import { safeDispatchCustomEvent } from "../../../test-util/dom";
-import { aFilm, anAlbum, anImage } from "../../../test-util/fixtures";
+import { aFilm, aCollection, anImage } from "../../../test-util/fixtures";
 
 describe("FilmDetailSection Component", () => {
     it("Should load message when no film selected", () => {
-        const state = { album: null } as State;
+        const state = { collection: null } as State;
 
         const dom = filmDetailSection(state, () => { });
 
@@ -27,7 +27,7 @@ describe("FilmDetailSection Component", () => {
     it("Should show film name in the header", () => {
         const film = aFilm();
         const state = {
-            album: anAlbum({ films: [film] }),
+            collection: aCollection({ films: [film] }),
             location: [FILM_DETAIL_SECTION, film.id],
         } as State;
 
@@ -43,7 +43,7 @@ describe("FilmDetailSection Component", () => {
         const image2 = anImage({ name: "image2" });
         const film = aFilm({ images: [image1, image2] });
         const state = {
-            album: anAlbum({ films: [film] }),
+            collection: aCollection({ films: [film] }),
             location: [FILM_DETAIL_SECTION, film.id],
         } as State;
 
@@ -58,7 +58,7 @@ describe("FilmDetailSection Component", () => {
     it("Should open modal with id and name preloaded to edit film name", () => {
         const film = aFilm();
         const state = {
-            album: anAlbum({ films: [film] }),
+            collection: aCollection({ films: [film] }),
             location: [FILM_DETAIL_SECTION, film.id],
         } as State;
         const emit = vi.fn();
@@ -80,7 +80,7 @@ describe("FilmDetailSection Component", () => {
         const film = aFilm({ images: [anImage(), anImage()] });
 
         const state = {
-            album: anAlbum({ films: [film] }),
+            collection: aCollection({ films: [film] }),
             location: [FILM_DETAIL_SECTION, film.id],
         } as State;
 
@@ -109,7 +109,7 @@ describe("FilmDetailSection Component", () => {
         const film = aFilm();
 
         const state = {
-            album: anAlbum({ films: [film] }),
+            collection: aCollection({ films: [film] }),
             location: [FILM_DETAIL_SECTION, film.id],
         } as State;
 

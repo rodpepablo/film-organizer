@@ -4,28 +4,28 @@ import { State, Emit } from "../../../../domain/models/state";
 import NavMenu from "../nav-menu/nav-menu";
 import {
     ADD_FILM_MENU,
-    ALBUM_MANAGEMENT_MENU,
-    CREATE_ALBUM_MENU,
+    COLLECTION_MANAGEMENT_MENU,
+    CREATE_COLLECTION_MENU,
     FILM_MANAGEMENT_MENU,
     LIST_FILMS_MENU,
-    LOAD_ALBUM_MENU,
+    LOAD_COLLECTION_MENU,
 } from "../../../../infra/constants";
 import { items } from "./nav-menu-items";
-import { albumSelector } from "../../../../infra/selectors/album";
+import { collectionSelector } from "../../../../infra/selectors/collection";
 
 export default (state: State, emit: Emit): HTMLElement => {
-    const album = albumSelector(state);
+    const collection = collectionSelector(state);
     const menus: NavMenu[] = [];
 
-    const albumManagementMenu = new NavMenu(
-        "Album Management",
-        ALBUM_MANAGEMENT_MENU,
+    const collectionManagementMenu = new NavMenu(
+        "Collection Management",
+        COLLECTION_MANAGEMENT_MENU,
     );
-    albumManagementMenu.addMenuItem(items[CREATE_ALBUM_MENU]);
-    albumManagementMenu.addMenuItem(items[LOAD_ALBUM_MENU]);
-    menus.push(albumManagementMenu);
+    collectionManagementMenu.addMenuItem(items[CREATE_COLLECTION_MENU]);
+    collectionManagementMenu.addMenuItem(items[LOAD_COLLECTION_MENU]);
+    menus.push(collectionManagementMenu);
 
-    if (album != null) {
+    if (collection != null) {
         const filmManagementMenu = new NavMenu(
             "Film Management",
             FILM_MANAGEMENT_MENU,

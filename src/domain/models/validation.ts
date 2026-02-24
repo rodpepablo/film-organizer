@@ -1,4 +1,4 @@
-import { Album } from "./album";
+import { Collection } from "./collection";
 
 export type ValidationResult = [boolean, { msg: string }];
 
@@ -8,13 +8,13 @@ export interface Validator {
 
 export interface WithContext {
     context: any;
-    withContext(album: any): Validator;
+    withContext(collection: any): Validator;
 }
 
-export class ValidatorWithAlbumContext implements Validator, WithContext {
-    context: Album;
+export class ValidatorWithCollectionContext implements Validator, WithContext {
+    context: Collection;
 
-    withContext(context: Album): Validator {
+    withContext(context: Collection): Validator {
         this.context = context;
         return this;
     }

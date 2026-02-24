@@ -18,7 +18,7 @@ import {
 import {
     aFilm,
     aForm,
-    anAlbum,
+    aCollection,
     anImage,
     aState,
 } from "../../test-util/fixtures";
@@ -39,7 +39,7 @@ describe("Film Image store", () => {
             const image = anImage({ name: "old name" });
             const film = aFilm({ images: [image, anImage()] });
             const state = {
-                album: anAlbum({ films: [film] }),
+                collection: aCollection({ films: [film] }),
                 forms: {
                     [EDIT_IMAGE_NAME_FORM]: aForm({
                         values: {
@@ -59,8 +59,8 @@ describe("Film Image store", () => {
 
             manager.editFilmName();
 
-            expect(state.album?.films[0].images[0].name).toEqual("new name");
-            expect(state.album?.films[0].images[0].lastUpdated).toEqual("new date");
+            expect(state.collection?.films[0].images[0].name).toEqual("new name");
+            expect(state.collection?.films[0].images[0].lastUpdated).toEqual("new date");
             expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
                 formId: EDIT_IMAGE_NAME_FORM,
             });
@@ -79,7 +79,7 @@ describe("Film Image store", () => {
             const image = anImage({ name: "old name" });
             const film = aFilm({ images: [image, anImage()] });
             const state = {
-                album: anAlbum({ films: [film] }),
+                collection: aCollection({ films: [film] }),
                 forms: {
                     [EDIT_IMAGE_NAME_FORM]: aForm({
                         values: {
@@ -96,7 +96,7 @@ describe("Film Image store", () => {
 
             manager.editFilmName();
 
-            expect(state.album?.films[0].images[0].name).toEqual("old name");
+            expect(state.collection?.films[0].images[0].name).toEqual("old name");
             expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
                 formId: EDIT_IMAGE_NAME_FORM,
             });
@@ -110,9 +110,9 @@ describe("Film Image store", () => {
         });
 
         it("Should clear and close and create a notification on unexpected error", () => {
-            // I.E. Album with no films will break the store
+            // I.E. Collection with no films will break the store
             const state = {
-                album: anAlbum(),
+                collection: aCollection(),
                 forms: {
                     [EDIT_IMAGE_NAME_FORM]: aForm({
                         values: {
@@ -148,8 +148,8 @@ describe("Film Image store", () => {
         it("should update previewPath", async () => {
             const image = anImage({ previewPath: null });
             const film = aFilm({ images: [image, anImage()] });
-            const album = anAlbum({ films: [film, aFilm()] });
-            const state = aState({ album });
+            const collection = aCollection({ films: [film, aFilm()] });
+            const state = aState({ collection });
             const bus = spiedBus();
             const api = mockedAPI();
             const manager = aManagerWith(state, bus, api);
@@ -162,15 +162,15 @@ describe("Film Image store", () => {
 
             await manager.createImagePreview({ imageId: image.id });
 
-            expect(state.album?.films[0].images[0].previewPath).toEqual(previewPath);
+            expect(state.collection?.films[0].images[0].previewPath).toEqual(previewPath);
             expectRender(bus);
         });
 
         it("Should update loading before and after generating the preview", async () => {
             const image = anImage({ previewPath: null, loading: false });
             const film = aFilm({ images: [image] });
-            const album = anAlbum({ films: [film] });
-            const state = aState({ album });
+            const collection = aCollection({ films: [film] });
+            const state = aState({ collection });
             const bus = spiedBus();
             const api = mockedAPI();
             const manager = aManagerWith(state, bus, api);
@@ -183,14 +183,14 @@ describe("Film Image store", () => {
 
             await manager.createImagePreview({ imageId: image.id });
 
-            expect(state.album?.films[0].images[0].loading).toBeFalsy();
+            expect(state.collection?.films[0].images[0].loading).toBeFalsy();
         });
 
         it("Should manage error from ipc handler", async () => {
             const image = anImage({ previewPath: null });
             const film = aFilm({ images: [image, anImage()] });
-            const album = anAlbum({ films: [film, aFilm()] });
-            const state = aState({ album });
+            const collection = aCollection({ films: [film, aFilm()] });
+            const state = aState({ collection });
             const bus = spiedBus();
             const api = mockedAPI();
             const manager = aManagerWith(state, bus, api);
@@ -202,7 +202,7 @@ describe("Film Image store", () => {
 
             await manager.createImagePreview({ imageId: image.id });
 
-            expect(state.album?.films[0].images[0].previewPath).toBeNull();
+            expect(state.collection?.films[0].images[0].previewPath).toBeNull();
             expect(bus.emit).toHaveBeenCalledWith(
                 CREATE_NOTIFICATION,
                 UNEXPECTED_ERROR,
@@ -211,7 +211,7 @@ describe("Film Image store", () => {
         });
 
         it("Should manage unexpected error", async () => {
-            const state = aState({ album: null });
+            const state = aState({ collection: null });
             const bus = spiedBus();
             const api = mockedAPI();
             const manager = aManagerWith(state, bus, api);

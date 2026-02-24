@@ -1,23 +1,23 @@
 import "./footer.css";
 import { State, Emit } from "../../../../domain/models/state";
 import { html } from "../../../../infra/html";
-import { albumNameSelector } from "../../../../infra/selectors/album";
+import { collectionNameSelector } from "../../../../infra/selectors/collection";
 import Button from "../../general/button/button";
-import { saveAlbum } from "../../../../infra/actions/album";
+import { saveCollection } from "../../../../infra/actions/collection";
 
 export default function footer(state: State, emit: Emit): HTMLElement {
-    const albumName = albumNameSelector(state);
+    const collectionName = collectionNameSelector(state);
     return html`
         <footer class="footer">
-            ${albumName && footerAlbumInfo(state, emit, albumName)}
+            ${collectionName && footerCollectionInfo(state, emit, collectionName)}
         </footer>
     `;
 }
 
-function footerAlbumInfo(
+function footerCollectionInfo(
     state: State,
     emit: Emit,
-    albumName: string,
+    collectionName: string,
 ): HTMLElement {
     const button = new Button({
         value: "save",
@@ -25,11 +25,11 @@ function footerAlbumInfo(
         onclick: emitSave(emit),
     });
     return html`
-        <div class="footer-album">
+        <div class="footer-collection">
             ${button.render(state, emit)}
-            <div class="footer-album-info">
-                <span class="footer-album-span">Album:</span>
-                <h5 class="footer-album-title">${albumName}</h5>
+            <div class="footer-collection-info">
+                <span class="footer-collection-span">Collection:</span>
+                <h5 class="footer-collection-title">${collectionName}</h5>
             </div>
         </div>
     `;
@@ -39,6 +39,6 @@ function emitSave(emit: Emit) {
     return (e: DOMEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        saveAlbum(emit);
+        saveCollection(emit);
     };
 }

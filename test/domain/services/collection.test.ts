@@ -3,7 +3,7 @@ import { mock } from "vitest-mock-extended";
 import { join } from "path";
 import fs from "fs/promises";
 import electron, { IpcMainInvokeEvent } from "electron";
-import AlbumService from "../../../src/domain/services/album";
+import CollectionService from "../../../src/domain/services/collection";
 import {
     createTemporalDirectory,
     loadJSON,
@@ -12,15 +12,15 @@ import {
     createFolder,
     createDummyFile,
 } from "../../test-util/file-system";
-import { Album } from "../../../src/domain/models/album";
+import { Collection } from "../../../src/domain/models/collection";
 import {
-    LOAD_ALBUM_HANDLER,
-    CREATE_ALBUM_HANDLER,
-    SAVE_ALBUM_HANDLER,
+    LOAD_COLLECTION_HANDLER,
+    CREATE_COLLECTION_HANDLER,
+    SAVE_COLLECTION_HANDLER,
 } from "../../../src/infra/ipc-events";
-import { aFilm, anAlbum, anImage } from "../../test-util/fixtures";
+import { aFilm, aCollection, anImage } from "../../test-util/fixtures";
 
-const NAME = "album_name";
+const NAME = "collection_name";
 
 const EVENT = {} as IpcMainInvokeEvent;
 let temporalDirectory: string;
@@ -33,46 +33,46 @@ afterEach(() => {
     removeDirectory(temporalDirectory);
 });
 
-describe("AlbumService", () => {
-    it("Should create an album in a designated file", async () => {
-        const albumService = new AlbumService();
+describe("CollectionService", () => {
+    it("Should create an collection in a designated file", async () => {
+        const collectionService = new CollectionService();
 
-        const createdAlbum = await albumService.createAlbum(
+        const createdCollection = await collectionService.createCollection(
             EVENT,
             temporalDirectory,
             NAME,
         );
 
-        const expectedAlbum = {
+        const expectedCollection = {
             name: NAME,
             path: join(temporalDirectory, `${NAME}.json`),
             films: [],
         };
 
-        expect(createdAlbum).toStrictEqual(expectedAlbum);
-        const savedAlbum = loadJSON<Album>(expectedAlbum.path);
-        expect(savedAlbum).toStrictEqual(expectedAlbum);
+        expect(createdCollection).toStrictEqual(expectedCollection);
+        const savedCollection = loadJSON<Collection>(expectedCollection.path);
+        expect(savedCollection).toStrictEqual(expectedCollection);
     });
 
-    it("Should load an album from a designated path", async () => {
+    it("Should load an collection from a designated path", async () => {
         const fullpath = join(temporalDirectory, "test.json");
-        const savedAlbum = anAlbum({ path: "/last/path.json" });
-        saveJSON(fullpath, savedAlbum);
+        const savedCollection = aCollection({ path: "/last/path.json" });
+        saveJSON(fullpath, savedCollection);
 
-        const albumService = new AlbumService();
+        const collectionService = new CollectionService();
 
-        const album = await albumService.loadAlbum(EVENT, fullpath);
+        const collection = await collectionService.loadCollection(EVENT, fullpath);
 
-        expect(album).toStrictEqual(
-            anAlbum({
-                ...savedAlbum,
+        expect(collection).toStrictEqual(
+            aCollection({
+                ...savedCollection,
                 path: fullpath,
             }),
         );
     });
 
-    it("Should save an album", async () => {
-        const albumPath = join(temporalDirectory, "test.json");
+    it("Should save an collection", async () => {
+        const collectionPath = join(temporalDirectory, "test.json");
         const image1 = anImage({
             name: "image1",
             ext: "tif",
@@ -88,14 +88,14 @@ describe("AlbumService", () => {
             path: "film",
             images: [image1, image2],
         });
-        const previousAlbum = anAlbum({ path: albumPath, films: [film] });
+        const previousCollection = aCollection({ path: collectionPath, films: [film] });
 
-        saveJSON(albumPath, previousAlbum);
+        saveJSON(collectionPath, previousCollection);
         createFolder(temporalDirectory, "film");
         createDummyFile(temporalDirectory, "film", "image1.tif");
         createDummyFile(temporalDirectory, "film", "image2.jpg");
 
-        const albumService = new AlbumService();
+        const collectionService = new CollectionService();
 
         const imageWithPreview = anImage({
             ...image1,
@@ -105,17 +105,17 @@ describe("AlbumService", () => {
             ...image2,
             name: "renamed",
         });
-        const album = anAlbum({
-            ...previousAlbum,
+        const collection = aCollection({
+            ...previousCollection,
             name: "new_name",
-            path: albumPath,
+            path: collectionPath,
             films: [aFilm({ ...film, images: [imageWithPreview, renamedImage] })],
         });
 
-        const savedAlbum = await albumService.saveAlbum(EVENT, album);
+        const savedCollection = await collectionService.saveCollection(EVENT, collection);
 
-        const expectedAlbum = anAlbum({
-            ...album,
+        const expectedCollection = aCollection({
+            ...collection,
             films: [
                 aFilm({
                     ...film,
@@ -132,8 +132,8 @@ describe("AlbumService", () => {
                 }),
             ],
         });
-        expect(loadJSON(albumPath)).toStrictEqual(expectedAlbum);
-        expect(savedAlbum).toStrictEqual(expectedAlbum);
+        expect(loadJSON(collectionPath)).toStrictEqual(expectedCollection);
+        expect(savedCollection).toStrictEqual(expectedCollection);
         const savedImages = await fs.readdir(join(temporalDirectory, "film"));
         expect(savedImages).toHaveLength(2);
         expect(savedImages).toContain("image1.tif");
@@ -141,7 +141,7 @@ describe("AlbumService", () => {
     });
 
     it("Swaping names between images should not raise an error on os renaming", async () => {
-        const albumPath = join(temporalDirectory, "test.json");
+        const collectionPath = join(temporalDirectory, "test.json");
         const image1 = anImage({
             name: "image1",
             ext: "jpg",
@@ -157,14 +157,14 @@ describe("AlbumService", () => {
             path: "film",
             images: [image1, image2],
         });
-        const previousAlbum = anAlbum({ path: albumPath, films: [film] });
+        const previousCollection = aCollection({ path: collectionPath, films: [film] });
 
-        saveJSON(albumPath, previousAlbum);
+        saveJSON(collectionPath, previousCollection);
         createFolder(temporalDirectory, "film");
         createDummyFile(temporalDirectory, "film", "image1.jpg");
         createDummyFile(temporalDirectory, "film", "image2.jpg");
 
-        const albumService = new AlbumService();
+        const collectionService = new CollectionService();
 
         const renamedImage1 = anImage({
             ...image1,
@@ -175,8 +175,8 @@ describe("AlbumService", () => {
             ...image2,
             name: "image1",
         });
-        const album = anAlbum({
-            ...previousAlbum,
+        const collection = aCollection({
+            ...previousCollection,
             films: [
                 aFilm({
                     ...film,
@@ -185,10 +185,10 @@ describe("AlbumService", () => {
             ],
         });
 
-        const savedAlbum = await albumService.saveAlbum(EVENT, album);
+        const savedCollection = await collectionService.saveCollection(EVENT, collection);
 
-        const expectedAlbum = anAlbum({
-            ...album,
+        const expectedCollection = aCollection({
+            ...collection,
             films: [
                 aFilm({
                     ...film,
@@ -205,8 +205,8 @@ describe("AlbumService", () => {
                 }),
             ],
         });
-        expect(loadJSON(albumPath)).toStrictEqual(expectedAlbum);
-        expect(savedAlbum).toStrictEqual(expectedAlbum);
+        expect(loadJSON(collectionPath)).toStrictEqual(expectedCollection);
+        expect(savedCollection).toStrictEqual(expectedCollection);
         const savedImages = await fs.readdir(join(temporalDirectory, "film"));
         expect(savedImages).toHaveLength(2);
         expect(savedImages).toContain("image1.jpg");
@@ -214,22 +214,22 @@ describe("AlbumService", () => {
     });
 
     it("Should load IPC handlers", () => {
-        const albumService = new AlbumService();
+        const collectionService = new CollectionService();
         const ipcMain = mock<electron.IpcMain>();
 
-        albumService.load(ipcMain);
+        collectionService.load(ipcMain);
 
         expect(ipcMain.handle).toHaveBeenCalledWith(
-            CREATE_ALBUM_HANDLER,
-            albumService.createAlbum,
+            CREATE_COLLECTION_HANDLER,
+            collectionService.createCollection,
         );
         expect(ipcMain.handle).toHaveBeenCalledWith(
-            LOAD_ALBUM_HANDLER,
-            albumService.loadAlbum,
+            LOAD_COLLECTION_HANDLER,
+            collectionService.loadCollection,
         );
         expect(ipcMain.handle).toHaveBeenCalledWith(
-            SAVE_ALBUM_HANDLER,
-            albumService.saveAlbum,
+            SAVE_COLLECTION_HANDLER,
+            collectionService.saveCollection,
         );
     });
 });

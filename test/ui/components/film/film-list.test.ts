@@ -3,12 +3,12 @@ import { State } from "../../../../src/domain/models/state";
 import { FILM_DETAIL_SECTION } from "../../../../src/infra/constants";
 import { NAVIGATE, SORT_FILM_LIST } from "../../../../src/infra/events";
 import filmList from "../../../../src/ui/components/film/film-list/film-list";
-import { aFilm, anAlbum } from "../../../test-util/fixtures";
+import { aFilm, aCollection } from "../../../test-util/fixtures";
 import { safeDispatchCustomEvent } from "../../../test-util/dom";
 
 describe("Film List Component", () => {
-    it("Should load a message if no album loaded", () => {
-        const state = { album: null };
+    it("Should load a message if no collection loaded", () => {
+        const state = { collection: null };
 
         const dom = filmList(state as State, () => { });
 
@@ -16,9 +16,9 @@ describe("Film List Component", () => {
         expect(dom.querySelectorAll(".film-list-item")).toHaveLength(0);
     });
 
-    it("Should load a message if no films added to the loaded album", () => {
+    it("Should load a message if no films added to the loaded collection", () => {
         const state = {
-            album: anAlbum({ films: [] }),
+            collection: aCollection({ films: [] }),
         };
 
         const dom = filmList(state as State, () => { });
@@ -29,7 +29,7 @@ describe("Film List Component", () => {
 
     it("Should list films when loaded", () => {
         const state = {
-            album: anAlbum({ films: [aFilm()] }),
+            collection: aCollection({ films: [aFilm()] }),
         };
 
         const dom = filmList(state as State, () => { });
@@ -44,7 +44,7 @@ describe("Film List Component", () => {
         const film2 = aFilm();
 
         const state = {
-            album: anAlbum({ films: [film1, film2] }),
+            collection: aCollection({ films: [film1, film2] }),
         };
 
         const dom = filmList(state as State, emit);
@@ -58,7 +58,7 @@ describe("Film List Component", () => {
     it("Should emit a sort film list event when action received by sortable-list", () => {
         const emit = vi.fn();
         const state = {
-            album: anAlbum({ films: [aFilm(), aFilm()] }),
+            collection: aCollection({ films: [aFilm(), aFilm()] }),
         } as State;
 
         const dom = filmList(state, emit);
