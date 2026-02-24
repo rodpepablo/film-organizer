@@ -15,14 +15,15 @@ describe("Create initial state", () => {
 
         expect(state.location).toEqual([HOME_SECTION]);
     });
+
     it("Should initialize menus elements", () => {
         const state = {} as State;
 
         createInitialState(state);
 
         expect(state.menus).toStrictEqual({
-            [COLLECTION_MANAGEMENT_MENU]: false,
-            [FILM_MANAGEMENT_MENU]: false,
+            [COLLECTION_MANAGEMENT_MENU]: true,
+            [FILM_MANAGEMENT_MENU]: true,
         });
     });
 

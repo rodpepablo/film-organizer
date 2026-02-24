@@ -8,8 +8,8 @@ import { State } from "../models/state";
 export default function createInitialState(state: State): void {
     state.location = [HOME_SECTION];
     state.menus = {
-        [COLLECTION_MANAGEMENT_MENU]: false,
-        [FILM_MANAGEMENT_MENU]: false,
+        [COLLECTION_MANAGEMENT_MENU]: true,
+        [FILM_MANAGEMENT_MENU]: true,
     };
     state.modal = {
         active: false,
