@@ -8,6 +8,7 @@ import {
     FILM_INFO_MODAL,
     FILM_NAME_EDIT_SUCCESS,
     FILM_NOT_IN_COLLECTION_ERROR,
+    FILM_SECTION,
     UNEXPECTED_ERROR,
 } from "../../infra/constants";
 import {
@@ -26,6 +27,7 @@ import {
     closeModal,
     formError,
     openModal,
+    navigate,
 } from "../../infra/actions/ui";
 import { FilmInfo } from "../models/film";
 
@@ -40,15 +42,19 @@ export class FilmStoreManager {
         this.api = api;
     }
 
-    manageAddFilm = async (): Promise<void> => {
+    addFilm = async (): Promise<void> => {
         try {
             const collectionPath = this.state.collection.path;
             const filmPath = await this.api.fs.getFolder();
             if (filmPath !== null) {
-                const filmResult = await this.api.film.addFilm(collectionPath, filmPath);
+                const filmResult = await this.api.film.addFilm(
+                    collectionPath,
+                    filmPath,
+                );
                 if (filmResult.ok) {
                     this.state.collection.films.push(filmResult.result);
                     createNotification(this.emit, FILM_ADDITION_SUCCESS);
+                    navigate(this.emit, { to: [FILM_SECTION] });
                     this.emit("render");
                     return;
                 }
@@ -131,7 +137,9 @@ export class FilmStoreManager {
             }
 
             const filmId = values.filmId;
-            const film = this.state.collection.films.find((film) => film.id === filmId);
+            const film = this.state.collection.films.find(
+                (film) => film.id === filmId,
+            );
             film.info = this.parseFilmInfo(values);
 
             createNotification(this.emit, EDIT_FILM_INFO_SUCCESS);
@@ -175,7 +183,7 @@ export function filmStore(state: State, emitter: Nanobus) {
         process.env.NODE_ENV !== "test" ? window.api : ({} as Window["api"]);
     const filmStoreManager = new FilmStoreManager(state, emitter, api);
 
-    emitter.on(ADD_FILM_REQUEST, filmStoreManager.manageAddFilm);
+    emitter.on(ADD_FILM_REQUEST, filmStoreManager.addFilm);
     emitter.on(EDIT_FILM_NAME_REQUEST, filmStoreManager.editFilmName);
     emitter.on(SORT_IMAGE_LIST, filmStoreManager.sortImageList);
     emitter.on(EDIT_FILM_INFO_REQUEST, filmStoreManager.editFilmInfo);

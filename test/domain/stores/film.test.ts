@@ -10,6 +10,7 @@ import {
     EDIT_FILM_INFO_REQUEST,
     EDIT_FILM_NAME_REQUEST,
     FORM_ERROR,
+    NAVIGATE,
     OPEN_MODAL,
     SORT_IMAGE_LIST,
 } from "../../../src/infra/events";
@@ -32,6 +33,7 @@ import {
     FILM_INFO_MODAL,
     FILM_NAME_EDIT_SUCCESS,
     FILM_NOT_IN_COLLECTION_ERROR,
+    FILM_SECTION,
     UNEXPECTED_ERROR,
 } from "../../../src/infra/constants";
 import { IPCErrors } from "../../../src/infra/ipc-service";
@@ -44,7 +46,7 @@ const COLLECTION = aCollection({ path: COLLECTION_PATH });
 
 describe("Film store", () => {
     describe("Add film", () => {
-        it("Should add a film from request", async () => {
+        it("Should add a film roll to the collection", async () => {
             const film = aFilm();
             const state = aState({ collection: COLLECTION });
             const bus = spiedBus();
@@ -54,7 +56,7 @@ describe("Film store", () => {
             api.fs.getFolder.mockResolvedValue(FILM_PATH);
             api.film.addFilm.mockResolvedValue({ ok: true, result: film });
 
-            await manager.manageAddFilm();
+            await manager.addFilm();
 
             expect(state.collection).toStrictEqual({
                 ...COLLECTION,
@@ -66,6 +68,7 @@ describe("Film store", () => {
                 CREATE_NOTIFICATION,
                 FILM_ADDITION_SUCCESS,
             );
+            expect(bus.emit).toHaveBeenCalledWith(NAVIGATE, { to: [FILM_SECTION] });
             expectRender(bus);
         });
 
@@ -77,7 +80,7 @@ describe("Film store", () => {
 
             api.fs.getFolder.mockResolvedValue(null);
 
-            await manager.manageAddFilm();
+            await manager.addFilm();
 
             expect(state.collection).toStrictEqual(COLLECTION);
             expect(api.fs.getFolder).toHaveBeenCalledOnce();
@@ -97,7 +100,7 @@ describe("Film store", () => {
                 type: IPCErrors.FILM_FOLDER_OUTSIDE_COLLECTION_FOLDER,
             });
 
-            await manager.manageAddFilm();
+            await manager.addFilm();
 
             expect(state.collection).toStrictEqual(COLLECTION);
             expect(api.fs.getFolder).toHaveBeenCalledOnce();
@@ -118,7 +121,7 @@ describe("Film store", () => {
             api.fs.getFolder.mockResolvedValue(FILM_PATH);
             api.film.addFilm.mockRejectedValue(new Error());
 
-            await manager.manageAddFilm();
+            await manager.addFilm();
 
             expect(state.collection).toStrictEqual(COLLECTION);
             expect(api.fs.getFolder).toHaveBeenCalledOnce();
@@ -236,9 +239,9 @@ describe("Film store", () => {
             const newOrder = [image2.id, image1.id, image3.id];
             manager.sortImageList({ filmId: film.id, newOrder });
 
-            expect(state.collection?.films[1].images.map((image) => image.id)).toEqual(
-                newOrder,
-            );
+            expect(
+                state.collection?.films[1].images.map((image) => image.id),
+            ).toEqual(newOrder);
             expectRender(bus);
         });
 
