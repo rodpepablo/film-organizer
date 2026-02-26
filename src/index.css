@@ -63,3 +63,7 @@ body {
 	margin: 1em;
 	padding: 1em;
 }
+
+.separator {
+	flex: 1;
+}

@@ -26,3 +26,6 @@ export const safeDispatchCustomEvent = (
 ) => {
     dom.dispatchEvent(new window.CustomEvent(name, params));
 };
+
+export const safeDispatchEvent = (dom: HTMLElement, name: string) =>
+    dom.dispatchEvent(new window.Event(name, { bubbles: true }));

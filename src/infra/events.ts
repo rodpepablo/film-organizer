@@ -22,6 +22,7 @@ export const EDIT_FILM_NAME_REQUEST = "film-name::edit::request";
 export const SORT_IMAGE_LIST = "image-list::sort";
 export const SHOW_FILM_INFO = "film-info::show";
 export const EDIT_FILM_INFO_REQUEST = "film-info::edit::request";
+export const BULK_EDIT_IMAGE_NAME_REQUEST = "image-name::bulk-edit::request";
 
 // FilmImage
 export const EDIT_IMAGE_NAME_REQUEST = "image-name::edit::request";

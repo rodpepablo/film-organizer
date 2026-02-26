@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it } from "vitest";
 import EditImageNameModal from "../../../../src/ui/components/film/edit-image-name-modal/edit-image-name-modal";
 import { aState } from "../../../test-util/fixtures";
 import { testHasInputs } from "../../../test-util/util";

@@ -1,6 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
 import { State } from "../../../../src/domain/models/state";
 import {
+    BULK_EDIT_IMAGE_NAME_FORM,
+    BULK_EDIT_IMAGE_NAME_MODAL,
     EDIT_FILM_NAME_FORM,
     EDIT_FILM_NAME_MODAL,
     FILM_DETAIL_SECTION,
@@ -12,8 +14,16 @@ import {
     UPDATE_FORM,
 } from "../../../../src/infra/events";
 import filmDetailSection from "../../../../src/ui/components/film/film-detail-section/film-detail-section";
-import { safeDispatchCustomEvent } from "../../../test-util/dom";
-import { aFilm, aCollection, anImage } from "../../../test-util/fixtures";
+import {
+    safeDispatchCustomEvent,
+    safeDispatchEvent,
+} from "../../../test-util/dom";
+import {
+    aFilm,
+    aCollection,
+    anImage,
+    aState,
+} from "../../../test-util/fixtures";
 
 describe("FilmDetailSection Component", () => {
     it("Should load message when no film selected", () => {
@@ -117,5 +127,30 @@ describe("FilmDetailSection Component", () => {
         dom.querySelector<HTMLElement>("[icon='mdi:info']")?.click();
 
         expect(emit).toHaveBeenCalledWith(SHOW_FILM_INFO, { filmId: film.id });
+    });
+
+    it("Should open a pre-filled modal form to bulk edit image names when clicking on menu item", () => {
+        const emit = vi.fn();
+        const film = aFilm();
+
+        const state = aState({
+            collection: aCollection({ films: [film] }),
+            location: [FILM_DETAIL_SECTION, film.id],
+        });
+
+        const dom = filmDetailSection(state, emit);
+        const menuItem = dom.querySelector<HTMLElement>(".drop-down-item")!;
+        safeDispatchEvent(menuItem, "mousedown");
+
+        expect(emit).toHaveBeenCalledWith(OPEN_MODAL, {
+            modalId: BULK_EDIT_IMAGE_NAME_MODAL,
+        });
+        expect(emit).toHaveBeenCalledWith(UPDATE_FORM, {
+            formId: BULK_EDIT_IMAGE_NAME_FORM,
+            values: {
+                filmId: film.id,
+                nameTemplate: film.bulkNameEditTemplate || "",
+            },
+        });
     });
 });

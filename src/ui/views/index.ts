@@ -7,6 +7,7 @@ import ModalComponent from "../components/general/modal/modal";
 import notifications from "../components/general/notifications/notifications";
 import CreateCollectionModal from "../components/collection/create-collection-modal/create-collection-modal";
 import {
+    BULK_EDIT_IMAGE_NAME_MODAL,
     CREATE_COLLECTION_MODAL,
     EDIT_FILM_INFO_MODAL,
     EDIT_FILM_NAME_MODAL,
@@ -17,11 +18,13 @@ import EditFilmNameModal from "../components/film/edit-film-name-modal/edit-film
 import EditImageNameModal from "../components/film/edit-image-name-modal/edit-image-name-modal";
 import FilmInfoModal from "../components/film/film-info-modal/film-info-modal";
 import EditFilmInfoModal from "../components/film/edit-film-info-modal/edit-film-info-modal";
+import BulkEditImageNameModal from "../components/image/bulk-edit-image-name-modal/bulk-edit-image-name-modal";
 
 const modal = new ModalComponent({
     [CREATE_COLLECTION_MODAL]: new CreateCollectionModal(),
     [EDIT_FILM_NAME_MODAL]: new EditFilmNameModal(),
     [EDIT_IMAGE_NAME_MODAL]: new EditImageNameModal(),
+    [BULK_EDIT_IMAGE_NAME_MODAL]: new BulkEditImageNameModal(),
     [FILM_INFO_MODAL]: new FilmInfoModal(),
     [EDIT_FILM_INFO_MODAL]: new EditFilmInfoModal(),
 });

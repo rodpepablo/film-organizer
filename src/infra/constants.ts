@@ -18,6 +18,7 @@ export const ADD_FILM_MENU = "add-film-menu";
 export const CREATE_COLLECTION_MODAL = "create-collection-modal";
 export const EDIT_FILM_NAME_MODAL = "edit-film-name-modal";
 export const EDIT_IMAGE_NAME_MODAL = "edit-image-name-modal";
+export const BULK_EDIT_IMAGE_NAME_MODAL = "bulk-edit-image-name-modal";
 export const FILM_INFO_MODAL = "film-info-modal";
 export const EDIT_FILM_INFO_MODAL = "edit-film-info-modal";
 
@@ -25,7 +26,14 @@ export const EDIT_FILM_INFO_MODAL = "edit-film-info-modal";
 export const CREATE_COLLECTION_FORM = "create-collection-form";
 export const EDIT_FILM_NAME_FORM = "edit-film-name-form";
 export const EDIT_IMAGE_NAME_FORM = "edit-image-name-form";
+export const BULK_EDIT_IMAGE_NAME_FORM = "bulk-edit-image-name-form";
 export const EDIT_FILM_INFO_FORM = "edit-film-info-form";
+
+// ICONS
+export const EDIT_ICON = "mdi:pencil";
+export const INFO_ICON = "mdi:info";
+export const DOWN_ICON = "mdi:chevron-down";
+export const UP_ICON = "mdi:chevron-up";
 
 // NOTIFICATIONS
 const success = (message: string): CreateNotificationParams => ({
@@ -37,8 +45,12 @@ const error = (message: string): CreateNotificationParams => ({
     message,
 });
 
-export const COLLECTION_CREATION_SUCCESS = success("Collection created successfully");
-export const COLLECTION_LOAD_SUCCESS = success("Collection loaded successfully");
+export const COLLECTION_CREATION_SUCCESS = success(
+    "Collection created successfully",
+);
+export const COLLECTION_LOAD_SUCCESS = success(
+    "Collection loaded successfully",
+);
 export const COLLECTION_LOAD_ERROR = error("Trying to load invalid file");
 export const COLLECTION_SAVE_SUCCESS = success("Collection saved successfully");
 

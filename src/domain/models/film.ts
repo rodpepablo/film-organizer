@@ -2,6 +2,7 @@ export interface Film {
     id: string;
     name: string;
     path: string;
+    bulkNameEditTemplate?: string;
     info: FilmInfo;
     images: FilmImage[];
 }

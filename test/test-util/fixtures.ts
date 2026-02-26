@@ -24,7 +24,9 @@ export const aState = (attributes: Partial<State> = {}): State => {
     };
 };
 
-export const aCollection = (attributes: Partial<Collection> = {}): Collection => {
+export const aCollection = (
+    attributes: Partial<Collection> = {},
+): Collection => {
     return {
         name: "TEST COLLECTION",
         path: "/PATH/TO/COLLECTION.json",
@@ -38,6 +40,7 @@ export const aFilm = (attributes: Partial<Film> = {}): Film => {
         id: uuidv4().toString(),
         name: "TEST FILM",
         path: "FILM/TIF",
+        bulkNameEditTemplate: "film-%fi-%ii",
         info: aFilmInfo(),
         images: [],
         ...attributes,
