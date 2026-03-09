@@ -1,6 +1,6 @@
-export interface Film {
-    id: string;
-    name: string;
+import { NamedEntity } from "./base";
+
+export interface Film extends NamedEntity {
     path: string;
     bulkNameEditTemplate?: string;
     info: FilmInfo;
@@ -15,9 +15,8 @@ export interface FilmInfo {
     filmStockExpiration: string;
 }
 
-export interface FilmImage {
-    id: string;
-    name: string;
+export interface FilmImage extends NamedEntity {
+    filmId: string;
     ext: string;
     path: string;
     previewPath?: string | null;

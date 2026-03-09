@@ -23,18 +23,23 @@ export default class FilmService implements IFilmService, IIPCService {
     ): Promise<IPCResult<Film>> => {
         const collectionFolder = dirname(collectionPath);
         if (!filmPath.startsWith(collectionFolder))
-            return { ok: false, type: IPCErrors.FILM_FOLDER_OUTSIDE_COLLECTION_FOLDER };
+            return {
+                ok: false,
+                type: IPCErrors.FILM_FOLDER_OUTSIDE_COLLECTION_FOLDER,
+            };
 
         const filmRelativePath = relative(collectionFolder, filmPath);
 
         const files = await fs.readdir(filmPath);
 
+        const filmId = this.idGenerator.generate();
         const filmImages: FilmImage[] = files
             .filter(this.filterSupportedFormats)
             .map((file: string) => {
                 const split = file.split(".");
                 return {
                     id: this.idGenerator.generate(),
+                    filmId: filmId,
                     name: split[0],
                     ext: split[1].toLowerCase(),
                     path: join(filmPath, file),
@@ -42,7 +47,7 @@ export default class FilmService implements IFilmService, IIPCService {
             });
 
         const film: Film = {
-            id: this.idGenerator.generate(),
+            id: filmId,
             name: basename(filmPath),
             path: filmRelativePath,
             info: {

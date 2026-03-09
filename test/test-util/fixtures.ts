@@ -61,6 +61,7 @@ export const aFilmInfo = (attributes: Partial<FilmInfo> = {}): FilmInfo => {
 export const anImage = (attributes: Partial<FilmImage> = {}): FilmImage => {
     return {
         id: uuidv4().toString(),
+        filmId: uuidv4().toString(),
         name: "TEST IMAGE",
         ext: "jpg",
         path: "/PATH/TO/IMAGE.jpg",

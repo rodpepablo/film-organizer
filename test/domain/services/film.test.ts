@@ -37,9 +37,9 @@ describe("Film Service", () => {
         createDummyFile(temporalPath, filmPath, "small.jpg");
 
         idGenerator.generate
+            .mockReturnValueOnce("f-1")
             .mockReturnValueOnce("i-1")
-            .mockReturnValueOnce("i-2")
-            .mockReturnValueOnce("f-1");
+            .mockReturnValueOnce("i-2");
 
         const filmResult = await filmService.addFilm(
             EVENT,
@@ -63,12 +63,14 @@ describe("Film Service", () => {
                 images: [
                     {
                         id: "i-1",
+                        filmId: "f-1",
                         name: "image",
                         ext: "tif",
                         path: join(temporalPath, filmPath, "image.tif"),
                     },
                     {
                         id: "i-2",
+                        filmId: "f-1",
                         name: "small",
                         ext: "jpg",
                         path: join(temporalPath, filmPath, "small.jpg"),
@@ -84,7 +86,11 @@ describe("Film Service", () => {
         const collectionPath = join(temporalPath, "collection.json");
         const filmPath = join(temporalPath, "..", "wrong-directory");
 
-        const filmResult = await filmService.addFilm(EVENT, collectionPath, filmPath);
+        const filmResult = await filmService.addFilm(
+            EVENT,
+            collectionPath,
+            filmPath,
+        );
 
         expect(filmResult).toStrictEqual({
             ok: false,
