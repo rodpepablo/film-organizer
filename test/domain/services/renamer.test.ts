@@ -13,14 +13,21 @@ describe("Image Renamer Service", () => {
         const image2 = anImage({ filmId: film.id });
         film.images = [image1, image2];
         film.info.camera = "Canon";
+        film.info.lens = "50mm-f1.2";
+        film.info.filmStock = "Ultramax400";
+        film.info.shotISO = "125";
+        film.info.filmStockExpiration = "2025";
         const collection = aCollection({ films: [anotherFilm, film] });
 
         const imageRenamerService = new ImageRenamerService(collection);
 
-        const renamed = imageRenamerService.rename(film.images, "%c-%fi-%ii");
+        const renamed = imageRenamerService.rename(
+            film.images,
+            "%c-%l-%fs-%iso-%fe-%fi-%ii",
+        );
 
-        expect(renamed[0].name).toEqual("Canon-2-1");
-        expect(renamed[1].name).toEqual("Canon-2-2");
+        expect(renamed[0].name).toEqual("Canon-50mm-f1.2-Ultramax400-125-2025-2-1");
+        expect(renamed[1].name).toEqual("Canon-50mm-f1.2-Ultramax400-125-2025-2-2");
     });
 
     it("Sould raise an error if the template is not registered", () => {

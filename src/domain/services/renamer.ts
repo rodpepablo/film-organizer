@@ -2,7 +2,7 @@ import { NamedEntity } from "../models/base";
 import { Collection } from "../models/collection";
 import { IContextExtractor, IRenamerService } from "../ports/renamer";
 import {
-    CameraExtractor,
+    FilmInfoExtractor,
     FilmIndexExtractor,
     ImageIndexExtractor,
 } from "./context-extractors";
@@ -91,7 +91,11 @@ export default class ImageRenamerService extends RenamerService {
         super(context);
         this.registerExtractor(new ImageIndexExtractor());
         this.registerExtractor(new FilmIndexExtractor());
-        this.registerExtractor(new CameraExtractor());
+        this.registerExtractor(new FilmInfoExtractor("c", "camera"));
+        this.registerExtractor(new FilmInfoExtractor("fs", "filmStock"));
+        this.registerExtractor(new FilmInfoExtractor("l", "lens"));
+        this.registerExtractor(new FilmInfoExtractor("iso", "shotISO"));
+        this.registerExtractor(new FilmInfoExtractor("fe", "filmStockExpiration"));
     }
 }
 

@@ -1,6 +1,5 @@
-import { NamedEntity } from "../models/base";
 import { Collection } from "../models/collection";
-import { FilmImage } from "../models/film";
+import { FilmImage, FilmInfo } from "../models/film";
 import { IContextExtractor } from "../ports/renamer";
 
 const NOT_FILM_FOR_IMAGE = "No film found for given image";
@@ -30,14 +29,21 @@ export class FilmIndexExtractor implements IContextExtractor {
     }
 }
 
-export class CameraExtractor implements IContextExtractor {
-    templateElement = "c";
+export class FilmInfoExtractor implements IContextExtractor {
+    templateElement: string;
+    private prop: keyof FilmInfo;
+
+    constructor(templateElement: string, prop: keyof FilmInfo) {
+        this.templateElement = templateElement;
+        this.prop = prop;
+    }
+
     extract(collection: Collection, image: FilmImage): string {
         const film = collection.films.find((film) => film.id === image.filmId);
 
         if (film == null) throw new ContextPropExtractorError(NOT_FILM_FOR_IMAGE);
 
-        return film.info.camera;
+        return film.info[this.prop];
     }
 }
 

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
-    CameraExtractor,
+    FilmInfoExtractor,
     ContextPropExtractorError,
     FilmIndexExtractor,
     ImageIndexExtractor,
@@ -70,9 +70,12 @@ describe("Context extractors", () => {
         });
     });
 
-    describe("Camera extractor", () => {
-        it("Should expose correct template element", () => {
-            expect(new CameraExtractor().templateElement).toEqual("c");
+    describe("Film Info extractor", () => {
+        it("Should expose correct template element depending on configuration", () => {
+            expect(new FilmInfoExtractor("c", "camera").templateElement).toEqual("c");
+            expect(new FilmInfoExtractor("iso", "shotISO").templateElement).toEqual(
+                "iso",
+            );
         });
 
         it("Should extract the information from the collection", () => {
@@ -81,9 +84,15 @@ describe("Context extractors", () => {
             film.images = [image];
             const collection = aCollection({ films: [film] });
 
-            const extractor = new CameraExtractor();
+            const cameraExtractor = new FilmInfoExtractor("c", "camera");
+            const filmExtractor = new FilmInfoExtractor("f", "filmStock");
 
-            expect(extractor.extract(collection, image)).toEqual(film.info.camera);
+            expect(cameraExtractor.extract(collection, image)).toEqual(
+                film.info.camera,
+            );
+            expect(filmExtractor.extract(collection, image)).toEqual(
+                film.info.filmStock,
+            );
         });
 
         it("Should raise an error if film is not found", () => {
@@ -91,7 +100,7 @@ describe("Context extractors", () => {
             const film = aFilm({ images: [image] });
             const collection = aCollection({ films: [film] });
 
-            const extractor = new CameraExtractor();
+            const extractor = new FilmInfoExtractor("c", "camera");
 
             expect(() => extractor.extract(collection, image)).toThrow(
                 ContextPropExtractorError,
