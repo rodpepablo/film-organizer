@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { aCollection, aFilm, anImage } from "../../test-util/fixtures";
 import ImageRenamerService, {
-    TemplateYieldingDuplicatedNamesError,
+    NonInjectiveTemplateError,
     UnregisteredPropExtractorError,
 } from "../../../src/domain/services/renamer";
 
@@ -46,7 +46,7 @@ describe("Image Renamer Service", () => {
         const imageRenamerService = new ImageRenamerService(collection);
 
         expect(() => imageRenamerService.rename(film.images, "%fi")).toThrow(
-            TemplateYieldingDuplicatedNamesError,
+            NonInjectiveTemplateError,
         );
     });
 });

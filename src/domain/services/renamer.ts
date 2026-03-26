@@ -82,7 +82,7 @@ export class RenamerService implements IRenamerService {
     private checkForDuplicities(renamed: NamedEntity[]) {
         const newNames = renamed.map((entity) => entity.name);
         if (new Set(newNames).size < newNames.length)
-            throw new TemplateYieldingDuplicatedNamesError();
+            throw new NonInjectiveTemplateError();
     }
 }
 
@@ -97,4 +97,4 @@ export default class ImageRenamerService extends RenamerService {
 
 export class UnregisteredPropExtractorError extends Error { }
 
-export class TemplateYieldingDuplicatedNamesError extends Error { }
+export class NonInjectiveTemplateError extends Error { }

@@ -1,5 +1,7 @@
 import Nanobus from "nanobus";
 import {
+    BULK_EDIT_IMAGE_NAME_FORM,
+    BULK_IMAGE_NAME_EDIT_SUCCESS,
     EDIT_IMAGE_NAME_FORM,
     IMAGE_NAME_EDIT_SUCCESS,
     UNEXPECTED_ERROR,
@@ -8,6 +10,7 @@ import { IPCErrors } from "../../infra/ipc-service";
 import { IPCError } from "../../infra/ipc-service";
 import { uiFormValuesSelector } from "../../infra/selectors/ui";
 import {
+    BULK_EDIT_IMAGE_NAME_REQUEST,
     CREATE_IMAGE_PREVIEW_REQUEST,
     EDIT_IMAGE_NAME_REQUEST,
 } from "../../infra/events";
@@ -22,6 +25,14 @@ import {
 import { ImageValidators } from "../validators/film-image";
 import { FilmImage } from "../models/film";
 import DateWrapper, { IDateWrapper } from "../../infra/date-wrapper";
+import ImageRenamerService, {
+    NonInjectiveTemplateError,
+    UnregisteredPropExtractorError,
+} from "../services/renamer";
+import {
+    NON_INJECTIVE_TEMPLATE,
+    UNSUPPORTED_TEMPLATE_TAG,
+} from "../../infra/errors";
 
 export class FilmImageStoreManager {
     state: State;
@@ -41,7 +52,7 @@ export class FilmImageStoreManager {
         this.date = date;
     }
 
-    editFilmName = () => {
+    editImageName = () => {
         clearFormError(this.emit, { formId: EDIT_IMAGE_NAME_FORM });
         const values: EditFilmNameValues = uiFormValuesSelector(
             this.state,
@@ -79,6 +90,52 @@ export class FilmImageStoreManager {
 
         closeModal(this.emit);
         clearForm(this.emit, { formId: EDIT_IMAGE_NAME_FORM });
+        this.emit("render");
+    };
+
+    bulkEditImageName = () => {
+        try {
+            clearFormError(this.emit, { formId: BULK_EDIT_IMAGE_NAME_FORM });
+            const values = uiFormValuesSelector(
+                this.state,
+                BULK_EDIT_IMAGE_NAME_FORM,
+            ) as BulkEditImageNameValues;
+
+            const film = this.state.collection.films.find(
+                (film) => film.id === values.filmId,
+            );
+            const imageRenamer = new ImageRenamerService(this.state.collection);
+            film.images = imageRenamer.rename(
+                film.images,
+                values.nameTemplate,
+            ) as FilmImage[];
+            const newDate = this.date.now();
+            film.images.forEach((image) => (image.lastUpdated = newDate));
+            closeModal(this.emit);
+            clearForm(this.emit, { formId: BULK_EDIT_IMAGE_NAME_FORM });
+            createNotification(this.emit, BULK_IMAGE_NAME_EDIT_SUCCESS);
+        } catch (error) {
+            switch (error.constructor) {
+                case UnregisteredPropExtractorError:
+                    formError(this.emit, {
+                        formId: BULK_EDIT_IMAGE_NAME_FORM,
+                        error: UNSUPPORTED_TEMPLATE_TAG,
+                    });
+                    break;
+                case NonInjectiveTemplateError:
+                    formError(this.emit, {
+                        formId: BULK_EDIT_IMAGE_NAME_FORM,
+                        error: NON_INJECTIVE_TEMPLATE,
+                    });
+                    break;
+                default:
+                    this.manageErrors({
+                        ok: false,
+                        type: IPCErrors.UNEXPECTED_ERROR,
+                        message: error,
+                    });
+            }
+        }
         this.emit("render");
     };
 
@@ -137,7 +194,11 @@ export function filmImageStore(state: State, emitter: Nanobus) {
         new DateWrapper(),
     );
 
-    emitter.on(EDIT_IMAGE_NAME_REQUEST, filmImageStoreManager.editFilmName);
+    emitter.on(EDIT_IMAGE_NAME_REQUEST, filmImageStoreManager.editImageName);
+    emitter.on(
+        BULK_EDIT_IMAGE_NAME_REQUEST,
+        filmImageStoreManager.bulkEditImageName,
+    );
     emitter.on(
         CREATE_IMAGE_PREVIEW_REQUEST,
         filmImageStoreManager.createImagePreview,
@@ -148,6 +209,11 @@ export type EditFilmNameValues = {
     filmId: string;
     imageId: string;
     name: string;
+};
+
+export type BulkEditImageNameValues = {
+    filmId: string;
+    nameTemplate: string;
 };
 
 export type CreateImagePreviewParams = {

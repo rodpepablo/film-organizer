@@ -25,6 +25,7 @@ export const ZCollection = z.object({
             images: z.array(
                 z.object({
                     id: z.string(),
+                    filmId: z.string(),
                     name: z.string(),
                     ext: z.string(),
                     path: z.string(),

@@ -64,5 +64,8 @@ export const EDIT_FILM_INFO_SUCCESS = success("Film info changed successfully");
 export const IMAGE_NAME_EDIT_SUCCESS = success(
     "Image name changed successfully",
 );
+export const BULK_IMAGE_NAME_EDIT_SUCCESS = success(
+    "Image names changed successfully",
+);
 
 export const UNEXPECTED_ERROR = error("Unexpected error");

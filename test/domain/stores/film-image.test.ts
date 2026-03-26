@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { mock, mocked } from "vitest-mock-extended";
+import { mock } from "vitest-mock-extended";
 import Nanobus from "nanobus";
 import { State } from "../../../src/domain/models/state";
 import {
@@ -7,6 +7,7 @@ import {
     FilmImageStoreManager,
 } from "../../../src/domain/stores/film-image";
 import {
+    BULK_EDIT_IMAGE_NAME_REQUEST,
     CLEAR_FORM,
     CLEAR_FORM_ERROR,
     CLOSE_MODAL,
@@ -23,13 +24,19 @@ import {
     aState,
 } from "../../test-util/fixtures";
 import {
+    BULK_EDIT_IMAGE_NAME_FORM,
+    BULK_IMAGE_NAME_EDIT_SUCCESS,
     EDIT_IMAGE_NAME_FORM,
     IMAGE_NAME_EDIT_SUCCESS,
     UNEXPECTED_ERROR,
 } from "../../../src/infra/constants";
 import { Form } from "../../../src/domain/models/ui";
 import { expectRender, mockedAPI, spiedBus } from "../../test-util/mocking";
-import { INVALID_IMAGE_NAME } from "../../../src/infra/errors";
+import {
+    INVALID_IMAGE_NAME,
+    NON_INJECTIVE_TEMPLATE,
+    UNSUPPORTED_TEMPLATE_TAG,
+} from "../../../src/infra/errors";
 import { IPCErrors } from "../../../src/infra/ipc-service";
 import DateWrapper, { IDateWrapper } from "../../../src/infra/date-wrapper";
 
@@ -57,10 +64,12 @@ describe("Film Image store", () => {
 
             date.now.mockReturnValue("new date");
 
-            manager.editFilmName();
+            manager.editImageName();
 
             expect(state.collection?.films[0].images[0].name).toEqual("new name");
-            expect(state.collection?.films[0].images[0].lastUpdated).toEqual("new date");
+            expect(state.collection?.films[0].images[0].lastUpdated).toEqual(
+                "new date",
+            );
             expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
                 formId: EDIT_IMAGE_NAME_FORM,
             });
@@ -94,7 +103,7 @@ describe("Film Image store", () => {
             const api = mockedAPI();
             const manager = aManagerWith(state, bus, api);
 
-            manager.editFilmName();
+            manager.editImageName();
 
             expect(state.collection?.films[0].images[0].name).toEqual("old name");
             expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
@@ -127,7 +136,7 @@ describe("Film Image store", () => {
             const api = mockedAPI();
             const manager = aManagerWith(state, bus, api);
 
-            manager.editFilmName();
+            manager.editImageName();
 
             expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
                 formId: EDIT_IMAGE_NAME_FORM,
@@ -141,6 +150,146 @@ describe("Film Image store", () => {
                 formId: EDIT_IMAGE_NAME_FORM,
             });
             expectRender(bus);
+        });
+    });
+
+    describe("Bulk edit film image names", () => {
+        it("Should update names and create a success notification", () => {
+            const film = aFilm();
+            const anotherFilm = aFilm();
+            const image1 = anImage({ filmId: film.id, name: "image1" });
+            const image2 = anImage({ filmId: film.id, name: "image2" });
+            film.images = [image1, image2];
+            const state = aState({
+                collection: aCollection({ films: [anotherFilm, film] }),
+                forms: {
+                    [BULK_EDIT_IMAGE_NAME_FORM]: aForm({
+                        values: { filmId: film.id, nameTemplate: "%fi-%ii" },
+                    }),
+                },
+            });
+            const bus = spiedBus();
+            const api = mockedAPI();
+            const date = mock<IDateWrapper>();
+
+            const manager = new FilmImageStoreManager(state, bus, api, date);
+
+            date.now.mockReturnValue("new date");
+
+            manager.bulkEditImageName();
+
+            expect(film.images[0].name).toEqual("2-1");
+            expect(film.images[1].name).toEqual("2-2");
+            expect(film.images[0].lastUpdated).toEqual("new date");
+            expect(film.images[1].lastUpdated).toEqual("new date");
+            expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
+                formId: BULK_EDIT_IMAGE_NAME_FORM,
+            });
+            expect(bus.emit).toHaveBeenCalledWith(CLOSE_MODAL);
+            expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM, {
+                formId: BULK_EDIT_IMAGE_NAME_FORM,
+            });
+            expect(bus.emit).toHaveBeenCalledWith(
+                CREATE_NOTIFICATION,
+                BULK_IMAGE_NAME_EDIT_SUCCESS,
+            );
+        });
+
+        it("Should put error on form when using unsupported template tag", () => {
+            const film = aFilm();
+            const image = anImage({ filmId: film.id, name: "not-changed" });
+            film.images = [image];
+            const state = aState({
+                collection: aCollection({ films: [film] }),
+                forms: {
+                    [BULK_EDIT_IMAGE_NAME_FORM]: aForm({
+                        values: { filmId: film.id, nameTemplate: "%aa" },
+                    }),
+                },
+            });
+            const bus = spiedBus();
+            const api = mockedAPI();
+            const date = mock<IDateWrapper>();
+
+            const manager = new FilmImageStoreManager(state, bus, api, date);
+
+            manager.bulkEditImageName();
+
+            expect(film.images[0].name).toEqual("not-changed");
+            expect(film.images[0].lastUpdated).toBeUndefined();
+            expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
+                formId: BULK_EDIT_IMAGE_NAME_FORM,
+            });
+            expect(bus.emit).toHaveBeenCalledWith(FORM_ERROR, {
+                formId: BULK_EDIT_IMAGE_NAME_FORM,
+                error: UNSUPPORTED_TEMPLATE_TAG,
+            });
+            expectRender(bus);
+        });
+
+        it("Should show error on form if template yields repeated names after rename", () => {
+            const film = aFilm();
+            const image1 = anImage({ filmId: film.id, name: "image1" });
+            const image2 = anImage({ filmId: film.id, name: "image2" });
+            film.images = [image1, image2];
+            const state = aState({
+                collection: aCollection({ films: [film] }),
+                forms: {
+                    [BULK_EDIT_IMAGE_NAME_FORM]: aForm({
+                        values: { filmId: film.id, nameTemplate: "%fi" },
+                    }),
+                },
+            });
+            const bus = spiedBus();
+            const api = mockedAPI();
+            const date = mock<IDateWrapper>();
+
+            const manager = new FilmImageStoreManager(state, bus, api, date);
+
+            manager.bulkEditImageName();
+
+            expect(film.images[0].name).toEqual("image1");
+            expect(film.images[1].name).toEqual("image2");
+            expect(film.images[0].lastUpdated).toBeUndefined();
+            expect(film.images[1].lastUpdated).toBeUndefined();
+            expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
+                formId: BULK_EDIT_IMAGE_NAME_FORM,
+            });
+            expect(bus.emit).toHaveBeenCalledWith(FORM_ERROR, {
+                formId: BULK_EDIT_IMAGE_NAME_FORM,
+                error: NON_INJECTIVE_TEMPLATE,
+            });
+            expectRender(bus);
+        });
+
+        it("Should manage unexpected error", () => {
+            const image = anImage();
+            const film = aFilm({ images: [image] });
+            const state = aState({
+                collection: aCollection({ films: [film] }),
+                forms: {
+                    [BULK_EDIT_IMAGE_NAME_FORM]: aForm({
+                        values: { filmId: "wrong-id", nameTemplate: "%fi-%ii" },
+                    }),
+                },
+            });
+            const bus = spiedBus();
+            const api = mockedAPI();
+            const date = mock<IDateWrapper>();
+
+            const manager = new FilmImageStoreManager(state, bus, api, date);
+
+            manager.bulkEditImageName();
+
+            expect(film.images[0].name).toEqual(image.name);
+            expect(film.images[0].lastUpdated).toEqual(image.lastUpdated);
+            expect(bus.emit).toHaveBeenCalledWith(CLEAR_FORM_ERROR, {
+                formId: BULK_EDIT_IMAGE_NAME_FORM,
+            });
+            expect(bus.emit).toHaveBeenCalledWith(
+                CREATE_NOTIFICATION,
+                UNEXPECTED_ERROR,
+            );
         });
     });
 
@@ -162,7 +311,9 @@ describe("Film Image store", () => {
 
             await manager.createImagePreview({ imageId: image.id });
 
-            expect(state.collection?.films[0].images[0].previewPath).toEqual(previewPath);
+            expect(state.collection?.films[0].images[0].previewPath).toEqual(
+                previewPath,
+            );
             expectRender(bus);
         });
 
@@ -231,7 +382,11 @@ describe("Film Image store", () => {
 
         filmImageStore({} as State, emitter);
 
-        const events = [EDIT_IMAGE_NAME_REQUEST, CREATE_IMAGE_PREVIEW_REQUEST];
+        const events = [
+            EDIT_IMAGE_NAME_REQUEST,
+            CREATE_IMAGE_PREVIEW_REQUEST,
+            BULK_EDIT_IMAGE_NAME_REQUEST,
+        ];
         expect(emitter.on).toHaveBeenCalledTimes(events.length);
         for (let event of events) {
             expect(emitter.on).toHaveBeenCalledWith(event, expect.any(Function));
