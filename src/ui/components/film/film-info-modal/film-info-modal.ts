@@ -9,8 +9,9 @@ import { updateForm } from "../../../../infra/actions/ui";
 import { EDIT_FILM_INFO_FORM } from "../../../../infra/constants";
 import { openModal } from "../../../../infra/actions/ui";
 import { EDIT_FILM_INFO_MODAL } from "../../../../infra/constants";
+import NamedValueList from "../../general/named-value-list/named-value-list";
 
-const infoItems = [
+const infoItems: { label: string; name: keyof FilmInfo }[] = [
     { label: "Camera", name: "camera" },
     { label: "Lens", name: "lens" },
     { label: "Film Stock", name: "filmStock" },
@@ -22,10 +23,8 @@ export default class FilmInfoModal implements Component {
     render(state: State, emit: Emit): HTMLElement {
         const info = filmInfoSelector(state);
 
-        const items = infoItems.map(
-            (infoItem) => html`<li class="film-info-modal-item">
-                <b>${infoItem.label}:</b>${(info as Record<string, any>)[infoItem.name]}
-            </li>`,
+        const items = new NamedValueList(
+            infoItems.map((item) => ({ name: item.label, value: info[item.name] })),
         );
 
         const editButton = new Button({
@@ -37,9 +36,7 @@ export default class FilmInfoModal implements Component {
         return html`
             <div class="film-info-modal">
                 <h5 class="center subtitle modal-title">Film Info</h5>
-                <ul>
-                    ${items}
-                </ul>
+                ${items.render(state, emit)}
                 ${editButton.render(state, emit)}
             </div>
         `;
