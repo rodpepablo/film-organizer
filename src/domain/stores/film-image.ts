@@ -25,9 +25,10 @@ import {
 import { ImageValidators } from "../validators/film-image";
 import { FilmImage } from "../models/film";
 import DateWrapper, { IDateWrapper } from "../../infra/date-wrapper";
-import ImageRenamerService, {
+import {
     NonInjectiveTemplateError,
     UnregisteredPropExtractorError,
+    ImageRenamerService,
 } from "../services/renamer";
 import {
     NON_INJECTIVE_TEMPLATE,

@@ -1,4 +1,5 @@
 import { State, Emit } from "../../../../domain/models/state";
+import { ImageRenamerService } from "../../../../domain/services/renamer";
 import Component from "../../../../infra/component";
 import { BULK_EDIT_IMAGE_NAME_FORM } from "../../../../infra/constants";
 import { BULK_EDIT_IMAGE_NAME_REQUEST } from "../../../../infra/events";
@@ -7,9 +8,13 @@ import Button from "../../general/button/button";
 import Form from "../../general/form/form";
 import HiddenInput from "../../general/input/hidden-input";
 import Input from "../../general/input/input";
+import NamedValueList from "../../general/named-value-list/named-value-list";
 
 export default class BulkEditImageNameModal implements Component {
     render(state: State, emit: Emit): HTMLElement {
+        const legend = new NamedValueList(
+            ImageRenamerService.getAvailableOptions(),
+        );
         const form = new Form({
             formId: BULK_EDIT_IMAGE_NAME_FORM,
             submitEvent: BULK_EDIT_IMAGE_NAME_REQUEST,
@@ -23,6 +28,7 @@ export default class BulkEditImageNameModal implements Component {
         return html`
             <div>
                 <h5 class="center subtitle">Bulk Edit Image Name</h5>
+                ${legend.render(state, emit)}
                 ${form.render(state, emit)}
             </div>
         `;

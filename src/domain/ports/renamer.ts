@@ -7,5 +7,6 @@ export interface IRenamerService {
 
 export interface IContextExtractor {
     templateElement: string;
+    helpText: string;
     extract(collection: Collection, image: NamedEntity): string;
 }

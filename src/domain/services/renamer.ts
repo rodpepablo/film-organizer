@@ -1,10 +1,14 @@
-import { NamedEntity } from "../models/base";
+import { NamedEntity, NamedValue } from "../models/base";
 import { Collection } from "../models/collection";
 import { IContextExtractor, IRenamerService } from "../ports/renamer";
 import {
-    FilmInfoExtractor,
-    FilmIndexExtractor,
-    ImageIndexExtractor,
+    imageIndexExtractor,
+    filmIndexExtractor,
+    cameraExtractor,
+    filmStockExtractor,
+    lensExtractor,
+    shotISOExtractor,
+    filmExpirationExtractor,
 } from "./context-extractors";
 
 class Template {
@@ -36,15 +40,13 @@ class Template {
     }
 }
 
-export class RenamerService implements IRenamerService {
+class RenamerService implements IRenamerService {
     private context: Collection;
-    protected extractorTemplates: string[];
-    protected extractors: Record<string, IContextExtractor>;
+    static extractorTemplates: string[] = [];
+    static extractors: Record<string, IContextExtractor> = {};
 
     constructor(context: Collection) {
         this.context = context;
-        this.extractorTemplates = [];
-        this.extractors = {};
     }
 
     rename(entities: NamedEntity[], template: string): NamedEntity[] {
@@ -55,25 +57,36 @@ export class RenamerService implements IRenamerService {
         return renamedEntities;
     }
 
-    protected registerExtractor(extractor: IContextExtractor) {
+    static registerExtractor(extractor: IContextExtractor) {
         this.extractorTemplates.push(extractor.templateElement);
         this.extractors[extractor.templateElement] = extractor;
+    }
+
+    static getAvailableOptions(): NamedValue[] {
+        const extractors = this.extractors;
+        return Object.values(extractors).map((extractor) => ({
+            name: `%${extractor.templateElement}`,
+            value: extractor.helpText,
+        }));
     }
 
     private parseTemplate(template: string): Template {
         const parts = template.split("%");
         const results = new Template();
+        const extractorTemplates = (this.constructor as typeof RenamerService)
+            .extractorTemplates;
+        const extractors = (this.constructor as typeof RenamerService).extractors;
 
         results.add(parts[0]);
         parts.slice(1).forEach((part) => {
-            const extractorTemplate = this.extractorTemplates.find((t) =>
+            const extractorTemplate = extractorTemplates.find((t) =>
                 part.toLowerCase().startsWith(t.toLowerCase()),
             );
 
             if (extractorTemplate == null)
                 throw new UnregisteredPropExtractorError(part);
 
-            results.add(this.extractors[extractorTemplate]);
+            results.add(extractors[extractorTemplate]);
             results.add(part.slice(extractorTemplate.length));
         });
         return results;
@@ -86,19 +99,19 @@ export class RenamerService implements IRenamerService {
     }
 }
 
-export default class ImageRenamerService extends RenamerService {
-    constructor(context: Collection) {
-        super(context);
-        this.registerExtractor(new ImageIndexExtractor());
-        this.registerExtractor(new FilmIndexExtractor());
-        this.registerExtractor(new FilmInfoExtractor("c", "camera"));
-        this.registerExtractor(new FilmInfoExtractor("fs", "filmStock"));
-        this.registerExtractor(new FilmInfoExtractor("l", "lens"));
-        this.registerExtractor(new FilmInfoExtractor("iso", "shotISO"));
-        this.registerExtractor(new FilmInfoExtractor("fe", "filmStockExpiration"));
-    }
-}
-
 export class UnregisteredPropExtractorError extends Error { }
 
 export class NonInjectiveTemplateError extends Error { }
+
+export class ImageRenamerService extends RenamerService {
+    static extractorTemplates: string[] = [];
+    static extractors: Record<string, IContextExtractor> = {};
+}
+
+ImageRenamerService.registerExtractor(imageIndexExtractor);
+ImageRenamerService.registerExtractor(filmIndexExtractor);
+ImageRenamerService.registerExtractor(cameraExtractor);
+ImageRenamerService.registerExtractor(filmStockExtractor);
+ImageRenamerService.registerExtractor(lensExtractor);
+ImageRenamerService.registerExtractor(shotISOExtractor);
+ImageRenamerService.registerExtractor(filmExpirationExtractor);

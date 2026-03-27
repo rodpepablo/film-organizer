@@ -1,8 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { aCollection, aFilm, anImage } from "../../test-util/fixtures";
-import ImageRenamerService, {
+import {
     NonInjectiveTemplateError,
     UnregisteredPropExtractorError,
+    ImageRenamerService,
 } from "../../../src/domain/services/renamer";
 
 describe("Image Renamer Service", () => {
@@ -55,5 +56,17 @@ describe("Image Renamer Service", () => {
         expect(() => imageRenamerService.rename(film.images, "%fi")).toThrow(
             NonInjectiveTemplateError,
         );
+    });
+
+    it("Should provide a summary with the available extractors", () => {
+        expect(ImageRenamerService.getAvailableOptions()).toStrictEqual([
+            { name: "%ii", value: "Image index" },
+            { name: "%fi", value: "Film index" },
+            { name: "%c", value: "Camera" },
+            { name: "%fs", value: "Film Stock" },
+            { name: "%l", value: "Lens" },
+            { name: "%iso", value: "Shot ISO" },
+            { name: "%fe", value: "Film Stock Expiration" },
+        ]);
     });
 });
