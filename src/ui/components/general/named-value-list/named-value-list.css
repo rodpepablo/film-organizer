@@ -3,12 +3,16 @@
 	display: flex;
 	justify-content: space-around;
 	flex-wrap: wrap;
-	padding: 1em;
+	padding: 0.3em 1em;
 	margin: 0;
 }
 
 .named-value-item {
 	flex: 1 0 40%;
 	flex-wrap: wrap;
-	padding: 1em;
+	padding: 0.2em;
+}
+
+.named-value-item b {
+	margin-right: 0.6em;
 }
