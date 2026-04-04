@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import packageJSON from "../../package.json";
 import { Collection } from "../../src/domain/models/collection";
 import { Film, FilmImage, FilmInfo } from "../../src/domain/models/film";
 import { State } from "../../src/domain/models/state";
@@ -28,6 +29,8 @@ export const aCollection = (
     attributes: Partial<Collection> = {},
 ): Collection => {
     return {
+        app: "FILM_ORGANIZER",
+        version: packageJSON.version,
         name: "TEST COLLECTION",
         path: "/PATH/TO/COLLECTION.json",
         films: [],

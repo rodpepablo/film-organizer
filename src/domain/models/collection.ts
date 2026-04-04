@@ -2,12 +2,24 @@ import { z } from "zod";
 import { Film } from "./film";
 
 export interface Collection {
+    app: string;
+    version: string;
     name: string;
     path: string;
     films: Film[];
 }
 
+export const ZCollectionBasic = z.object({
+    app: z.string(),
+    version: z.string(),
+    name: z.string(),
+    path: z.string(),
+    films: z.array(z.any()),
+});
+
 export const ZCollection = z.object({
+    app: z.string(),
+    version: z.string(),
     name: z.string(),
     path: z.string(),
     films: z.array(

@@ -22,13 +22,16 @@ contextBridge.exposeInMainWorld("api", {
     collection: {
         createCollection: (path: string, name: string): Promise<Collection> =>
             ipcRenderer.invoke(CREATE_COLLECTION_HANDLER, path, name),
-        loadCollection: (path: string): Promise<Collection> =>
+        loadCollection: (path: string): Promise<IPCResult<Collection>> =>
             ipcRenderer.invoke(LOAD_COLLECTION_HANDLER, path),
         saveCollection: (collection: Collection): Promise<Collection> =>
             ipcRenderer.invoke(SAVE_COLLECTION_HANDLER, collection),
     },
     film: {
-        addFilm: (collectionPath: string, filmPath: string): Promise<IPCResult<Film>> =>
+        addFilm: (
+            collectionPath: string,
+            filmPath: string,
+        ): Promise<IPCResult<Film>> =>
             ipcRenderer.invoke(ADD_FILM_HANDLER, collectionPath, filmPath),
     },
     image: {

@@ -12,11 +12,14 @@ declare global {
             };
             collection: {
                 createCollection(path: string, name: string): Promise<Collection>;
-                loadCollection(path: string): Promise<Collection>;
+                loadCollection(path: string): Promise<IPCResult<Collection>>;
                 saveCollection(collection: Collection): Promise<Collection>;
             };
             film: {
-                addFilm(collectionPath: string, filmPath: string): Promise<IPCResult<Film>>;
+                addFilm(
+                    collectionPath: string,
+                    filmPath: string,
+                ): Promise<IPCResult<Film>>;
             };
             image: {
                 createPreviewImage(image: FilmImage): Promise<IPCResult<string>>;

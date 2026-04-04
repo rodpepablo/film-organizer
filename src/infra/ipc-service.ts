@@ -4,6 +4,7 @@ export interface IIPCService {
 
 export enum IPCErrors {
     FILM_FOLDER_OUTSIDE_COLLECTION_FOLDER,
+    INVALID_COLLECTION_FILE,
     UNEXPECTED_ERROR,
 }
 

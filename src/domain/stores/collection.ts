@@ -16,7 +16,6 @@ import {
 } from "../../infra/events";
 import { Emit, State } from "../models/state";
 import { CollectionValidators } from "../validators/collection";
-import { ZCollection } from "../models/collection";
 import { IPCError, IPCErrors } from "../../infra/ipc-service";
 import { uiFormValuesSelector } from "../../infra/selectors/ui";
 import {
@@ -55,12 +54,16 @@ export class CollectionStoreManager {
             this.state,
             CREATE_COLLECTION_FORM,
         ) as CreateCollectionValues;
-        const [isValid, error] = CollectionValidators.collectionCreation.validate(formValues);
+        const [isValid, error] =
+            CollectionValidators.collectionCreation.validate(formValues);
 
         if (isValid) {
             const path = await this.api.fs.getFolder();
             if (path !== null) {
-                const collection = await this.api.collection.createCollection(path, formValues.name);
+                const collection = await this.api.collection.createCollection(
+                    path,
+                    formValues.name,
+                );
 
                 this.state.collection = collection;
                 closeModal(this.emit);
@@ -80,14 +83,13 @@ export class CollectionStoreManager {
     manageLoadCollection = async (): Promise<void> => {
         const path = await this.api.fs.getFile();
         if (path !== null) {
-            const collection = await this.api.collection.loadCollection(path);
+            const result = await this.api.collection.loadCollection(path);
 
-            try {
-                ZCollection.parse(collection);
-                this.state.collection = collection;
+            if (result.ok) {
+                this.state.collection = result.result;
                 createNotification(this.emit, COLLECTION_LOAD_SUCCESS);
                 navigate(this.emit, { to: [FILM_SECTION] });
-            } catch {
+            } else {
                 createNotification(this.emit, COLLECTION_LOAD_ERROR);
             }
             this.emit("render");
@@ -96,7 +98,9 @@ export class CollectionStoreManager {
 
     manageSaveCollection = async (): Promise<void> => {
         try {
-            this.state.collection = await this.api.collection.saveCollection(this.state.collection);
+            this.state.collection = await this.api.collection.saveCollection(
+                this.state.collection,
+            );
             createNotification(this.emit, COLLECTION_SAVE_SUCCESS);
             this.emit("render");
         } catch (error) {
@@ -125,10 +129,23 @@ export class CollectionStoreManager {
 export function collectionStore(state: Substate, emitter: Nanobus) {
     const api =
         process.env.NODE_ENV !== "test" ? window.api : ({} as Window["api"]);
-    const collectionStoreManager = new CollectionStoreManager(state, emitter, api);
+    const collectionStoreManager = new CollectionStoreManager(
+        state,
+        emitter,
+        api,
+    );
 
-    emitter.on(CREATE_COLLECTION_REQUEST, collectionStoreManager.manageCreateCollection);
-    emitter.on(LOAD_COLLECTION_REQUEST, collectionStoreManager.manageLoadCollection);
-    emitter.on(SAVE_COLLECTION_REQUEST, collectionStoreManager.manageSaveCollection);
+    emitter.on(
+        CREATE_COLLECTION_REQUEST,
+        collectionStoreManager.manageCreateCollection,
+    );
+    emitter.on(
+        LOAD_COLLECTION_REQUEST,
+        collectionStoreManager.manageLoadCollection,
+    );
+    emitter.on(
+        SAVE_COLLECTION_REQUEST,
+        collectionStoreManager.manageSaveCollection,
+    );
     emitter.on(SORT_FILM_LIST, collectionStoreManager.manageSortFilmList);
 }

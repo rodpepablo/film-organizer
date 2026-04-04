@@ -33,6 +33,7 @@ import { expectRender, mockedAPI, spiedBus } from "../../test-util/mocking";
 import { Collection } from "../../../src/domain/models/collection";
 import { State } from "../../../src/domain/models/state";
 import { aFilm, aForm, aCollection, anImage } from "../../test-util/fixtures";
+import { IPCErrors } from "../../../src/infra/ipc-service";
 
 const COLLECTION_NAME = "COLLECTION_NAME";
 const FOLDER_PATH = "/PATH";
@@ -44,7 +45,9 @@ describe("Collection store", () => {
             const state = {
                 collection: null,
                 forms: {
-                    [CREATE_COLLECTION_FORM]: aForm({ values: { name: COLLECTION_NAME } }),
+                    [CREATE_COLLECTION_FORM]: aForm({
+                        values: { name: COLLECTION_NAME },
+                    }),
                 },
             };
             const bus = spiedBus();
@@ -141,10 +144,16 @@ describe("Collection store", () => {
             const bus = spiedBus();
             const api = mockedAPI();
             const manager = new CollectionStoreManager(state, bus, api);
-            const expectedCollection = aCollection({ name: COLLECTION_NAME, path: FILE_PATH });
+            const expectedCollection = aCollection({
+                name: COLLECTION_NAME,
+                path: FILE_PATH,
+            });
 
             api.fs.getFile.mockResolvedValue(FILE_PATH);
-            api.collection.loadCollection.mockResolvedValue(expectedCollection);
+            api.collection.loadCollection.mockResolvedValue({
+                ok: true,
+                result: expectedCollection,
+            });
 
             await manager.manageLoadCollection();
 
@@ -183,7 +192,10 @@ describe("Collection store", () => {
             const manager = new CollectionStoreManager(state, bus, api);
 
             api.fs.getFile.mockResolvedValue(FILE_PATH);
-            api.collection.loadCollection.mockResolvedValue({ invalid: 3 } as unknown as Collection);
+            api.collection.loadCollection.mockResolvedValue({
+                ok: false,
+                type: IPCErrors.INVALID_COLLECTION_FILE,
+            });
 
             await manager.manageLoadCollection();
 
@@ -257,7 +269,9 @@ describe("Collection store", () => {
         const film1 = aFilm();
         const film2 = aFilm();
         const film3 = aFilm();
-        const state = { collection: aCollection({ films: [film1, film2, film3] }) } as State;
+        const state = {
+            collection: aCollection({ films: [film1, film2, film3] }),
+        } as State;
         const bus = spiedBus();
         const api = mockedAPI();
         const manager = new CollectionStoreManager(state, bus, api);
