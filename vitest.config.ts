@@ -6,4 +6,9 @@ export default defineConfig({
         environment: "node", // default
         include: ["**/*.{test,spec}.ts"],
     },
+    resolve: {
+        alias: {
+            "@html": "test/test-util/html.ts",
+        },
+    },
 });

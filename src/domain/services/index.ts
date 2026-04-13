@@ -1,9 +1,8 @@
 import { app, dialog, ipcMain } from "electron";
-import packageJSON from "../../../package.json";
 import CollectionService from "./collection";
 import FSService from "./fs";
 import FilmService from "./film";
-import { IdGenerator } from "../../infra/id-generator";
+import { IdGenerator } from "../../infra/adapters/id-generator";
 import FilmImageService from "./film-image";
 import SharpImageProcessing from "../../infra/adapters/sharp-image-processing";
 import MigrationManager from "../../infra/migration-manager";
@@ -11,7 +10,7 @@ import MigrationManager from "../../infra/migration-manager";
 export default function loadServices() {
     const idGenerator = new IdGenerator();
     const sharpImageProcessing = new SharpImageProcessing(app.getPath("temp"));
-    const migrationManager = new MigrationManager(packageJSON.version);
+    const migrationManager = new MigrationManager(app.getVersion());
 
     const fsService = new FSService(dialog);
     const collectionService = new CollectionService(migrationManager);

@@ -1,18 +1,13 @@
 import { Collection } from "./collection";
 
-export type ValidationResult = [boolean, { msg: string }];
+export type ValidationResult = [false, { msg: string }] | [true, null];
 
 export interface Validator {
     validate(data: any): ValidationResult;
 }
 
-export interface WithContext {
-    context: any;
-    withContext(collection: any): Validator;
-}
-
-export class ValidatorWithCollectionContext implements Validator, WithContext {
-    context: Collection;
+export class ValidatorWithCollectionContext implements Validator {
+    context?: Collection;
 
     withContext(context: Collection): Validator {
         this.context = context;

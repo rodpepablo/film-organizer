@@ -1,6 +1,6 @@
 import { INVALID_FILM_NAME, INVALID_SHOT_ISO } from "../../infra/errors";
+import { EditFilmInfoValues } from "../../stores/types";
 import { ValidationResult, Validator } from "../models/validation";
-import { EditFilmInfoValues } from "../stores/film";
 
 class EditFilmNameValidator implements Validator {
     validate(data: any): ValidationResult {

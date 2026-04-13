@@ -1,23 +1,21 @@
 import { app, BrowserWindow, protocol, session } from "electron";
+import path from "path";
 import loadServices from "./domain/services";
-declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
-declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
-
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require("electron-squirrel-startup")) {
-    app.quit();
-}
 
 const createWindow = (): void => {
     const mainWindow = new BrowserWindow({
         height: 800,
         width: 1200,
         webPreferences: {
-            preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+            preload: path.join(__dirname, "../preload/index.js"),
         },
     });
 
-    mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+    if (process.env.ELECTRON_RENDERER_URL) {
+        mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL);
+    } else {
+        mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"));
+    }
 
     mainWindow.webContents.openDevTools();
 };

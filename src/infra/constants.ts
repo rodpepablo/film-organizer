@@ -1,4 +1,4 @@
-import { CreateNotificationParams } from "../domain/stores/ui";
+import { CreateNotificationParams } from "../stores/types";
 
 // NAVIGATION
 export const HOME_SECTION = "home";

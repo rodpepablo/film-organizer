@@ -14,6 +14,8 @@ export class ImageIndexExtractor implements IContextExtractor {
         for (let i in film.images) {
             if (film.images[i].id === image.id) return String(Number(i) + 1);
         }
+
+        return "";
     }
 }
 

@@ -11,7 +11,7 @@ import {
 } from "../../test-util/file-system";
 import electron from "electron";
 import { IPCErrors } from "../../../src/infra/ipc-service";
-import { IIdGenerator } from "../../../src/infra/id-generator";
+import { IIdGenerator } from "../../../src/infra/adapters/id-generator";
 
 const EVENT = {} as electron.IpcMainInvokeEvent;
 

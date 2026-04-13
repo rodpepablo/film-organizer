@@ -10,7 +10,7 @@ export interface Modal {
 }
 
 export interface Form {
-    error?: string | null;
+    error: string | null;
     values: Record<string, any>;
 }
 

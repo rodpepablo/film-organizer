@@ -1,4 +1,4 @@
-import { jsdomWindow } from "../../src/infra/html";
+import { jsdomWindow } from "@html";
 
 const window = jsdomWindow();
 

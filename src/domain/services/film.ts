@@ -5,7 +5,7 @@ import { IIPCService, IPCErrors, IPCResult } from "../../infra/ipc-service";
 import { Film, FilmImage } from "../models/film";
 import { IFilmService } from "../ports/film";
 import config from "../../../src/infra/config";
-import { IIdGenerator } from "../../infra/id-generator";
+import { IIdGenerator } from "../../infra/adapters/id-generator";
 
 type Event = Electron.IpcMainInvokeEvent;
 
