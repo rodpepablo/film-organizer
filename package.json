@@ -9,7 +9,8 @@
 		"preview": "electron-vite preview",
 		"lint": "eslint --ext .ts,.tsx .",
 		"test": "vitest",
-		"test:watch": "vitest --watch"
+		"test:watch": "vitest --watch",
+		"dist": "npm run build && electron-builder --publish always"
 	},
 	"keywords": [],
 	"author": {
@@ -23,6 +24,7 @@
 		"@typescript-eslint/eslint-plugin": "^5.62.0",
 		"@typescript-eslint/parser": "^5.62.0",
 		"electron": "39.2.7",
+		"electron-builder": "^26.8.1",
 		"electron-vite": "^5.0.0",
 		"eslint": "^8.57.1",
 		"eslint-plugin-import": "^2.32.0",
@@ -40,5 +42,44 @@
 		"sortablejs": "^1.15.7",
 		"uuid": "^13.0.0",
 		"zod": "^4.3.6"
+	},
+	"build": {
+		"appId": "com.rodpepablo.filmorganizer",
+		"productName": "Film Organizer",
+
+		"directories": {
+			"output": "release"
+		},
+
+		"files": [
+			"out/**/*",
+			"node_modules/**/*",
+			"package.json"
+		],
+
+		"asar": true,
+
+		"asarUnpack": [
+			"**/node_modules/sharp/**/*"
+		],
+
+		"mac": {
+			"target": [
+				"dmg"
+			],
+			"category": "public.app-category.photography"
+		},
+
+		"win": {
+			"target": [
+				"nsis"
+			]
+		},
+
+		"linux": {
+			"target": [
+				"AppImage"
+			]
+		}
 	}
 }
