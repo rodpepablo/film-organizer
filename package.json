@@ -1,6 +1,6 @@
 {
 	"name": "film-organizer",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"description": "An electron desktop app to organize my analog photo scans",
 	"main": "out/main/index.js",
 	"scripts": {
@@ -46,36 +46,29 @@
 	"build": {
 		"appId": "com.rodpepablo.filmorganizer",
 		"productName": "Film Organizer",
-
 		"directories": {
 			"output": "release"
 		},
-
 		"files": [
 			"out/**/*",
 			"node_modules/**/*",
 			"package.json"
 		],
-
 		"asar": true,
-
 		"asarUnpack": [
 			"**/node_modules/sharp/**/*"
 		],
-
 		"mac": {
 			"target": [
 				"dmg"
 			],
 			"category": "public.app-category.photography"
 		},
-
 		"win": {
 			"target": [
 				"nsis"
 			]
 		},
-
 		"linux": {
 			"target": [
 				"AppImage"
