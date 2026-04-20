@@ -1,6 +1,7 @@
 .input-container {
 	display: flex;
 	align-items: center;
+	overflow: visible;
 }
 
 .input-label {
@@ -13,9 +14,50 @@
 	border: 2px solid var(--primary-color);
 	flex: 1;
 	padding: 0.4em;
+	width: 100%;
+	box-sizing: border-box;
 }
 
 .input[type="text"]:focus {
 	border: 2px solid var(--secondary-color);
 	outline: 0;
+}
+
+.input-options-container {
+	position: relative;
+	flex-grow: 1;
+}
+
+.input-options {
+	position: absolute;
+	top: 35px;
+	border: 2px solid var(--primary-color);
+	padding: 0;
+	margin: 0;
+	list-style: none;
+	width: 100%;
+	box-sizing: border-box;
+	background: var(--white-color);
+	max-height: 150px;
+	overflow-y: scroll;
+}
+
+.input-options > li {
+	padding: 0.3em;
+	border-bottom: 2px solid var(--secondary-light);
+	cursor: pointer;
+}
+
+.input-options > li:hover {
+	background: var(--secondary-light);
+	color: var(--white-color);
+}
+
+.input-options li:last-child {
+	border-bottom: none;
+}
+
+.input-options li[targeted] {
+	background: var(--secondary-light);
+	color: var(--white-color);
 }

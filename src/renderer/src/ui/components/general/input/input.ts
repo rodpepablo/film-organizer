@@ -3,15 +3,15 @@ import { html } from "@html";
 import { State, Emit } from "../../../../../../domain/models/state";
 import Component from "../../../component";
 
-type InputConfig = {
+export type InputConfig = {
     name: string;
     label: string;
 };
 
 export interface IInput extends Component {
-    value: any;
+    value?: any;
     name: string;
-    setValue(value: string): void;
+    setValue(value: any): void;
 }
 
 export default class Input implements IInput {
@@ -26,7 +26,7 @@ export default class Input implements IInput {
         this.name = config.name;
     }
 
-    setValue(value: string) {
+    setValue(value: any) {
         this.value = value;
     }
 

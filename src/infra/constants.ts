@@ -1,4 +1,4 @@
-import { CreateNotificationParams } from "../stores/types";
+import { CreateNotificationParams } from "../renderer/src/stores/types";
 
 // NAVIGATION
 export const HOME_SECTION = "home";
@@ -34,6 +34,11 @@ export const EDIT_ICON = "mdi:pencil";
 export const INFO_ICON = "mdi:info";
 export const DOWN_ICON = "mdi:chevron-down";
 export const UP_ICON = "mdi:chevron-up";
+
+// KEYS
+export const KEY_UP = 38;
+export const KEY_DOWN = 40;
+export const KEY_ENTER = 13;
 
 // NOTIFICATIONS
 const success = (message: string): CreateNotificationParams => ({

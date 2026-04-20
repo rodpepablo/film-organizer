@@ -29,3 +29,8 @@ export const safeDispatchCustomEvent = (
 
 export const safeDispatchEvent = (dom: HTMLElement, name: string) =>
     dom.dispatchEvent(new window.Event(name, { bubbles: true }));
+
+export const safeDispatchKeyboardEvent = (dom: HTMLElement, keyCode: number) =>
+    dom.dispatchEvent(
+        new window.KeyboardEvent("keydown", { bubbles: true, keyCode }),
+    );
